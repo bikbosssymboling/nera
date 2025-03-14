@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import {
     masterDepartmantGET, employeeALLGET
-} from "@/services/apiEmployeeManageService";
+} from "@/services/callAPI/ManageEmployee/apiEmployeeManageService";
 
 // ✅ กำหนด Type สำหรับพนักงาน
 interface EmployeeSearchData {

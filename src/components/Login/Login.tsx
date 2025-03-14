@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
-import { authLogin } from "@/services/apiAuthService"; // ✅ เรียกใช้ Service กลาง
+import { authLogin } from "@/services/callAPI/Login/apiAuthService"; // ✅ เรียกใช้ Service กลาง
 
 export default function Login() {
     const router = useRouter();
@@ -75,6 +75,7 @@ export default function Login() {
                 localStorage.removeItem("employeeRoleName");
                 localStorage.removeItem("employeeTypeCode");
                 localStorage.removeItem("employeeTypeName");
+                router.push("/navbar");
             }
         }
     };
