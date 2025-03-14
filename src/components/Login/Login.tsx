@@ -23,22 +23,23 @@ export default function Login() {
         } else {
             try {
                 const data = await authLogin(username, password); // ✅ เรียก API ผ่าน Service
-                if (data.status === "Success") {
-                    console.log(data.data)
-                    if (data.data.statusLogin !== "Not Found") {
-                        localStorage.setItem("employeeID", data.data.employeeID);
-                        localStorage.setItem("employeeCode", data.data.employeeCode);
-                        localStorage.setItem("employeeFullName", data.data.fullName);
-                        localStorage.setItem("employeeDepartmentName", data.data.departmentName);
-                        localStorage.setItem("employeeRoleName", data.data.roleName);
-                        localStorage.setItem("employeeTypeCode", data.data.employeeTypeCode);
-                        localStorage.setItem("employeeTypeName", data.data.employeeTypeName);
+                console.log(data.Status)
+                if (data.Status === "Success") {
+                    console.log(data.Data)
+                    if (data.Data.statusLogin !== "Not Found") {
+                        localStorage.setItem("employeeID", data.Data.employeeID);
+                        localStorage.setItem("employeeCode", data.Data.employeeCode);
+                        localStorage.setItem("employeeFullName", data.Data.fullName);
+                        localStorage.setItem("employeeDepartmentName", data.Data.departmentName);
+                        localStorage.setItem("employeeRoleName", data.Data.roleName);
+                        localStorage.setItem("employeeTypeCode", data.Data.employeeTypeCode);
+                        localStorage.setItem("employeeTypeName", data.Data.employeeTypeName);
                         router.push("/navbar");
                     } else {
                         Swal.fire({
                             icon: "error",
                             title: "เข้าสู่ระบบไม่สำเร็จ",
-                            html: `<span class="text-red-500">ไม่พบข้อมูลผู้ใช้งาน</span>`
+                            html: `<span class="text-rblueed-500">ไม่พบข้อมูลผู้ใช้งาน</span>`
                         });
                         localStorage.removeItem("employeeID");
                         localStorage.removeItem("employeeCode");
@@ -49,10 +50,11 @@ export default function Login() {
                         localStorage.removeItem("employeeTypeName");
                     }
                 } else {
+                    console.log(data)
                     Swal.fire({
-                        icon: "error",
+                        icon: "warning",
                         title: "เข้าสู่ระบบไม่สำเร็จ",
-                        html: `<span class="text-red-500">${data.message}</span>`
+                        html: `<span class="text-blue-500">ไม่พบข้อมูลผู้ใช้งาน</span>`
                     });
                     localStorage.removeItem("employeeID");
                     localStorage.removeItem("employeeCode");
@@ -75,7 +77,6 @@ export default function Login() {
                 localStorage.removeItem("employeeRoleName");
                 localStorage.removeItem("employeeTypeCode");
                 localStorage.removeItem("employeeTypeName");
-                router.push("/navbar");
             }
         }
     };
