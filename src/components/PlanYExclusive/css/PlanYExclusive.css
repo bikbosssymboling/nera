@@ -1,0 +1,34 @@
+ /* ปรับขนาดตารางให้เล็กลง */
+ #work-schedule th, #work-schedule td {
+    padding: 4px 6px; /* ลด Padding เพื่อให้เซลล์เล็กลง */
+    font-size: 12px; /* ลดขนาดตัวอักษร */
+    white-space: nowrap; /* ป้องกันข้อความขึ้นบรรทัดใหม่ */
+    border: 1px solid #ddd; /* เพิ่มเส้นขอบให้ตารางดูชัดเจน */
+}
+
+/* ปรับความกว้างของคอลัมน์ */
+#work-schedule th.id-column,
+#work-schedule td.id-column {
+    min-width: 40px; /* ลดขนาดคอลัมน์ ID */
+}
+
+#work-schedule th.manage-column,
+#work-schedule td.manage-column {
+    min-width: 100px; /* ลดขนาดช่อง Manage, Account, Store */
+}
+
+#work-schedule th.region-column,
+#work-schedule td.region-column {
+    min-width: 150px; /* ลดขนาดช่อง Region, Province */
+}
+
+#work-schedule th.amount-column,
+#work-schedule td.amount-column {
+    min-width: 80px; /* ลดขนาด Amount */
+}
+
+/* เพิ่ม Scrollbar ถ้าตารางกว้างเกิน */
+#work-schedule-container {
+    overflow-x: auto; /* เพิ่ม Scrollbar ตามแนวนอน */
+    max-width: 100%; /* จำกัดความกว้างไม่ให้เกินหน้าจอ */
+}
