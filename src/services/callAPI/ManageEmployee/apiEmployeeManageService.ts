@@ -1,13 +1,4 @@
-import axios from "axios";
-
-/* ตั้งค่า API Base URL */
-const API_BASE_URL = "https://nera.mcaplc.com:8090/nera_api";
-
-/* สร้างอินสแตนซ์ axios */
-const api = axios.create({
-    baseURL: API_BASE_URL,
-    timeout: 5000, // Timeout 5 วินาที
-});
+import api from "@/lib/api";
 
 /* =============================================================================================================== */
 export const masterDepartmantGET = async () => {
