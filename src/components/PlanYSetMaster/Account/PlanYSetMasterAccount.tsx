@@ -51,6 +51,12 @@ export default function PlanYSetMasterAccount() {
         { id: 30, accountCode: "ROB02", name: "Robinson - UPC", nameEng: "Robinson - UPC" },
     ];
     
+    const filteredAccounts = accounts.filter(account =>
+        account.accountCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        account.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        account.nameEng.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    
 
     // ✅ ฟังก์ชันเปิด Modal สำหรับ "เพิ่ม" หรือ "แก้ไข"
     const handleEdit = (account?: Account) => {
@@ -145,7 +151,7 @@ export default function PlanYSetMasterAccount() {
                             </tr>
                         </thead>
                         <tbody>
-                            {accounts.map((account, index) => (
+                            {filteredAccounts.map((account, index) => (
                                 <tr key={account.id} className="text-xs text-gray-900">
                                     <td className="border p-2 border-gray-300 text-center">{index + 1}</td>
                                     <td className="border p-2 border-gray-300">{account.accountCode}</td>
@@ -153,18 +159,15 @@ export default function PlanYSetMasterAccount() {
                                     <td className="border p-2 border-gray-300">{account.nameEng}</td>
                                     <td className="border p-2 border-gray-300">
                                         <div className="flex justify-center items-center space-x-1">
-                                            {/* ปุ่มแก้ไข */}
                                             <button
                                                 className="bg-yellow-500 text-white px-2 py-1 rounded-md text-xs shadow-md cursor-pointer"
-                                                onClick={() => handleEdit(account)} // ✅ เปิด Modal พร้อมข้อมูล
+                                                onClick={() => handleEdit(account)}
                                             >
                                                 <FaEdit />
                                             </button>
-
-                                            {/* ปุ่มลบ */}
                                             <button
                                                 className="bg-red-500 text-white px-2 py-1 rounded-md text-xs shadow-md cursor-pointer"
-                                                onClick={() => handleDelete(account.accountCode)} // ✅ เรียกฟังก์ชันลบ
+                                                onClick={() => handleDelete(account.accountCode)}
                                             >
                                                 <FaTrash />
                                             </button>
