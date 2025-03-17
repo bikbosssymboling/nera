@@ -10,6 +10,7 @@ import dynamic from "next/dynamic";
 // Lazy Load Component
 const EmployeeManage = dynamic(() => import("@/app/employeemanage/page"));
 const PlanYExclusive = dynamic(() => import("@/app/planyexclusive/page"));
+const PlanYSetMasterAccount = dynamic(() => import("@/app/planysetmasteraccount/page"));
 
 export default function Layout() {
     const router = useRouter();
@@ -54,11 +55,11 @@ export default function Layout() {
                     </li>
                     {submenuOpen["exclusive"] && (
                         <ul className="pl-6">
-                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600" 
+                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm" 
                                 onClick={() => setActivePage("planYexclusive")}>
                                 <FaCalendar /> Plan Y Exclusive
                             </li>
-                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600" 
+                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm" 
                                 onClick={() => setActivePage("dashboardexclusive")}>
                                 <FaCalendar /> Dashboard Exclusive
                             </li>
@@ -72,25 +73,25 @@ export default function Layout() {
                     </li>
                     {submenuOpen["setup"] && (
                         <ul className="pl-6">
-                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600" onClick={() => setActivePage("account")}>
+                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm" onClick={() => setActivePage("planysetmasteraccount")}>
                                 <FaBriefcase /> Account
                             </li>
-                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600" onClick={() => setActivePage("region")}>
+                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm" onClick={() => setActivePage("region")}>
                                 <FaGlobe /> Region
                             </li>
-                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600" onClick={() => setActivePage("province")}>
+                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm" onClick={() => setActivePage("province")}>
                                 <FaMapMarkerAlt /> Province
                             </li>
-                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600" onClick={() => setActivePage("store")}>
+                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm" onClick={() => setActivePage("store")}>
                                 <FaStore /> Store
                             </li>
-                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600" onClick={() => setActivePage("kpi")}>
+                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm" onClick={() => setActivePage("kpi")}>
                                 <FaChartLine /> KPI
                             </li>
-                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600" onClick={() => setActivePage("position")}>
+                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm" onClick={() => setActivePage("position")}>
                                 <FaClipboardList /> Position
                             </li>
-                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600" onClick={() => setActivePage("job")}>
+                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm" onClick={() => setActivePage("job")}>
                                 <FaClipboardList /> Job
                             </li>
                         </ul>
@@ -103,7 +104,7 @@ export default function Layout() {
                     </li>
                     {submenuOpen["system"] && (
                         <ul className="pl-6">
-                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600" 
+                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm" 
                                 onClick={() => setActivePage("system")}>
                                 <FaUserCog /> System Permission
                             </li>
@@ -115,7 +116,7 @@ export default function Layout() {
             {/* Main Content */}
             <div className={`flex-1 flex flex-col transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-0"}`}>
                 {/* Navbar */}
-                <nav className="w-full fixed top-0 left-0 bg-gradient-to-r from-blue-500 to-purple-500 text-white flex justify-between items-center px-4 py-3 shadow-md">
+                <nav className="w-full fixed top-0 left-0 bg-gradient-to-r from-blue-500 to-purple-500 text-white flex justify-between items-center px-4 py-3 z-30 shadow-md">
                     <button className="text-white cursor-pointer" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
                         <FaBars />
                     </button>
@@ -142,6 +143,7 @@ export default function Layout() {
                 <div className="flex-1 p-6 pt-20">
                     {activePage === "employee" && <EmployeeManage />}
                     {activePage === "planYexclusive" && <PlanYExclusive />}
+                    {activePage === "planysetmasteraccount" && <PlanYSetMasterAccount />}
                     {activePage !== "employee" && <div className="text-center text-gray-500 text-xl mt-20">🔧 กำลังพัฒนา...</div>}
                 </div>
             </div>
