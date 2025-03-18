@@ -6,6 +6,7 @@ import { FaPlus, FaEdit, FaTrash, FaFileExcel, FaWrench, FaUsers, FaIdCard
 import EmployeeTypeModal from "./EmployeeTypeModal";
 import EmployeeChangeModal from "./EmployeeChangeModal";
 import {useEmployeeFilterSearchState, useMasterDepartmentGETState} from "./Hook/EmployeeManageHook";
+import type { DepartmentMasterData } from "./Types/Types"; // ✅ Import type จาก Hook
 
 const fixDataEmployee = [
     {"employeeID": 1, "employeeTypeName": "O1 - พนักงานประจำ MCA", "employeeCode": "100001", "fullName": "TEST1 TEST1", "departmentName": "Department Test 1", "roleName": "Role Test 1", "employeeStatus": "0", "personalCardExpired": "15/08/2026", "blackListDate": ""},
@@ -31,15 +32,6 @@ const fixDataEmployee = [
 ];
 
 
-
-const arrDataDepartment = [
-    {departmentID: 1, departmentName: "Account Executive (BU1) "}
-    ,{departmentID: 2, departmentName: "Accounting&Finance"}
-    ,{departmentID: 3, departmentName: "B&O Support"}
-    ,{departmentID: 4, departmentName: "Business Development"}
-    ,{departmentID: 5, departmentName: "Data & IT Center"}
-];
-
 const arrDataRole = [
     {departmentName: "Account Executive (BU1) ", roleID: 1, roleName: "Account Director "}
     ,{departmentName: "Accounting&Finance", roleID: 6, roleName: "Account Payble Officer"}
@@ -52,9 +44,14 @@ const arrDataRole = [
 
 
 export default function EmployeeManage() {
-    // Hook ดึง Master Department
-    const hookuseMasterDepartmentGETState = useMasterDepartmentGETState();
-    const [department, setDepartment] = useState(hookuseMasterDepartmentGETState.departmentMasterData);
+    // ✅ ใช้ Hook ที่มี `departmentMasterData`
+    const { departmentMasterData } = useMasterDepartmentGETState();
+    const [department, setDepartment] = useState<DepartmentMasterData[]>([]);
+    useEffect(() => {
+        setDepartment(departmentMasterData);
+    }, [departmentMasterData]); // ✅ เมื่อ departmentMasterData อัปเดต ให้ตั้งค่าใหม่
+
+    
     // Hook ดึงข้อมูล พนักงาน
     const hookuseEmployeeFilterSearchState = useEmployeeFilterSearchState();
     const [employees, setEmployees] = useState(hookuseEmployeeFilterSearchState.employees);
@@ -157,7 +154,7 @@ export default function EmployeeManage() {
                             onChange={(e) => hookuseEmployeeFilterSearchState.setFilterDepartment(e.target.value)} // ✅ ใช้ฟังก์ชันจาก filters
                         >
                             <option value="">ทั้งหมด</option>
-                            {arrDataDepartment.map((dep) => (
+                            {department.map((dep) => (
                                 <option key={dep.departmentID} value={dep.departmentID}>
                                     {dep.departmentName.trim()}
                                 </option>

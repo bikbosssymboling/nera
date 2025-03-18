@@ -3,7 +3,7 @@ import api from "@/lib/api";
 /* =============================================================================================================== */
 export const masterDepartmantGET = async () => {
     try {
-        const response = await api.get("/auth/masterDepartmantGET", {});
+        const response = await api.get("/HRManagement/departmentsGet", {});
         return response.data;
     } catch (error) {
         throw error;
@@ -11,7 +11,7 @@ export const masterDepartmantGET = async () => {
 };
 export const masterRoleGET = async () => {
     try {
-        const response = await api.get("/auth/masterRoleGET", {});
+        const response = await api.get("/HRManagement/roleGet", {});
         return response.data;
     } catch (error) {
         throw error;

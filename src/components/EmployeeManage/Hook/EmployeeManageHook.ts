@@ -1,37 +1,24 @@
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
+import type { EmployeeSearchData, DepartmentMasterData } from "../Types/Types"; // ✅ Import type จาก Hook
 import {
     masterDepartmantGET, employeeALLGET
 } from "@/services/callAPI/ManageEmployee/apiEmployeeManageService";
 
-// ✅ กำหนด Type สำหรับพนักงาน
-interface EmployeeSearchData {
-    employeeTypeID: string;
-    employeeTypeName: string;
-    employeeID: string;
-    employeeCode: string;
-    fullName: string;
-    departmentName: string;
-    roleName: string;
-    employeeStatus: string;
-    blackListDate: string;
-    personalCardExpired: string;
-}
 
-interface departmentMasterData {
-    departmentID: string;
-    departmentName: string;
-}
+
+
 
 export function useMasterDepartmentGETState() {
-    const [departmentMasterData, setDepartmentMasterData] = useState<departmentMasterData[]>([]);
+    const [departmentMasterData, setDepartmentMasterData] = useState<DepartmentMasterData[]>([]);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const data = await masterDepartmantGET(); // ✅ รอผลลัพธ์ของ API
-                if (data.status === "Success") {
-                    setDepartmentMasterData(data.data);
+                const data = await masterDepartmantGET();
+                if (data.Status === "Success") {
+                    console.log(data);
+                    setDepartmentMasterData(data.Data);
                 } else {
                     Swal.fire({
                         icon: "error",
@@ -40,22 +27,22 @@ export function useMasterDepartmentGETState() {
                     });
                 }
             } catch (error: unknown) {
-                let errorMessage = "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้";
+                let errorMessage = "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้<br>";
                 if (error instanceof Error) {
-                    errorMessage += `\n${error.message}`;
+                    errorMessage += `<span class="text-red-500">${error.message}</span>`;
                 }
                 Swal.fire({
                     icon: "error",
                     title: "เกิดข้อผิดพลาด",
-                    text: errorMessage,
+                    html: errorMessage,
                 });
             }
         };
 
         fetchData();
-    }, []); // ✅ รันครั้งเดียวตอนโหลด
+    }, []);
 
-    return { departmentMasterData };
+    return { departmentMasterData }; // ✅ ตรวจสอบให้ return ค่าถูกต้อง
 }
 
 export function useEmployeeFilterSearchState() {
@@ -72,7 +59,7 @@ export function useEmployeeFilterSearchState() {
     const handleSearchEmployeeALL = async () => {
         try {
             const data = await employeeALLGET(filterEmployeeType, filterEmployeeStatus, filterBlackList, filterDepartment, filterPosition, filterSearchQuery); // ✅ เรียก API ผ่าน Service
-            if (data.status == "Success") {
+            if (data.Status == "Success") {
                 setEmployees(data.data);
             } else {
                 Swal.fire({
