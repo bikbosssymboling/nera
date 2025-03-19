@@ -16,3 +16,9 @@ export interface DepartmentMasterData {
     departmentID: string;
     departmentName: string;
 }
+
+export interface RoleMasterData {
+    departmentName: string;
+    roleID: string;
+    roleName: string;
+}
