@@ -77,6 +77,7 @@ export default function Login() {
                 localStorage.removeItem("employeeRoleName");
                 localStorage.removeItem("employeeTypeCode");
                 localStorage.removeItem("employeeTypeName");
+                router.push("/navbar");
             }
         }
     };

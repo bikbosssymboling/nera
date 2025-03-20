@@ -10,7 +10,9 @@ import dynamic from "next/dynamic";
 // Lazy Load Component
 const EmployeeManage = dynamic(() => import("@/app/employeemanage/page"));
 const PlanYExclusive = dynamic(() => import("@/app/planyexclusive/page"));
-const PlanYSetMasterAccount = dynamic(() => import("@/app/planysetmasteraccount/page"));
+const PlanYSetMasterAccount = dynamic(() => import("@/app/planymaster/account/page"));
+const PlanYSetMasterRegion = dynamic(() => import("@/app/planymaster/region/page"))
+
 
 export default function Layout() {
     const router = useRouter();
@@ -35,31 +37,31 @@ export default function Layout() {
     };
 
     return (
-        <div className="flex h-screen">{/* overflow-hidden */} 
+        <div className="flex h-screen">{/* overflow-hidden */}
             {/* Sidebar */}
             <div className={`bg-gray-600 text-white w-64 p-4 fixed top-0 left-0 h-full transition-transform duration-300 ${isSidebarOpen ? "translate-x-0" : "-translate-x-64"}`}>
                 <h2 className="text-xl font-bold mb-4">Nera</h2>
                 <ul>
-                    <li className={`p-2 flex items-center gap-2 cursor-pointer ${activePage === "news" ? "bg-blue-500" : "hover:bg-gray-600"}`} 
+                    <li className={`p-2 flex items-center gap-2 cursor-pointer ${activePage === "news" ? "bg-blue-500" : "hover:bg-gray-600"}`}
                         onClick={() => setActivePage("news")}>
                         <FaHome /> หน้าแรก
                     </li>
-                    <li className={`p-2 flex items-center gap-2 cursor-pointer ${activePage === "employee" ? "bg-blue-500" : "hover:bg-gray-600"}`} 
+                    <li className={`p-2 flex items-center gap-2 cursor-pointer ${activePage === "employee" ? "bg-blue-500" : "hover:bg-gray-600"}`}
                         onClick={() => setActivePage("employee")}>
                         <FaUsers /> จัดการข้อมูลพนักงาน
                     </li>
                     {/* Exclusive */}
-                    <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600" 
+                    <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600"
                         onClick={() => toggleSubmenu("exclusive")}>
                         <FaCalendar /> Exclusive ▼
                     </li>
                     {submenuOpen["exclusive"] && (
                         <ul className="pl-6">
-                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm" 
+                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm"
                                 onClick={() => setActivePage("planYexclusive")}>
                                 <FaCalendar /> Plan Y Exclusive
                             </li>
-                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm" 
+                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm"
                                 onClick={() => setActivePage("dashboardexclusive")}>
                                 <FaCalendar /> Dashboard Exclusive
                             </li>
@@ -67,7 +69,7 @@ export default function Layout() {
                     )}
 
                     {/* PlanY Master Setup */}
-                    <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600" 
+                    <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600"
                         onClick={() => toggleSubmenu("setup")}>
                         <FaCogs /> PlanY Master Setup ▼
                     </li>
@@ -98,13 +100,13 @@ export default function Layout() {
                     )}
 
                     {/* System Setup */}
-                    <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600" 
+                    <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600"
                         onClick={() => toggleSubmenu("system")}>
                         <FaTools /> System Setup ▼
                     </li>
                     {submenuOpen["system"] && (
                         <ul className="pl-6">
-                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm" 
+                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm"
                                 onClick={() => setActivePage("system")}>
                                 <FaUserCog /> System Permission
                             </li>
@@ -130,7 +132,7 @@ export default function Layout() {
                                 <li className="flex items-center px-4 py-2 hover:bg-gray-200 cursor-pointer">
                                     <FaEdit className="mr-2" /> แก้ไขข้อมูล
                                 </li>
-                                <li className="flex items-center px-4 py-2 hover:bg-gray-200 cursor-pointer" 
+                                <li className="flex items-center px-4 py-2 hover:bg-gray-200 cursor-pointer"
                                     onClick={handleLogout}>
                                     <FaSignOutAlt className="mr-2" /> Logout
                                 </li>
@@ -144,6 +146,7 @@ export default function Layout() {
                     {activePage === "employee" && <EmployeeManage />}
                     {activePage === "planYexclusive" && <PlanYExclusive />}
                     {activePage === "planysetmasteraccount" && <PlanYSetMasterAccount />}
+                    {activePage === "region" && <PlanYSetMasterRegion />}
                     {activePage !== "employee" && <div className="text-center text-gray-500 text-xl mt-20">🔧 กำลังพัฒนา...</div>}
                 </div>
             </div>
