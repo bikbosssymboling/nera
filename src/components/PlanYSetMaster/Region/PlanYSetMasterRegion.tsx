@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { FaBriefcase, FaEdit, FaPlus, FaSearch, FaTrash } from "react-icons/fa";
 import RegionModal from "./PlanYSetMasterRegionModalChange";
 import Swal from "sweetalert2";
-import { regionAdd, regionList } from "@/services/callAPI/PlanYMasterSetup/Region/apiRegionService";
+import { regionAdd, regionDelete, regionList } from "@/services/callAPI/PlanYMasterSetup/Region/apiRegionService";
 
 interface Region {
   id: number;
@@ -41,7 +41,7 @@ export default function PlanYMasterRegion() {
   };
 
   // ✅ ฟังก์ชันลบข้อมูลออกจาก state
-  const handleDelete = async (regionId: string) => {
+  const handleDelete = async (regionId: number) => {
     Swal.fire({
       icon: "warning",
       text: "คุณต้องการลบ Region นี้ใช่หรือไม่?",
@@ -67,6 +67,7 @@ export default function PlanYMasterRegion() {
 
           // ✅ เช็คสถานะการลบ
           if (data.status === "Success") {
+            getListData(); // ✅ โหลดข้อมูลใหม่
             Swal.fire({
               icon: "success",
               title: "ลบข้อมูลเรียบร้อย",
@@ -93,26 +94,60 @@ export default function PlanYMasterRegion() {
     });
   };
 
-  const getListData = async () => {
+  const handleButtonSearch = () => {
+    setSearchQuery(""); // ✅ ล้างค่า searchQuery
+    getListData();
+  }
+
+  const getListData = async (isLoading: boolean = true) => {
     try {
+      if (isLoading) {
+        Swal.fire({
+          title: "กำลังโหลดข้อมูล...",
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+      }
+
       const res = await regionList();
-      setRegions(
-        res.map((region: any) => ({
+      if (res.status === "Success") {
+        const formattedRegions = res.data.map((region: any) => ({
           id: region.regionID,
           regionCode: region.regionCode,
           name: region.regionNameThai,
           nameEng: region.regionNameEnglish,
-        }))
-      );
-      console.log(res);
-    } catch (error: unknown) { }
-  }
+        }));
+        setRegions(formattedRegions);
+      } else {
+        // Swal.fire({
+        //   icon: "error",
+        //   title: "ไม่สามารถโหลดข้อมูลได้",
+        //   text: res.error_message || "เกิดข้อผิดพลาด",
+        // });
+      }
+    } catch (error: unknown) {
+      let errorMessage = "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้<br>";
+      if (error instanceof Error) {
+        errorMessage += `<span class="text-red-500">${error.message}</span>`;
+      }
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        html: errorMessage,
+      });
+    } finally {
+      if (isLoading) Swal.close();
+    }
+  };
+
 
 
   useEffect(() => {
     getListData();
   }, []);
- 
+
   return (
     <div className="p-2">
       {/* Header */}
@@ -130,7 +165,9 @@ export default function PlanYMasterRegion() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <button className="cursor-pointer bg-blue-500 text-white text-xs px-3 py-2 rounded flex items-center gap-1 shadow-md">
+          <button
+            onClick={() => handleButtonSearch()}
+            className="cursor-pointer bg-blue-500 text-white text-xs px-3 py-2 rounded flex items-center gap-1 shadow-md">
             <FaSearch /> Search
           </button>
         </div>
@@ -182,7 +219,7 @@ export default function PlanYMasterRegion() {
                       </button>
                       <button
                         className="bg-red-500 text-white px-2 py-1 rounded-md text-xs shadow-md cursor-pointer"
-                        onClick={() => handleDelete(region.id.toString())} // ✅ ส่ง `regionId` ไปลบ
+                        onClick={() => handleDelete(region.id)} // ✅ ส่ง `regionId` ไปลบ
                       >
                         <FaTrash />
                       </button>
@@ -194,8 +231,12 @@ export default function PlanYMasterRegion() {
           </table>
         </div>
       </div>
-      <RegionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} region={editRegion} />
-
+      <RegionModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        region={editRegion}
+        getListData={getListData} // ✅ ส่ง function getListData เข้าไป
+      />
     </div>
   );
 }

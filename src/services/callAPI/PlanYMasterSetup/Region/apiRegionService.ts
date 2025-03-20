@@ -1,4 +1,5 @@
 import api from "@/lib/api";
+const loggedInUser = localStorage.getItem("employeeFullName") || "unknown user";
 
 export const regionList = async () => {
     try {
@@ -10,7 +11,11 @@ export const regionList = async () => {
     }
 };
 
-export const regionAdd = async (regionCode: string, regionNameThai: string, regionNameEnglish: string, createdBy: string) => {
+export const regionAdd = async (regionCode: string, regionNameThai: string, regionNameEnglish: string) => {
+    // ดึง user ที่ login อยู่ใน localStorage
+    let createdBy = loggedInUser;  
+ 
+    // const createdBy =   'test user'
     try {
         const response = await api.put("/PlanYMasterSetupRegion/region", { regionCode, regionNameThai, regionNameEnglish, createdBy });
         return response.data;
@@ -19,18 +24,20 @@ export const regionAdd = async (regionCode: string, regionNameThai: string, regi
         throw error;
     }
 };
-export const regionEdit = async (regionCode: string, name: string, nameEng: string) => {
+export const regionEdit = async (regionId:number, regionCode: string, regionNameThai: string, regionNameEnglish: string, ) => {
+    const updatedBy = loggedInUser
     try {
-        const response = await api.post("/PlanYMasterSetupRegion/region", { regionCode, name, nameEng });
+        const response = await api.post("/PlanYMasterSetupRegion/region", { regionId, regionCode, regionNameThai, regionNameEnglish, updatedBy });
         return response.data;
     } catch (error) {
         console.error("Region Edit API Error:", error);
         throw error;
     }
 };
-export const regionDelete = async (regionId: string) => {
+export const regionDelete = async (regionId: number) => {
+    const updatedBy = loggedInUser
     try {
-        const response = await api.delete("/PlanYMasterSetupRegion/region", { regionId });
+        const response = await api.delete(`/PlanYMasterSetupRegion/region`, { data: { regionId, updatedBy } });
         return response.data;
     } catch (error) {
         console.error("Region Delete API Error:", error);
