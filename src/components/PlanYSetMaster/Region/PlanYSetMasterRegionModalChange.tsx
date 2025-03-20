@@ -17,12 +17,15 @@ interface RegionModalProps {
     isOpen: boolean;
     onClose: () => void;
     region: Region | null;
+    getListData: (showLoading: boolean) => void;
 }
 
 const RegionModal: React.FC<RegionModalProps> = ({
     isOpen,
     onClose,
     region,
+    getListData,
+
 }) => {
     const [mounted, setMounted] = useState(false);
     const [errors, setErrors] = useState<{ regionCode?: string; name?: string; nameEng?: string }>(
@@ -64,6 +67,7 @@ const RegionModal: React.FC<RegionModalProps> = ({
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+
     const handleSave = async () => {
         let newErrors: { regionCode?: string; name?: string; nameEng?: string } = {};
 
@@ -92,6 +96,7 @@ const RegionModal: React.FC<RegionModalProps> = ({
                 });
 
                 response = await regionEdit(
+                    formData.id,
                     formData.regionCode,
                     formData.name,
                     formData.nameEng
@@ -109,7 +114,6 @@ const RegionModal: React.FC<RegionModalProps> = ({
                     formData.regionCode,
                     formData.name,
                     formData.nameEng,
-                    'cretedBy test'
                 );
             }
 
@@ -118,7 +122,9 @@ const RegionModal: React.FC<RegionModalProps> = ({
                     icon: "success",
                     title: region ? "แก้ไขข้อมูลเรียบร้อย" : "เพิ่มข้อมูลเรียบร้อย",
                 });
+                getListData(false); // ✅ โหลดข้อมูลใหม่โดยไม่แสดง loading
                 handleClearError(); // ✅ ล้าง Error หลังจากบันทึกข้อมูลสำเร็จ
+                handleClearForm(); // ✅ ล้างค่าในฟอร์ม
                 onClose(); // ปิด Modal
             } else {
                 Swal.fire({
@@ -142,9 +148,12 @@ const RegionModal: React.FC<RegionModalProps> = ({
     };
 
     const handleClearError = () => {
-
         setErrors({ regionCode: "", name: "", nameEng: "" });
     }
+    const handleClearForm = () => {
+        setFormData({ id: 0, regionCode: "", name: "", nameEng: "" });
+    }
+
 
 
     if (!mounted) return null;
@@ -152,7 +161,7 @@ const RegionModal: React.FC<RegionModalProps> = ({
 
     return (
         <Modal
-        // add tailwind css show like swit alert
+            // add tailwind css show like swit alert
             isOpen={isOpen}
             onRequestClose={onClose}
             className="bg-white rounded-lg shadow-lg p-6 w-[400px] mx-auto transition-all duration-300 transform scale-100 opacity-100"
