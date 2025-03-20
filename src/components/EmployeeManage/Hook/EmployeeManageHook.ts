@@ -61,8 +61,9 @@ export function useMasterDepartmentGETState() {
         const fetchData = async () => {
             try {
                 const data = await masterDepartmantGET();
-                if (data.Status === "Success") {
-                    setDepartmentMasterData(data.Data);
+                console.log(data)
+                if (data.status === "Success") {
+                    setDepartmentMasterData(data.data);
                 } else {
                     Swal.fire({
                         icon: "error",
@@ -97,9 +98,9 @@ export function useMasterRoleGETState() {
         const fetchData = async () => {
             try {
                 const data = await masterRoleGET();
-                if (data.Status === "Success") {
+                if (data.status === "Success") {
                     console.log(data);
-                    setRoleMasterData(data.Data);
+                    setRoleMasterData(data.data);
                 } else {
                     Swal.fire({
                         icon: "error",

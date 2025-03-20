@@ -1,8 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import Modal from "react-modal";
+import Swal from "sweetalert2";
 import { FaFileExport, FaFileExcel, FaFileSignature, FaSearch, FaPenAlt, FaSave, FaTimes
     ,FaPlus, FaEdit, FaUser, FaLock, FaList, FaUndo
 } from "react-icons/fa"; // ✅ ใช้ react-icons
+import {
+    employeeINSERT
+} from "@/services/callAPI/ManageEmployee/apiEmployeeManageService";
+
 
 if (typeof window !== "undefined") {
     Modal.setAppElement(document.body);
@@ -14,7 +19,201 @@ interface EmployeeChangeModalProps {
     employeeType: string;
 }
 
+
+
 const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClose, employeeType }) => {
+    const [formData, setFormData] = useState({
+        department: '',
+        position: '',
+        firstName: '',
+        lastName: '',
+        nickName: '',
+        titleNameEnglish: '',
+        nameEnglish: '',
+        surnameEnglish: '',
+        lineID: '',
+        sex: '',
+        personalID: '',
+        birthDate: '',
+        age: '',
+        weight: '',
+        height: '',
+        phoneNo: '',
+        email: '',
+        bankID: '',
+        bankBranch: '',
+        bankNo: '',
+        taxType: '',
+        employeeTier: '',
+        salary: '',
+        cardHouseNumber: '',
+        cardVillage: '',
+        cardSubdistrict: '',
+        cardDistrict: '',
+        cardProvince: '',
+        cardPost: '',
+        currentHouseNumber: '',
+        currentVillage: '',
+        currentSubdistrict: '',
+        currentDistrict: '',
+        currentProvince: '',
+        currentPost: '',
+        fatherFirstName: '',
+        fatherLastName: '',
+        fatherAge: '',
+        fatherJob: '',
+        fatherPhoneNo: '',
+        fatherLifeStatus: '',
+        motherFirstName: '',
+        motherLastName: '',
+        motherAge: '',
+        motherJob: '',
+        motherPhoneNo: '',
+        motherLifeStatus: '',
+        siblingsCount: '',
+        siblingsNumber: '',
+        brotherCount: '',
+        sisterCount: '',
+        youngerBrotherCount: '',
+        youngerSisterCount: '',
+        emergencyFirstName: '',
+        emergencyLastName: '',
+        emergencyPhoneNo: '',
+        emergencyRelationship: '',
+        emergencyHouseNumber: '',
+        emergencyVillage: '',
+        emergencySubdistrict: '',
+        emergencyDistrict: '',
+        emergencyProvince: '',
+        emergencyPost: '',
+        marryStatus: '',
+        marryFirstName: '',
+        marryLastName: '',
+        marryAge: '',
+        marryChildrenSex: '',
+        marryChildrenNumber: '',
+        marryChildrenAge: '',
+        marryWorkLocation: '',
+        marryPhoneNo: '',
+        militaryRemark: '',
+        educationLevel1: '',
+        educationNameInstitution1: '',
+        educationFaculty1: '',
+        educationPeriod1: '',
+        educationGrade1: '',
+        educationLevel2: '',
+        educationNameInstitution2: '',
+        educationFaculty2: '',
+        educationPeriod2: '',
+        educationGrade2: '',
+        educationLevel3: '',
+        educationNameInstitution3: '',
+        educationFaculty3: '',
+        educationPeriod3: '',
+        educationGrade3: '',
+        workHistoryCompanyName1: '',
+        workHistoryBranch1: '',
+        workHistoryRole1: '',
+        workHistoryPeriod1: '',
+        workHistoryOther1: '',
+        workHistoryCompanyName2: '',
+        workHistoryBranch2: '',
+        workHistoryRole2: '',
+        workHistoryPeriod2: '',
+        workHistoryOther2: '',
+        workHistoryCompanyName3: '',
+        workHistoryBranch3: '',
+        workHistoryRole3: '',
+        workHistoryPeriod3: '',
+        workHistoryOther3: '',
+        seriousContagious: '',
+        seriousContagiousRemark: '',
+        congenitalDisease: '',
+        congenitalDiseaseRemark: '',
+        prescribedMedication: '',
+        prescribedMedicationRemark: '',
+        defective: '',
+        defectiveRemark: '',
+        trainingTopic1: '',
+        trainingLocation1: '',
+        trainingStartDate1: '',
+        trainingStartEnd1: '',
+        trainingTopic2: '',
+        trainingLocation2: '',
+        trainingStartDate2: '',
+        trainingStartEnd2: '',
+        trainingTopic3: '',
+        trainingLocation3: '',
+        trainingStartDate3: '',
+        trainingStartEnd3: '',
+        englishLevel: '',
+        toeicPoint: '',
+        ieltsPoint: '',
+        toeflPoint: '',
+        otherLanguages: '',
+        workOtherProvincesRemark: '',
+        otherAbilities: '',
+        talent: '',
+        username: '',
+        password: '',
+        blackListRemark: ''
+    });
+    
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+            setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+    const handleSaveUser = async () => {
+        
+        // 👉 ตรงนี้ต่อ API หรือ Validation ได้
+        // ✅ Map employeeType ให้ตรง MasterEmployeeTypeID ก่อนยิง API
+        const mapEmployeeType = (type: string) => {
+            if (type === 'O1') return 1;
+            if (type === 'O2') return 2;
+            if (type === 'O3') return 3;
+            if (type === 'Key Account') return 4;
+            return 0; // Default เผื่อไม่มี
+        };
+
+        const finalFormData = {
+            ...formData,
+            MasterEmployeeTypeID: mapEmployeeType(employeeType),
+        };
+        console.log("✅ ข้อมูลพนักงาน:", finalFormData);
+        
+        try {
+            const data = await employeeINSERT(finalFormData); // ✅ ใช้ await ได้เพราะ async แล้ว
+            if (data.Status == "Success") {
+                Swal.fire({
+                    icon: "success",
+                    title: "บันทีกข้อมูลสำเร็จ",
+                    text: "เพิ่มพนักงานเรียบร้อย"
+                });
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "ไม่สามารถค้นหาข้อมูลได้",
+                    text: data.error_message || ""
+                });
+            }
+        } catch (error: unknown) {
+            let errorMessage = "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้<br>";
+            if (error instanceof Error) {
+                errorMessage += `<span class="text-red-500">${error.message}</span>`;
+            }
+            Swal.fire({
+                icon: "error",
+                title: "เกิดข้อผิดพลาด",
+                html: errorMessage
+            });
+        }
+    };
+
     return (
         <Modal
             isOpen={isOpen}
@@ -122,20 +321,31 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
                             {(employeeType === "O1" || employeeType === "O3") && (
                                 <>
                                     <div className="flex flex-col">
-                                        <label className="text-left font-bold text-xs mb-1">แผนก</label>
-                                        <select className="border p-1 w-full text-xs">
-                                            <option value="" selected>เลือก</option>
-                                            <option value="">Account Executive (BU1)</option>
-                                            <option value="">Accounting & Finance</option>
-                                        </select>
+                                    <label className="text-left font-bold text-xs mb-1">แผนก</label>
+                                    <select
+                                        className="border p-1 w-full text-xs"
+                                        name="department"
+                                        value={formData.department}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="">เลือก</option>
+                                        <option value="AE">Account Executive (BU1)</option>
+                                        <option value="AC">Accounting & Finance</option>
+                                    </select>
                                     </div>
+
                                     <div className="flex flex-col">
-                                        <label className="text-left font-bold text-xs mb-1">ตำแหน่ง</label>
-                                        <select className="border p-1 w-full text-xs">
-                                            <option value="" selected>เลือก</option>
-                                            <option value="">Account Director</option>
-                                            <option value="">Account Executive</option>
-                                        </select>
+                                    <label className="text-left font-bold text-xs mb-1">ตำแหน่ง</label>
+                                    <select
+                                        className="border p-1 w-full text-xs"
+                                        name="position"
+                                        value={formData.position}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="">เลือก</option>
+                                        <option value="AD">Account Director</option>
+                                        <option value="AE">Account Executive</option>
+                                    </select>
                                     </div>
                                     <div className="flex flex-col">
                                         <label className="text-left font-bold text-xs mb-1">ฝ่าย</label>
@@ -159,21 +369,50 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
                             </div>
                             <div className="flex flex-col">
                                 <label className="text-left font-bold text-xs mb-1">ชื่อ</label>
-                                <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
-                            </div>
-                            <div className="flex flex-col">
-                                <label className="text-left font-bold text-xs mb-1">นามสกุล</label>
-                                <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
-                            </div>
-                            <div className="flex flex-col">
-                                <label className="text-left font-bold text-xs mb-1">ชื่อเล่น</label>
-                                <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
-                            </div>
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="firstName"
+                                    value={formData.firstName}
+                                    onChange={handleChange}
+                                />
+                                </div>
+
+                                <div className="flex flex-col">
+                                    <label className="text-left font-bold text-xs mb-1">นามสกุล</label>
+                                    <input 
+                                        type="text" 
+                                        className="border p-1 w-full text-xs" 
+                                        placeholder="กรอกข้อมูล" 
+                                        name="lastName"
+                                        value={formData.lastName}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+
+                                <div className="flex flex-col">
+                                    <label className="text-left font-bold text-xs mb-1">ชื่อเล่น</label>
+                                    <input 
+                                        type="text" 
+                                        className="border p-1 w-full text-xs" 
+                                        placeholder="กรอกข้อมูล" 
+                                        name="nickName"
+                                        value={formData.nickName}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+
 
                             {/* ✅ แถวที่ 2 */}
                             <div className="flex flex-col">
                                 <label className="text-left font-bold text-xs mb-1">2. Title Name</label>
-                                <select className="border p-1 w-full text-xs">
+                                <select
+                                    className="border p-1 w-full text-xs"
+                                    name="titleNameEnglish"
+                                    value={formData.titleNameEnglish}
+                                    onChange={handleChange}
+                                >
                                     <option value="" selected>เลือก</option>
                                     <option value="Mr.">Mr.</option>
                                     <option value="Mrs.">Mrs.</option>
@@ -182,21 +421,47 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
                             </div>
                             <div className="flex flex-col">
                                 <label className="text-left font-bold text-xs mb-1">Name English</label>
-                                <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="nameEnglish"
+                                    value={formData.nameEnglish}
+                                    onChange={handleChange}
+                                />
                             </div>
                             <div className="flex flex-col">
                                 <label className="text-left font-bold text-xs mb-1">Surname English</label>
-                                <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="surnameEnglish"
+                                    value={formData.surnameEnglish}
+                                    onChange={handleChange}
+                                />
                             </div>
                             <div className="flex flex-col">
                                 <label className="text-left font-bold text-xs mb-1">Line ID</label>
-                                <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="lineID"
+                                    value={formData.lineID}
+                                    onChange={handleChange}
+                                />
                             </div>
 
                             {/* ✅ แถวที่ - */}
                             <div className="flex flex-col">
                                 <label className="text-left font-bold text-xs mb-1">3. เพศ</label>
-                                <select className="border p-1 w-full text-xs">
+                                <select
+                                    className="border p-1 w-full text-xs"
+                                    name="sex"
+                                    value={formData.sex}
+                                    onChange={handleChange}
+                                >
                                 <option value="" selected>เลือก</option>
                                 <option value="ชาย">ชาย</option>
                                 <option value="หญิง">หญิง</option>
@@ -205,37 +470,91 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
                             </div>
                             <div className="flex flex-col">
                                 <label className="text-left font-bold text-xs mb-1">เลขบัตรประชาชน</label>
-                                <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="personalID"
+                                    value={formData.personalID}
+                                    onChange={handleChange}
+                                />
                             </div>
                             <div className="flex flex-col">
                                 <label className="text-left font-bold text-xs mb-1">4. วันเดือนปีเกิด</label>
-                                <input type="date" className="border p-1 w-full text-xs" />
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="birthDate"
+                                    value={formData.birthDate}
+                                    onChange={handleChange}
+                                />
                             </div>
                             <div className="flex flex-col">
                                 <label className="text-left font-bold text-xs mb-1">อายุ</label>
-                                <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="age"
+                                    value={formData.age}
+                                    onChange={handleChange}
+                                />
                             </div>
 
                             {/* ✅ แถวที่ 4 */}
                             <div className="flex flex-col">
                                 <label className="text-left font-bold text-xs mb-1">น้ำหนัก/กก.</label>
-                                <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="weight"
+                                    value={formData.weight}
+                                    onChange={handleChange}
+                                />
                             </div>
                             <div className="flex flex-col">
                                 <label className="text-left font-bold text-xs mb-1">ส่วนสูง/ซม.</label>
-                                <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="height"
+                                    value={formData.height}
+                                    onChange={handleChange}
+                                />
                             </div>
                             <div className="flex flex-col">
                                 <label className="text-left font-bold text-xs mb-1">เบอร์โทรศัพท์</label>
-                                <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="phoneNo"
+                                    value={formData.phoneNo}
+                                    onChange={handleChange}
+                                />
                             </div>
                             <div className="flex flex-col">
                                 <label className="text-left font-bold text-xs mb-1">E-mail</label>
-                                <input type="email" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                />
                             </div>
                             <div className="flex flex-col">
                                 <label className="text-left font-bold text-xs mb-1">ธนาคาร</label>
-                                <select className="border p-1 w-full text-xs">
+                                <select
+                                    className="border p-1 w-full text-xs"
+                                    name="bankID"
+                                    value={formData.bankID}
+                                    onChange={handleChange}
+                                >
                                 <option value="" selected>เลือก</option>
                                 <option value="กรุงเทพ">กรุงเทพ</option>
                                 <option value="กสิกรไทย">กสิกรไทย</option>
@@ -244,15 +563,34 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
                             </div>
                             <div className="flex flex-col">
                                 <label className="text-left font-bold text-xs mb-1">สาขา(ธนาคาร)</label>
-                                <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="bankBranch"
+                                    value={formData.bankBranch}
+                                    onChange={handleChange}
+                                />
                             </div>
                             <div className="flex flex-col">
                                 <label className="text-left font-bold text-xs mb-1">เลขบัญชีธนาคาร</label>
-                                <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="bankNo"
+                                    value={formData.bankNo}
+                                    onChange={handleChange}
+                                />
                             </div>
                             <div className="flex flex-col">
                                 <label className="text-left font-bold text-xs mb-1">5. ประเภทภาษี</label>
-                                <select className="border p-1 w-full text-xs">
+                                <select
+                                    className="border p-1 w-full text-xs"
+                                    name="taxType"
+                                    value={formData.taxType}
+                                    onChange={handleChange}
+                                >
                                 <option value="" selected>เลือก</option>
                                 <option value="">ภ.ง.ด 1</option>
                                 <option value="">ภ.ง.ด 1 ก.พิเศษ</option>
@@ -266,11 +604,25 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
                             </div>
                             <div className="flex flex-col">
                                 <label className="text-left font-bold text-xs mb-1">เกรด/ระดับ พนักงาน</label>
-                                <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="employeeTier"
+                                    value={formData.employeeTier}
+                                    onChange={handleChange}
+                                />
                             </div>
                             <div className="flex flex-col">
                                 <label className="text-left font-bold text-xs mb-1">เงินเดือน</label>
-                                <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="salary"
+                                    value={formData.salary}
+                                    onChange={handleChange}
+                                />
                             </div>
                         </div>
                     </div>
@@ -301,27 +653,69 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
                                 <div className="grid grid-cols-2 gap-3 col-span-5">
                                     <div className="flex flex-col">
                                         <label className="text-left font-bold text-xs mb-1">บ้านเลขที่/หมู่บ้าน *</label>
-                                        <input type="text" className="border p-1 w-full text-xs" placeholder={`กรอกข้อมูลที่อยู่`} />
+                                        <input 
+                                            type="text" 
+                                            className="border p-1 w-full text-xs" 
+                                            placeholder="กรอกข้อมูล" 
+                                            name="cardHouseNumber"
+                                            value={formData.cardHouseNumber}
+                                            onChange={handleChange}
+                                        />
                                     </div>
                                     <div className="flex flex-col">
                                         <label className="text-left font-bold text-xs mb-1">หมู่ที่/คอนโด</label>
-                                        <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                        <input 
+                                            type="text" 
+                                            className="border p-1 w-full text-xs" 
+                                            placeholder="กรอกข้อมูล" 
+                                            name="cardVillage"
+                                            value={formData.cardVillage}
+                                            onChange={handleChange}
+                                        />
                                     </div>
                                     <div className="flex flex-col">
                                         <label className="text-left font-bold text-xs mb-1">แขวง/ตำบล *</label>
-                                        <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                        <input 
+                                            type="text" 
+                                            className="border p-1 w-full text-xs" 
+                                            placeholder="กรอกข้อมูล" 
+                                            name="cardSubdistrict"
+                                            value={formData.cardSubdistrict}
+                                            onChange={handleChange}
+                                        />
                                     </div>
                                     <div className="flex flex-col">
                                         <label className="text-left font-bold text-xs mb-1">เขต/อำเภอ *</label>
-                                        <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                        <input 
+                                            type="text" 
+                                            className="border p-1 w-full text-xs" 
+                                            placeholder="กรอกข้อมูล" 
+                                            name="cardDistrict"
+                                            value={formData.cardDistrict}
+                                            onChange={handleChange}
+                                        />
                                     </div>
                                     <div className="flex flex-col">
                                         <label className="text-left font-bold text-xs mb-1">จังหวัด *</label>
-                                        <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                        <input 
+                                            type="text" 
+                                            className="border p-1 w-full text-xs" 
+                                            placeholder="กรอกข้อมูล" 
+                                            name="cardProvince"
+                                            value={formData.cardProvince}
+                                            onChange={handleChange}
+                                        />
                                     </div>
                                     <div className="flex flex-col">
                                         <label className="text-left font-bold text-xs mb-1">รหัสไปรษณีย์ *</label>
-                                        <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                        <input 
+                                            type="text" 
+                                            className="border p-1 w-full text-xs" 
+                                            placeholder="กรอกข้อมูล" 
+                                            name="cardPost"
+                                            value={formData.cardPost}
+                                            onChange={handleChange}
+                                        />
                                     </div>
                                 </div>
 
@@ -334,27 +728,69 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
                                 <div className="grid grid-cols-2 gap-3 col-span-5">
                                     <div className="flex flex-col">
                                             <label className="text-left font-bold text-xs mb-1">บ้านเลขที่/หมู่บ้าน *</label>
-                                            <input type="text" className="border p-1 w-full text-xs" placeholder={`กรอกข้อมูลที่อยู่`} />
+                                            <input 
+                                                type="text" 
+                                                className="border p-1 w-full text-xs" 
+                                                placeholder="กรอกข้อมูล" 
+                                                name="currentHouseNumber"
+                                                value={formData.currentHouseNumber}
+                                                onChange={handleChange}
+                                            />
                                         </div>
                                         <div className="flex flex-col">
                                             <label className="text-left font-bold text-xs mb-1">หมู่ที่/คอนโด</label>
-                                            <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                            <input 
+                                                type="text" 
+                                                className="border p-1 w-full text-xs" 
+                                                placeholder="กรอกข้อมูล" 
+                                                name="currentVillage"
+                                                value={formData.currentVillage}
+                                                onChange={handleChange}
+                                            />
                                         </div>
                                         <div className="flex flex-col">
                                             <label className="text-left font-bold text-xs mb-1">แขวง/ตำบล *</label>
-                                            <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                            <input 
+                                                type="text" 
+                                                className="border p-1 w-full text-xs" 
+                                                placeholder="กรอกข้อมูล" 
+                                                name="currentSubdistrict"
+                                                value={formData.currentSubdistrict}
+                                                onChange={handleChange}
+                                            />
                                         </div>
                                         <div className="flex flex-col">
                                             <label className="text-left font-bold text-xs mb-1">เขต/อำเภอ *</label>
-                                            <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                            <input 
+                                                type="text" 
+                                                className="border p-1 w-full text-xs" 
+                                                placeholder="กรอกข้อมูล" 
+                                                name="currentDistrict"
+                                                value={formData.currentDistrict}
+                                                onChange={handleChange}
+                                            />
                                         </div>
                                         <div className="flex flex-col">
                                             <label className="text-left font-bold text-xs mb-1">จังหวัด *</label>
-                                            <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                            <input 
+                                                type="text" 
+                                                className="border p-1 w-full text-xs" 
+                                                placeholder="กรอกข้อมูล" 
+                                                name="currentProvince"
+                                                value={formData.currentProvince}
+                                                onChange={handleChange}
+                                            />
                                         </div>
                                         <div className="flex flex-col">
                                             <label className="text-left font-bold text-xs mb-1">รหัสไปรษณีย์ *</label>
-                                            <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                            <input 
+                                                type="text" 
+                                                className="border p-1 w-full text-xs" 
+                                                placeholder="กรอกข้อมูล" 
+                                                name="currentPost"
+                                                value={formData.currentPost}
+                                                onChange={handleChange}
+                                            />
                                         </div>
                                 </div>
                             </div>
@@ -376,27 +812,67 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
                                     <div className="grid grid-cols-2 gap-3">
                                     <div className="flex flex-col">
                                         <label className="text-left font-bold text-xs mb-1">ชื่อ</label>
-                                        <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกชื่อ" />
+                                        <input 
+                                            type="text" 
+                                            className="border p-1 w-full text-xs" 
+                                            placeholder="กรอกข้อมูล" 
+                                            name="fatherFirstName"
+                                            value={formData.fatherFirstName}
+                                            onChange={handleChange}
+                                        />
                                     </div>
                                     <div className="flex flex-col">
                                         <label className="text-left font-bold text-xs mb-1">นามสกุล</label>
-                                        <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกนามสกุล" />
+                                        <input 
+                                            type="text" 
+                                            className="border p-1 w-full text-xs" 
+                                            placeholder="กรอกข้อมูล" 
+                                            name="fatherLastName"
+                                            value={formData.fatherLastName}
+                                            onChange={handleChange}
+                                        />
                                     </div>
                                     <div className="flex flex-col">
                                         <label className="text-left font-bold text-xs mb-1">อายุ</label>
-                                        <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกอายุ" />
+                                        <input 
+                                            type="text" 
+                                            className="border p-1 w-full text-xs" 
+                                            placeholder="กรอกข้อมูล" 
+                                            name="fatherAge"
+                                            value={formData.fatherAge}
+                                            onChange={handleChange}
+                                        />
                                     </div>
                                     <div className="flex flex-col">
                                         <label className="text-left font-bold text-xs mb-1">อาชีพ</label>
-                                        <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกอาชีพ" />
+                                        <input 
+                                            type="text" 
+                                            className="border p-1 w-full text-xs" 
+                                            placeholder="กรอกข้อมูล" 
+                                            name="fatherJob"
+                                            value={formData.fatherJob}
+                                            onChange={handleChange}
+                                        />
                                     </div>
                                     <div className="flex flex-col">
                                         <label className="text-left font-bold text-xs mb-1">เบอร์โทรศัพท์</label>
-                                        <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกเบอร์โทรศัพท์" />
+                                        <input 
+                                            type="text" 
+                                            className="border p-1 w-full text-xs" 
+                                            placeholder="กรอกข้อมูล" 
+                                            name="fatherPhoneNo"
+                                            value={formData.fatherPhoneNo}
+                                            onChange={handleChange}
+                                        />
                                     </div>
                                     <div className="flex flex-col">
                                         <label className="text-left font-bold text-xs mb-1">สถานะภาพ</label>
-                                        <select className="border p-1 w-full text-xs">
+                                        <select
+                                            className="border p-1 w-full text-xs"
+                                            name="fatherLifeStatus"
+                                            value={formData.fatherLifeStatus}
+                                            onChange={handleChange}
+                                        >
                                         <option value="" selected>เลือก</option>
                                         <option value="มีชีวิตอยู่">มีชีวิตอยู่</option>
                                         <option value="เสียชีวิต">เสียชีวิต</option>
@@ -411,27 +887,67 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
                                     <div className="grid grid-cols-2 gap-3">
                                     <div className="flex flex-col">
                                         <label className="text-left font-bold text-xs mb-1">ชื่อ</label>
-                                        <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกชื่อ" />
+                                        <input 
+                                            type="text" 
+                                            className="border p-1 w-full text-xs" 
+                                            placeholder="กรอกข้อมูล" 
+                                            name="motherFirstName"
+                                            value={formData.motherFirstName}
+                                            onChange={handleChange}
+                                        />
                                     </div>
                                     <div className="flex flex-col">
                                         <label className="text-left font-bold text-xs mb-1">นามสกุล</label>
-                                        <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกนามสกุล" />
+                                        <input 
+                                            type="text" 
+                                            className="border p-1 w-full text-xs" 
+                                            placeholder="กรอกข้อมูล" 
+                                            name="motherLastName"
+                                            value={formData.motherLastName}
+                                            onChange={handleChange}
+                                        />
                                     </div>
                                     <div className="flex flex-col">
                                         <label className="text-left font-bold text-xs mb-1">อายุ</label>
-                                        <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกอายุ" />
+                                        <input 
+                                            type="text" 
+                                            className="border p-1 w-full text-xs" 
+                                            placeholder="กรอกข้อมูล" 
+                                            name="motherAge"
+                                            value={formData.motherAge}
+                                            onChange={handleChange}
+                                        />
                                     </div>
                                     <div className="flex flex-col">
                                         <label className="text-left font-bold text-xs mb-1">อาชีพ</label>
-                                        <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกอาชีพ" />
+                                        <input 
+                                            type="text" 
+                                            className="border p-1 w-full text-xs" 
+                                            placeholder="กรอกข้อมูล" 
+                                            name="motherJob"
+                                            value={formData.motherJob}
+                                            onChange={handleChange}
+                                        />
                                     </div>
                                     <div className="flex flex-col">
                                         <label className="text-left font-bold text-xs mb-1">เบอร์โทรศัพท์</label>
-                                        <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกเบอร์โทรศัพท์" />
+                                        <input 
+                                            type="text" 
+                                            className="border p-1 w-full text-xs" 
+                                            placeholder="กรอกข้อมูล" 
+                                            name="motherPhoneNo"
+                                            value={formData.motherPhoneNo}
+                                            onChange={handleChange}
+                                        />
                                     </div>
                                     <div className="flex flex-col">
                                         <label className="text-left font-bold text-xs mb-1">สถานะภาพ</label>
-                                        <select className="border p-1 w-full text-xs">
+                                        <select
+                                            className="border p-1 w-full text-xs"
+                                            name="motherLifeStatus"
+                                            value={formData.motherLifeStatus}
+                                            onChange={handleChange}
+                                        >
                                         <option value="" selected>เลือก</option>
                                         <option value="มีชีวิตอยู่">มีชีวิตอยู่</option>
                                         <option value="เสียชีวิต">เสียชีวิต</option>
@@ -445,27 +961,69 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
                                 <div className="grid grid-cols-4 gap-3 mt-2">
                                 <div className="flex flex-col">
                                     <label className="text-left font-bold text-xs mb-1">พี่น้อง รวมตัวเอง/คน</label>
-                                    <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                    <input 
+                                        type="text" 
+                                        className="border p-1 w-full text-xs" 
+                                        placeholder="กรอกข้อมูล" 
+                                        name="siblingsCount"
+                                        value={formData.siblingsCount}
+                                        onChange={handleChange}
+                                    />
                                 </div>
                                 <div className="flex flex-col">
                                     <label className="text-left font-bold text-xs mb-1">เป็นคนที่</label>
-                                    <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                    <input 
+                                        type="text" 
+                                        className="border p-1 w-full text-xs" 
+                                        placeholder="กรอกข้อมูล" 
+                                        name="siblingsNumber"
+                                        value={formData.siblingsNumber}
+                                        onChange={handleChange}
+                                    />
                                 </div>
                                 <div className="flex flex-col">
                                     <label className="text-left font-bold text-xs mb-1">พี่ชาย</label>
-                                    <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                    <input 
+                                        type="text" 
+                                        className="border p-1 w-full text-xs" 
+                                        placeholder="กรอกข้อมูล" 
+                                        name="brotherCount"
+                                        value={formData.brotherCount}
+                                        onChange={handleChange}
+                                    />
                                 </div>
                                 <div className="flex flex-col">
                                     <label className="text-left font-bold text-xs mb-1">พี่สาว</label>
-                                    <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                    <input 
+                                        type="text" 
+                                        className="border p-1 w-full text-xs" 
+                                        placeholder="กรอกข้อมูล" 
+                                        name="sisterCount"
+                                        value={formData.sisterCount}
+                                        onChange={handleChange}
+                                    />
                                 </div>
                                 <div className="flex flex-col">
                                     <label className="text-left font-bold text-xs mb-1">น้องชาย</label>
-                                    <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                    <input 
+                                        type="text" 
+                                        className="border p-1 w-full text-xs" 
+                                        placeholder="กรอกข้อมูล" 
+                                        name="youngerBrotherCount"
+                                        value={formData.youngerBrotherCount}
+                                        onChange={handleChange}
+                                    />
                                 </div>
                                 <div className="flex flex-col">
                                     <label className="text-left font-bold text-xs mb-1">น้องสาว</label>
-                                    <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                    <input 
+                                        type="text" 
+                                        className="border p-1 w-full text-xs" 
+                                        placeholder="กรอกข้อมูล" 
+                                        name="youngerSisterCount"
+                                        value={formData.youngerSisterCount}
+                                        onChange={handleChange}
+                                    />
                                 </div>
                                 </div>
                             </div>
@@ -482,19 +1040,47 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
                             <div className="grid grid-cols-4 gap-3 mt-3">
                                 <div className="flex flex-col">
                                     <label className="text-left font-bold text-xs mb-1">ชื่อ</label>
-                                    <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                    <input 
+                                        type="text" 
+                                        className="border p-1 w-full text-xs" 
+                                        placeholder="กรอกข้อมูล" 
+                                        name="emergencyFirstName"
+                                        value={formData.emergencyFirstName}
+                                        onChange={handleChange}
+                                    />
                                 </div>
                                 <div className="flex flex-col">
                                     <label className="text-left font-bold text-xs mb-1">นามสกุล</label>
-                                    <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                    <input 
+                                        type="text" 
+                                        className="border p-1 w-full text-xs" 
+                                        placeholder="กรอกข้อมูล" 
+                                        name="emergencyLastName"
+                                        value={formData.emergencyLastName}
+                                        onChange={handleChange}
+                                    />
                                 </div>
                                 <div className="flex flex-col">
                                     <label className="text-left font-bold text-xs mb-1">เบอร์โทรศัพท์</label>
-                                    <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                    <input 
+                                        type="text" 
+                                        className="border p-1 w-full text-xs" 
+                                        placeholder="กรอกข้อมูล" 
+                                        name="emergencyPhoneNo"
+                                        value={formData.emergencyPhoneNo}
+                                        onChange={handleChange}
+                                    />
                                 </div>
                                 <div className="flex flex-col">
                                     <label className="text-left font-bold text-xs mb-1">ความสัมพันธ์</label>
-                                    <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                    <input 
+                                        type="text" 
+                                        className="border p-1 w-full text-xs" 
+                                        placeholder="กรอกข้อมูล" 
+                                        name="emergencyRelationship"
+                                        value={formData.emergencyRelationship}
+                                        onChange={handleChange}
+                                    />
                                 </div>
                             </div>
 
@@ -502,27 +1088,69 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
                             <div className="grid grid-cols-4 gap-3 mt-3">
                                 <div className="flex flex-col">
                                     <label className="text-left font-bold text-xs mb-1">บ้านเลขที่/หมู่บ้าน *</label>
-                                    <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                    <input 
+                                        type="text" 
+                                        className="border p-1 w-full text-xs" 
+                                        placeholder="กรอกข้อมูล" 
+                                        name="emergencyHouseNumber"
+                                        value={formData.emergencyHouseNumber}
+                                        onChange={handleChange}
+                                    />
                                 </div>
                                 <div className="flex flex-col">
                                     <label className="text-left font-bold text-xs mb-1">หมู่ที่/คอนโด</label>
-                                    <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                    <input 
+                                        type="text" 
+                                        className="border p-1 w-full text-xs" 
+                                        placeholder="กรอกข้อมูล" 
+                                        name="emergencyVillage"
+                                        value={formData.emergencyVillage}
+                                        onChange={handleChange}
+                                    />
                                 </div>
                                 <div className="flex flex-col">
                                     <label className="text-left font-bold text-xs mb-1">แขวง/ตำบล *</label>
-                                    <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                    <input 
+                                        type="text" 
+                                        className="border p-1 w-full text-xs" 
+                                        placeholder="กรอกข้อมูล" 
+                                        name="emergencySubdistrict"
+                                        value={formData.emergencySubdistrict}
+                                        onChange={handleChange}
+                                    />
                                 </div>
                                 <div className="flex flex-col">
                                     <label className="text-left font-bold text-xs mb-1">เขต/อำเภอ *</label>
-                                    <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                    <input 
+                                        type="text" 
+                                        className="border p-1 w-full text-xs" 
+                                        placeholder="กรอกข้อมูล" 
+                                        name="emergencyDistrict"
+                                        value={formData.emergencyDistrict}
+                                        onChange={handleChange}
+                                    />
                                 </div>
                                 <div className="flex flex-col">
                                     <label className="text-left font-bold text-xs mb-1">จังหวัด *</label>
-                                    <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                    <input 
+                                        type="text" 
+                                        className="border p-1 w-full text-xs" 
+                                        placeholder="กรอกข้อมูล" 
+                                        name="emergencyProvince"
+                                        value={formData.emergencyProvince}
+                                        onChange={handleChange}
+                                    />
                                 </div>
                                 <div className="flex flex-col">
                                     <label className="text-left font-bold text-xs mb-1">รหัสไปรษณีย์ *</label>
-                                    <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูล" />
+                                    <input 
+                                        type="text" 
+                                        className="border p-1 w-full text-xs" 
+                                        placeholder="กรอกข้อมูล" 
+                                        name="emergencyPost"
+                                        value={formData.emergencyPost}
+                                        onChange={handleChange}
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -537,7 +1165,12 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
                                 <div className="grid grid-cols-1 gap-4 mt-3">
                                 <div className="flex items-center">
                                     <label className="text-sm font-bold mr-2">สถานะสมรส:</label>
-                                    <select className="border p-1 text-sm w-60">
+                                    <select
+                                        className="border p-1 w-full text-xs"
+                                        name="marryStatus"
+                                        value={formData.marryStatus}
+                                        onChange={handleChange}
+                                    >
                                     <option value="">เลือก</option>
                                     <option value="โสด">โสด</option>
                                     <option value="สมรส">สมรส</option>
@@ -552,19 +1185,45 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
                                     <div className="grid grid-cols-3 gap-4">
                                     <div className="flex flex-col">
                                         <label className="text-left font-bold text-xs mb-1">ชื่อคู่สมรส</label>
-                                        <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกชื่อคู่สมรส" />
+                                        <input 
+                                            type="text" 
+                                            className="border p-1 w-full text-xs" 
+                                            placeholder="กรอกข้อมูล" 
+                                            name="marryFirstName"
+                                            value={formData.marryFirstName}
+                                            onChange={handleChange}
+                                        />
                                     </div>
                                     <div className="flex flex-col">
                                         <label className="text-left font-bold text-xs mb-1">นามสกุลคู่สมรส</label>
-                                        <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกนามสกุลคู่สมรส" />
+                                        <input 
+                                            type="text" 
+                                            className="border p-1 w-full text-xs" 
+                                            placeholder="กรอกข้อมูล" 
+                                            name="marryLastName"
+                                            value={formData.marryLastName}
+                                            onChange={handleChange}
+                                        />
                                     </div>
                                     <div className="flex flex-col">
                                         <label className="text-left font-bold text-xs mb-1">อายุ</label>
-                                        <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกอายุ" />
+                                        <input 
+                                            type="text" 
+                                            className="border p-1 w-full text-xs" 
+                                            placeholder="กรอกข้อมูล" 
+                                            name="marryAge"
+                                            value={formData.marryAge}
+                                            onChange={handleChange}
+                                        />
                                     </div>
                                     <div className="flex flex-col">
                                         <label className="text-left font-bold text-xs mb-1">เพศบุตร</label>
-                                        <select className="border p-1 w-full text-xs">
+                                        <select
+                                            className="border p-1 w-full text-xs"
+                                            name="marryChildrenSex"
+                                            value={formData.marryChildrenSex}
+                                            onChange={handleChange}
+                                        >
                                         <option value="">เลือก</option>
                                         <option value="ชาย">ชาย</option>
                                         <option value="หญิง">หญิง</option>
@@ -572,19 +1231,47 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
                                     </div>
                                     <div className="flex flex-col">
                                         <label className="text-left font-bold text-xs mb-1">จำนวนบุตร</label>
-                                        <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกจำนวนบุตร" />
+                                        <input 
+                                            type="text" 
+                                            className="border p-1 w-full text-xs" 
+                                            placeholder="กรอกข้อมูล" 
+                                            name="marryChildrenNumber"
+                                            value={formData.marryChildrenNumber}
+                                            onChange={handleChange}
+                                        />
                                     </div>
                                     <div className="flex flex-col">
                                         <label className="text-left font-bold text-xs mb-1">อายุบุตร</label>
-                                        <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกอายุบุตร" />
+                                        <input 
+                                            type="text" 
+                                            className="border p-1 w-full text-xs" 
+                                            placeholder="กรอกข้อมูล" 
+                                            name="marryChildrenAge"
+                                            value={formData.marryChildrenAge}
+                                            onChange={handleChange}
+                                        />
                                     </div>
                                     <div className="flex flex-col">
                                         <label className="text-left font-bold text-xs mb-1">สถานที่ทำงานคู่สมรส</label>
-                                        <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกสถานที่ทำงานคู่สมรส" />
+                                        <input 
+                                            type="text" 
+                                            className="border p-1 w-full text-xs" 
+                                            placeholder="กรอกข้อมูล" 
+                                            name="marryWorkLocation"
+                                            value={formData.marryWorkLocation}
+                                            onChange={handleChange}
+                                        />
                                     </div>
                                     <div className="flex flex-col">
                                         <label className="text-left font-bold text-xs mb-1">เบอร์โทรศัพท์คู่สมรส</label>
-                                        <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกเบอร์โทรศัพท์" />
+                                        <input 
+                                            type="text" 
+                                            className="border p-1 w-full text-xs" 
+                                            placeholder="กรอกข้อมูล" 
+                                            name="marryPhoneNo"
+                                            value={formData.marryPhoneNo}
+                                            onChange={handleChange}
+                                        />
                                     </div>
                                     </div>
                                 </div>
@@ -597,7 +1284,12 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
                                 <div className="grid grid-cols-2 gap-4 mt-3">
                                 <div className="flex flex-col">
                                     <label className="text-left font-bold text-xs mb-1">สถานะทหาร</label>
-                                    <select className="border p-1 w-full text-xs">
+                                    <select
+                                        className="border p-1 w-full text-xs"
+                                        name="militaryStatus"
+                                        value={formData.position}
+                                        onChange={handleChange}
+                                    >
                                     <option value="">เลือก</option>
                                     <option value="ผ่านการเกณฑ์ทหาร">ผ่านการเกณฑ์ทหาร</option>
                                     <option value="ได้รับการยกเว้น">ได้รับการยกเว้น</option>
@@ -606,7 +1298,14 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
                                 </div>
                                 <div className="flex flex-col">
                                     <label className="text-left font-bold text-xs mb-1">หมายเหตุ (ถ้ามี)</label>
-                                    <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูลเพิ่มเติม" />
+                                    <input 
+                                        type="text" 
+                                        className="border p-1 w-full text-xs" 
+                                        placeholder="กรอกข้อมูล" 
+                                        name="militaryRemark"
+                                        value={formData.militaryRemark}
+                                        onChange={handleChange}
+                                    />
                                 </div>
                                 </div>
                             </div>
@@ -614,41 +1313,202 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
                             {/* Section ประวัติการศึกษา */}
                             <div className="border-t border-gray-200 pt-4">
                                 <h2 className="text-lg font-bold text-gray-700 flex items-center">🎓 ประวัติการศึกษา</h2>
-
-                                {/* ตารางข้อมูลการศึกษา */}
+                                {/* ตารางข้อมูลการศึกษา 1*/}
                                 <div className="grid grid-cols-1 gap-4 mt-3">
-                                {[...Array(3)].map((_, index) => (
-                                    <div className="grid grid-cols-6 gap-3 mt-3" key={index}>
-                                    <div className="flex flex-col">
-                                        <label className="text-left font-bold text-xs mb-1">ระดับการศึกษา</label>
-                                        <select className="border p-1 w-full text-xs">
-                                        <option value="">เลือก</option>
-                                        <option value="มัธยมศึกษา">มัธยมศึกษา</option>
-                                        <option value="ประกาศนียบัตร">ประกาศนียบัตร</option>
-                                        <option value="ปริญญาตรี">ปริญญาตรี</option>
-                                        <option value="ปริญญาโท">ปริญญาโท</option>
-                                        <option value="ปริญญาเอก">ปริญญาเอก</option>
-                                        </select>
+                                    <div className="grid grid-cols-6 gap-3 mt-3">
+                                        <div className="flex flex-col">
+                                            <label className="text-left font-bold text-xs mb-1">ระดับการศึกษา</label>
+                                            <select
+                                                className="border p-1 w-full text-xs"
+                                                name="educationLevel1"
+                                                value={formData.educationLevel1}
+                                                onChange={handleChange}
+                                            >
+                                            <option value="">เลือก</option>
+                                            <option value="มัธยมศึกษา">มัธยมศึกษา</option>
+                                            <option value="ประกาศนียบัตร">ประกาศนียบัตร</option>
+                                            <option value="ปริญญาตรี">ปริญญาตรี</option>
+                                            <option value="ปริญญาโท">ปริญญาโท</option>
+                                            <option value="ปริญญาเอก">ปริญญาเอก</option>
+                                            </select>
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <label className="text-left font-bold text-xs mb-1">ชื่อสถาบัน</label>
+                                            <input 
+                                                type="text" 
+                                                className="border p-1 w-full text-xs" 
+                                                placeholder="กรอกข้อมูล" 
+                                                name="educationNameInstitution1"
+                                                value={formData.educationNameInstitution1}
+                                                onChange={handleChange}
+                                            />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <label className="text-left font-bold text-xs mb-1">คณะ/สาขา</label>
+                                            <input 
+                                                type="text" 
+                                                className="border p-1 w-full text-xs" 
+                                                placeholder="กรอกข้อมูล" 
+                                                name="education_faculty1"
+                                                value={formData.educationFaculty1}
+                                                onChange={handleChange}
+                                            />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <label className="text-left font-bold text-xs mb-1">ช่วงเวลาที่ศึกษา</label>
+                                            <input 
+                                                type="text" 
+                                                className="border p-1 w-full text-xs" 
+                                                placeholder="กรอกข้อมูล" 
+                                                name="educationPeriod1"
+                                                value={formData.educationPeriod1}
+                                                onChange={handleChange}
+                                            />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <label className="text-left font-bold text-xs mb-1">เกรดเฉลี่ย</label>
+                                            <input 
+                                                type="text" 
+                                                className="border p-1 w-full text-xs" 
+                                                placeholder="กรอกข้อมูล" 
+                                                name="educationGrade1"
+                                                value={formData.educationGrade1}
+                                                onChange={handleChange}
+                                            />
+                                        </div>
                                     </div>
-                                    <div className="flex flex-col">
-                                        <label className="text-left font-bold text-xs mb-1">ชื่อสถาบัน</label>
-                                        <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกชื่อสถาบัน" />
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <label className="text-left font-bold text-xs mb-1">คณะ/สาขา</label>
-                                        <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกคณะ/สาขา" />
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <label className="text-left font-bold text-xs mb-1">ช่วงเวลาที่ศึกษา</label>
-                                        <input type="text" className="border p-1 w-full text-xs" placeholder="เช่น 2560 - 2564" />
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <label className="text-left font-bold text-xs mb-1">เกรดเฉลี่ย</label>
-                                        <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกเกรดเฉลี่ย" />
-                                    </div>
-                                    </div>
-                                ))}
                                 </div>
+                                {/* ตารางข้อมูลการศึกษา 2*/}
+                                <div className="grid grid-cols-1 gap-4 mt-3">
+                                    <div className="grid grid-cols-6 gap-3 mt-3">
+                                        <div className="flex flex-col">
+                                            <label className="text-left font-bold text-xs mb-1">ระดับการศึกษา</label>
+                                            <select
+                                                className="border p-1 w-full text-xs"
+                                                name="educationLevel2"
+                                                value={formData.educationLevel2}
+                                                onChange={handleChange}
+                                            >
+                                            <option value="">เลือก</option>
+                                            <option value="มัธยมศึกษา">มัธยมศึกษา</option>
+                                            <option value="ประกาศนียบัตร">ประกาศนียบัตร</option>
+                                            <option value="ปริญญาตรี">ปริญญาตรี</option>
+                                            <option value="ปริญญาโท">ปริญญาโท</option>
+                                            <option value="ปริญญาเอก">ปริญญาเอก</option>
+                                            </select>
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <label className="text-left font-bold text-xs mb-1">ชื่อสถาบัน</label>
+                                            <input 
+                                                type="text" 
+                                                className="border p-1 w-full text-xs" 
+                                                placeholder="กรอกข้อมูล" 
+                                                name="educationNameInstitution2"
+                                                value={formData.educationNameInstitution2}
+                                                onChange={handleChange}
+                                            />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <label className="text-left font-bold text-xs mb-1">คณะ/สาขา</label>
+                                            <input 
+                                                type="text" 
+                                                className="border p-1 w-full text-xs" 
+                                                placeholder="กรอกข้อมูล" 
+                                                name="educationFaculty2"
+                                                value={formData.educationFaculty2}
+                                                onChange={handleChange}
+                                            />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <label className="text-left font-bold text-xs mb-1">ช่วงเวลาที่ศึกษา</label>
+                                            <input 
+                                                type="text" 
+                                                className="border p-1 w-full text-xs" 
+                                                placeholder="กรอกข้อมูล" 
+                                                name="educationPeriod2"
+                                                value={formData.educationPeriod2}
+                                                onChange={handleChange}
+                                            />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <label className="text-left font-bold text-xs mb-1">เกรดเฉลี่ย</label>
+                                            <input 
+                                                type="text" 
+                                                className="border p-1 w-full text-xs" 
+                                                placeholder="กรอกข้อมูล" 
+                                                name="educationGrade2"
+                                                value={formData.educationGrade2}
+                                                onChange={handleChange}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                {/* ตารางข้อมูลการศึกษา 3*/}
+                                <div className="grid grid-cols-1 gap-4 mt-3">
+                                    <div className="grid grid-cols-6 gap-3 mt-3">
+                                        <div className="flex flex-col">
+                                            <label className="text-left font-bold text-xs mb-1">ระดับการศึกษา</label>
+                                            <select
+                                                className="border p-1 w-full text-xs"
+                                                name="educationLevel3"
+                                                value={formData.educationLevel3}
+                                                onChange={handleChange}
+                                            >
+                                            <option value="">เลือก</option>
+                                            <option value="มัธยมศึกษา">มัธยมศึกษา</option>
+                                            <option value="ประกาศนียบัตร">ประกาศนียบัตร</option>
+                                            <option value="ปริญญาตรี">ปริญญาตรี</option>
+                                            <option value="ปริญญาโท">ปริญญาโท</option>
+                                            <option value="ปริญญาเอก">ปริญญาเอก</option>
+                                            </select>
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <label className="text-left font-bold text-xs mb-1">ชื่อสถาบัน</label>
+                                            <input 
+                                                type="text" 
+                                                className="border p-1 w-full text-xs" 
+                                                placeholder="กรอกข้อมูล" 
+                                                name="educationNameInstitution3"
+                                                value={formData.educationNameInstitution3}
+                                                onChange={handleChange}
+                                            />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <label className="text-left font-bold text-xs mb-1">คณะ/สาขา</label>
+                                            <input 
+                                                type="text" 
+                                                className="border p-1 w-full text-xs" 
+                                                placeholder="กรอกข้อมูล" 
+                                                name="educationFaculty3"
+                                                value={formData.educationFaculty3}
+                                                onChange={handleChange}
+                                            />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <label className="text-left font-bold text-xs mb-1">ช่วงเวลาที่ศึกษา</label>
+                                            <input 
+                                                type="text" 
+                                                className="border p-1 w-full text-xs" 
+                                                placeholder="กรอกข้อมูล" 
+                                                name="educationPeriod3"
+                                                value={formData.educationPeriod3}
+                                                onChange={handleChange}
+                                            />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <label className="text-left font-bold text-xs mb-1">เกรดเฉลี่ย</label>
+                                            <input 
+                                                type="text" 
+                                                className="border p-1 w-full text-xs" 
+                                                placeholder="กรอกข้อมูล" 
+                                                name="educationGrade3"
+                                                value={formData.educationGrade3}
+                                                onChange={handleChange}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
                             </>
                         )}
@@ -658,46 +1518,185 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
                                 <h2 className="text-lg font-bold text-gray-700 flex items-center">📄 ประวัติการทำงาน</h2>
                             </div>
 
-                            {/* ตารางกรอกประวัติการทำงาน */}
+                            {/* ตารางกรอกประวัติการทำงาน 1*/}
                             <div className="grid grid-cols-5 gap-3">
                                 <div className="flex flex-col">
                                 <label className="text-xs font-bold mb-1">ชื่อบริษัท</label>
-                                <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกชื่อบริษัท" />
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="workHistoryCompanyName1"
+                                    value={formData.workHistoryCompanyName1}
+                                    onChange={handleChange}
+                                />
                                 </div>
                                 <div className="flex flex-col">
                                 <label className="text-xs font-bold mb-1">สาขา</label>
-                                <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกสาขา" />
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="workHistoryBranch1"
+                                    value={formData.workHistoryBranch1}
+                                    onChange={handleChange}
+                                />
                                 </div>
                                 <div className="flex flex-col">
                                 <label className="text-xs font-bold mb-1">ตำแหน่ง</label>
-                                <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกตำแหน่ง" />
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="workHistoryRole1"
+                                    value={formData.workHistoryRole1}
+                                    onChange={handleChange}
+                                />
                                 </div>
                                 <div className="flex flex-col">
                                 <label className="text-xs font-bold mb-1">ระยะเวลา</label>
-                                <input type="text" className="border p-1 w-full text-xs" placeholder="เช่น 2 ปี" />
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="workHistoryPeriod1"
+                                    value={formData.workHistoryPeriod1}
+                                    onChange={handleChange}
+                                />
                                 </div>
                                 <div className="flex flex-col">
                                 <label className="text-xs font-bold mb-1">อื่นๆ</label>
-                                <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกข้อมูลเพิ่มเติม" />
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="workHistoryOther1"
+                                    value={formData.workHistoryOther1}
+                                    onChange={handleChange}
+                                />
                                 </div>
                             </div>
 
-                            {/* รายการกรอกเพิ่ม */}
-                            <div className="mt-3 space-y-2">
-                                {[{ company: "บริษัท A", branch: "สาขา A", position: "ตำแหน่ง A", duration: "2 ปี", other: "อื่นๆ" },
-                                { company: "บริษัท B", branch: "สาขา B", position: "ตำแหน่ง B", duration: "3 ปี", other: "อื่นๆ" },
-                                { company: "บริษัท C", branch: "สาขา C", position: "ตำแหน่ง C", duration: "1 ปี", other: "อื่นๆ" }
-                                ].map((item, index) => (
-                                <div key={index} className="grid grid-cols-5 gap-3">
-                                    <input type="text" className="border p-1 w-full text-xs" placeholder={item.company} />
-                                    <input type="text" className="border p-1 w-full text-xs" placeholder={item.branch} />
-                                    <input type="text" className="border p-1 w-full text-xs" placeholder={item.position} />
-                                    <input type="text" className="border p-1 w-full text-xs" placeholder={item.duration} />
-                                    <input type="text" className="border p-1 w-full text-xs" placeholder={item.other} />
+                            {/* ตารางกรอกประวัติการทำงาน 2*/}
+                            <div className="grid grid-cols-5 gap-3">
+                                <div className="flex flex-col">
+                                <label className="text-xs font-bold mb-1">ชื่อบริษัท</label>
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="workHistoryCompanyName2"
+                                    value={formData.workHistoryCompanyName2}
+                                    onChange={handleChange}
+                                />
                                 </div>
-                                ))}
+                                <div className="flex flex-col">
+                                <label className="text-xs font-bold mb-1">สาขา</label>
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="workHistoryBranch2"
+                                    value={formData.workHistoryBranch2}
+                                    onChange={handleChange}
+                                />
+                                </div>
+                                <div className="flex flex-col">
+                                <label className="text-xs font-bold mb-1">ตำแหน่ง</label>
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="workHistoryRole2"
+                                    value={formData.workHistoryRole2}
+                                    onChange={handleChange}
+                                />
+                                </div>
+                                <div className="flex flex-col">
+                                <label className="text-xs font-bold mb-1">ระยะเวลา</label>
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="workHistoryPeriod2"
+                                    value={formData.workHistoryPeriod2}
+                                    onChange={handleChange}
+                                />
+                                </div>
+                                <div className="flex flex-col">
+                                <label className="text-xs font-bold mb-1">อื่นๆ</label>
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="workHistoryOther2"
+                                    value={formData.workHistoryOther2}
+                                    onChange={handleChange}
+                                />
+                                </div>
                             </div>
+
+                            {/* ตารางกรอกประวัติการทำงาน 3*/}
+                            <div className="grid grid-cols-5 gap-3">
+                                <div className="flex flex-col">
+                                <label className="text-xs font-bold mb-1">ชื่อบริษัท</label>
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="workHistoryCompanyName3"
+                                    value={formData.workHistoryCompanyName3}
+                                    onChange={handleChange}
+                                />
+                                </div>
+                                <div className="flex flex-col">
+                                <label className="text-xs font-bold mb-1">สาขา</label>
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="workHistoryBranch3"
+                                    value={formData.workHistoryBranch3}
+                                    onChange={handleChange}
+                                />
+                                </div>
+                                <div className="flex flex-col">
+                                <label className="text-xs font-bold mb-1">ตำแหน่ง</label>
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="workHistoryRole3"
+                                    value={formData.workHistoryRole3}
+                                    onChange={handleChange}
+                                />
+                                </div>
+                                <div className="flex flex-col">
+                                <label className="text-xs font-bold mb-1">ระยะเวลา</label>
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="workHistoryPeriod3"
+                                    value={formData.workHistoryPeriod3}
+                                    onChange={handleChange}
+                                />
+                                </div>
+                                <div className="flex flex-col">
+                                <label className="text-xs font-bold mb-1">อื่นๆ</label>
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="workHistoryOther3"
+                                    value={formData.workHistoryOther3}
+                                    onChange={handleChange}
+                                />
+                                </div>
+                            </div>
+
                         </div>
+
                         {(employeeType === "O1" || employeeType === "O3") && (
                             <>
                              {/* Section ประวัติรักษาพยาบาล */}
@@ -705,24 +1704,91 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
                                 <h2 className="text-lg font-bold text-gray-700 flex items-center">🏥 ประวัติรักษาพยาบาล</h2>
 
                                 <div className="grid grid-cols-1 gap-4 mt-3">
-                                {[
-                                    { id: "illness", question: "1. ท่านเคยป่วยหนักหรือเป็นโรคติดต่อร้ายแรงมาก่อนหรือไม่?", yes: "เคย", no: "ไม่เคย" },
-                                    { id: "chronic", question: "2. ท่านมีโรคประจำตัวหรือไม่?", yes: "มี", no: "ไม่มี" },
-                                    { id: "medication", question: "3. ท่านเคยได้รับคำสั่งการใช้ยาจากแพทย์หรือไม่?", yes: "ได้รับ", no: "ไม่ได้รับ" },
-                                    { id: "disability", question: "4. ท่านมีความพิการไม่ว่าส่วนใดของร่างกายหรือไม่?", yes: "เคย", no: "ไม่เคย" }
-                                ].map((item, index) => (
-                                    <div key={index} className="grid grid-cols-3 gap-3 items-center">
-                                    <label className="text-left font-bold text-xs">{item.question}</label>
+                                {/* ข้อ 1 */}
+                                <div className="grid grid-cols-3 gap-3 items-center">
+                                    <label className="text-left font-bold text-xs">
+                                    1. ท่านเคยป่วยหนักหรือเป็นโรคติดต่อร้ายแรงมาก่อนหรือไม่?
+                                    </label>
                                     <div className="flex gap-2 items-center">
-                                        <input type="radio" id={`${item.id}_no`} name={item.id} className="mr-1" />
-                                        <label htmlFor={`${item.id}_no`} className="text-xs">{item.no}</label>
-                                        <input type="radio" id={`${item.id}_yes`} name={item.id} className="ml-4 mr-1" />
-                                        <label htmlFor={`${item.id}_yes`} className="text-xs">{item.yes}</label>
+                                    <input type="radio" name="seriousContagious" className="mr-1" value="ไม่เคย" onChange={handleChange}/>
+                                    <label className="text-xs">ไม่เคย</label>
+                                    <input type="radio" name="seriousContagious" className="ml-4 mr-1" value="เคย" onChange={handleChange}/>
+                                    <label className="text-xs">เคย</label>
                                     </div>
-                                    <input type="text" className="border p-1 w-full text-xs" placeholder="กรอกรายละเอียดเพิ่มเติม (ถ้ามี)" />
-                                    </div>
-                                ))}
+                                    <input 
+                                        type="text" 
+                                        className="border p-1 w-full text-xs" 
+                                        placeholder="กรอกรายละเอียดเพิ่มเติม (ถ้ามี)" 
+                                        name="seriousContagiousRemark"
+                                        value={formData.seriousContagiousRemark}
+                                        onChange={handleChange}
+                                    />
                                 </div>
+
+                                {/* ข้อ 2 */}
+                                <div className="grid grid-cols-3 gap-3 items-center">
+                                    <label className="text-left font-bold text-xs">
+                                    2. ท่านมีโรคประจำตัวหรือไม่?
+                                    </label>
+                                    <div className="flex gap-2 items-center">
+                                    <input type="radio" name="congenitalDisease" className="mr-1" value="ไม่มี" onChange={handleChange}/>
+                                    <label className="text-xs">ไม่มี</label>
+                                    <input type="radio" name="congenitalDisease" className="ml-4 mr-1" value="มี" onChange={handleChange}/>
+                                    <label className="text-xs">มี</label>
+                                    </div>
+                                    <input 
+                                        type="text" 
+                                        className="border p-1 w-full text-xs" 
+                                        placeholder="กรอกรายละเอียดเพิ่มเติม (ถ้ามี)" 
+                                        name="congenitalDiseaseRemark"
+                                        value={formData.congenitalDiseaseRemark}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+
+                                {/* ข้อ 3 */}
+                                <div className="grid grid-cols-3 gap-3 items-center">
+                                    <label className="text-left font-bold text-xs">
+                                    3. ท่านเคยได้รับคำสั่งการใช้ยาจากแพทย์หรือไม่?
+                                    </label>
+                                    <div className="flex gap-2 items-center">
+                                    <input type="radio" name="prescribedMedication" className="mr-1" value="ไม่เคย" onChange={handleChange}/>
+                                    <label className="text-xs">ไม่เคย</label>
+                                    <input type="radio" name="prescribedMedication" className="ml-4 mr-1" value="เคย" onChange={handleChange}/>
+                                    <label className="text-xs">เคย</label>
+                                    </div>
+                                    <input 
+                                        type="text" 
+                                        className="border p-1 w-full text-xs" 
+                                        placeholder="กรอกรายละเอียดเพิ่มเติม (ถ้ามี)" 
+                                        name="prescribedMedicationRemark"
+                                        value={formData.prescribedMedicationRemark}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+
+                                {/* ข้อ 4 */}
+                                <div className="grid grid-cols-3 gap-3 items-center">
+                                    <label className="text-left font-bold text-xs">
+                                    4. ท่านมีความพิการไม่ว่าส่วนใดของร่างกายหรือไม่?
+                                    </label>
+                                    <div className="flex gap-2 items-center">
+                                    <input type="radio" name="defective" className="mr-1" value="ไม่มี" onChange={handleChange}/>
+                                    <label className="text-xs">ไม่มี</label>
+                                    <input type="radio" name="defective" className="ml-4 mr-1" value="มี" onChange={handleChange}/>
+                                    <label className="text-xs">มี</label>
+                                    </div>
+                                    <input 
+                                        type="text" 
+                                        className="border p-1 w-full text-xs" 
+                                        placeholder="กรอกรายละเอียดเพิ่มเติม (ถ้ามี)" 
+                                        name="defectiveRemark"
+                                        value={formData.defectiveRemark}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                </div>
+
                             </div>
 
                             {/* Section ประวัติฝึกอบรม */}
@@ -730,21 +1796,148 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
                                 <h2 className="text-lg font-bold text-gray-700 flex items-center">📚 ประวัติฝึกอบรม</h2>
 
                                 <div className="grid grid-cols-1 gap-3 mt-3">
-                                <div className="grid grid-cols-4 gap-3 items-center">
-                                    {["เรื่อง/หัวข้อ", "สถานที่ฝึกอบรม", "วันที่เริ่ม", "วันที่จบ"].map((label, index) => (
-                                    <div key={index}>
-                                        <label className="text-left font-bold text-xs mb-1">{label}</label>
-                                        <input type={index < 2 ? "text" : "date"} className="border p-1 w-full text-xs" placeholder={label.includes("เรื่อง") ? "กรอกเรื่อง/หัวข้อ" : undefined} />
+                                    <div className="grid grid-cols-4 gap-3 items-center">
+                                        <div>
+                                            <label className="text-left font-bold text-xs mb-1">เรื่อง/หัวข้อ</label>
+                                            <input 
+                                                type="text" 
+                                                className="border p-1 w-full text-xs" 
+                                                placeholder="กรอกข้อมูล" 
+                                                name="trainingTopic1"
+                                                value={formData.trainingTopic1}
+                                                onChange={handleChange}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-left font-bold text-xs mb-1">สถานที่ฝึกอบรม</label>
+                                            <input 
+                                                type="text" 
+                                                className="border p-1 w-full text-xs" 
+                                                placeholder="กรอกข้อมูล" 
+                                                name="trainingLocation1"
+                                                value={formData.trainingLocation1}
+                                                onChange={handleChange}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-left font-bold text-xs mb-1">วันที่เริ่ม</label>
+                                            <input 
+                                                type="text" 
+                                                className="border p-1 w-full text-xs" 
+                                                placeholder="กรอกข้อมูล" 
+                                                name="trainingStartDate1"
+                                                value={formData.trainingStartDate1}
+                                                onChange={handleChange}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-left font-bold text-xs mb-1">วันที่จบ</label>
+                                            <input 
+                                                type="text" 
+                                                className="border p-1 w-full text-xs" 
+                                                placeholder="กรอกข้อมูล" 
+                                                name="trainingStartEnd1"
+                                                value={formData.trainingStartEnd1}
+                                                onChange={handleChange}
+                                            />
+                                        </div>
                                     </div>
-                                    ))}
                                 </div>
-
-                                {/* ปุ่มเพิ่มรายการฝึกอบรม */}
-                                <div className="flex justify-center mt-4">
-                                    <button type="button" className="bg-green-500 text-white text-xs px-4 py-2 rounded w-auto shadow-md">
-                                    ➕ เพิ่มรายการฝึกอบรม
-                                    </button>
+                                <div className="grid grid-cols-1 gap-3 mt-3">
+                                    <div className="grid grid-cols-4 gap-3 items-center">
+                                        <div>
+                                            <label className="text-left font-bold text-xs mb-1">เรื่อง/หัวข้อ</label>
+                                            <input 
+                                                type="text" 
+                                                className="border p-1 w-full text-xs" 
+                                                placeholder="กรอกข้อมูล" 
+                                                name="trainingTopic2"
+                                                value={formData.trainingTopic2}
+                                                onChange={handleChange}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-left font-bold text-xs mb-1">สถานที่ฝึกอบรม</label>
+                                            <input 
+                                                type="text" 
+                                                className="border p-1 w-full text-xs" 
+                                                placeholder="กรอกข้อมูล" 
+                                                name="trainingLocation2"
+                                                value={formData.trainingLocation2}
+                                                onChange={handleChange}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-left font-bold text-xs mb-1">วันที่เริ่ม</label>
+                                            <input 
+                                                type="text" 
+                                                className="border p-1 w-full text-xs" 
+                                                placeholder="กรอกข้อมูล" 
+                                                name="trainingStartDate2"
+                                                value={formData.trainingStartDate2}
+                                                onChange={handleChange}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-left font-bold text-xs mb-1">วันที่จบ</label>
+                                            <input 
+                                                type="text" 
+                                                className="border p-1 w-full text-xs" 
+                                                placeholder="กรอกข้อมูล" 
+                                                name="trainingStartEnd2"
+                                                value={formData.trainingStartEnd2}
+                                                onChange={handleChange}
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
+                                <div className="grid grid-cols-1 gap-3 mt-3">
+                                    <div className="grid grid-cols-4 gap-3 items-center">
+                                        <div>
+                                            <label className="text-left font-bold text-xs mb-1">เรื่อง/หัวข้อ</label>
+                                            <input 
+                                                type="text" 
+                                                className="border p-1 w-full text-xs" 
+                                                placeholder="กรอกข้อมูล" 
+                                                name="trainingTopic3"
+                                                value={formData.trainingTopic3}
+                                                onChange={handleChange}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-left font-bold text-xs mb-1">สถานที่ฝึกอบรม</label>
+                                            <input 
+                                                type="text" 
+                                                className="border p-1 w-full text-xs" 
+                                                placeholder="กรอกข้อมูล" 
+                                                name="trainingLocation3"
+                                                value={formData.trainingLocation3}
+                                                onChange={handleChange}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-left font-bold text-xs mb-1">วันที่เริ่ม</label>
+                                            <input 
+                                                type="text" 
+                                                className="border p-1 w-full text-xs" 
+                                                placeholder="กรอกข้อมูล" 
+                                                name="trainingStartDate3"
+                                                value={formData.trainingStartDate3}
+                                                onChange={handleChange}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-left font-bold text-xs mb-1">วันที่จบ</label>
+                                            <input 
+                                                type="text" 
+                                                className="border p-1 w-full text-xs" 
+                                                placeholder="กรอกข้อมูล" 
+                                                name="trainingStartEnd3"
+                                                value={formData.trainingStartEnd3}
+                                                onChange={handleChange}
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -761,7 +1954,12 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
                                     ].map((item, index) => (
                                     <div key={index}>
                                         <label className="text-left font-bold text-xs mb-1">{item.label}</label>
-                                        <select className="border p-1 w-full text-xs">
+                                        <select
+                                            className="border p-1 w-full text-xs"
+                                            name="englishLevel"
+                                            value={formData.englishLevel}
+                                            onChange={handleChange}
+                                        >
                                         <option value="">เลือก</option>
                                         {item.options.map((option, i) => (
                                             <option key={i} value={option}>{option}</option>
@@ -772,76 +1970,139 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
                                 </div>
 
                                 {/* ด้านขวา */}
-                                <div className="grid grid-cols-2 gap-3">
-                                    {["TOEIC (คะแนน)", "IELTS (คะแนน)", "TOEFL (คะแนน)", "ภาษาอื่นๆ"].map((label, index) => (
-                                    <div key={index}>
-                                        <label className="text-left font-bold text-xs mb-1">{label}</label>
-                                        <input type="text" className="border p-1 w-full text-xs" placeholder={`กรอก${label}`} />
+                                <div className="grid grid-cols-2 gap-3">                               
+                                    <div>
+                                        <label className="text-left font-bold text-xs mb-1">TOEIC (คะแนน)</label>
+                                        <input 
+                                            type="text" 
+                                            className="border p-1 w-full text-xs" 
+                                            placeholder="กรอกข้อมูล" 
+                                            name="toeicPoint"
+                                            value={formData.toeicPoint}
+                                            onChange={handleChange}
+                                        />
                                     </div>
-                                    ))}
+                                    <div>
+                                        <label className="text-left font-bold text-xs mb-1">IELTS (คะแนน)</label>
+                                        <input 
+                                            type="text" 
+                                            className="border p-1 w-full text-xs" 
+                                            placeholder="กรอกข้อมูล" 
+                                            name="ieltsPoint"
+                                            value={formData.ieltsPoint}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-left font-bold text-xs mb-1">TOEFL (คะแนน)</label>
+                                        <input 
+                                            type="text" 
+                                            className="border p-1 w-full text-xs" 
+                                            placeholder="กรอกข้อมูล" 
+                                            name="toeflPoint"
+                                            value={formData.toeflPoint}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-left font-bold text-xs mb-1">ภาษาอื่นๆ</label>
+                                        <input 
+                                            type="text" 
+                                            className="border p-1 w-full text-xs" 
+                                            placeholder="กรอกข้อมูล" 
+                                            name="otherLanguages"
+                                            value={formData.otherLanguages}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
                                 </div>
                                 </div>
                             </div>
                             </>
                         )}
+                        
                         <div className="border-t border-gray-200 pt-4">
                             <h2 className="text-lg font-bold text-gray-700 flex items-center">📝 อื่นๆ</h2>
 
                             <div className="grid grid-cols-12 gap-6 mt-3">
                                 {/* ฝั่งซ้าย: หัวข้อ */}
-                                <div className="flex flex-col space-y-2 col-span-3 text-left">
-                                {[
-                                    "มีพาหนะเป็นของตัวเอง",
-                                    "ความสามารถในการใช้เครื่องสำนักงาน",
-                                    "สามารถไปปฏิบัติงานต่างจังหวัดได้",
-                                    "ความสามารถอื่น",
-                                    "ความสามารถพิเศษ"
-                                ].map((label, index) => (
-                                    <span key={index} className="text-sm font-bold block w-full">{label}</span>
-                                ))}
+                                <div className="flex flex-col space-y-4 col-span-3 text-left">
+                                <span className="text-sm font-bold">มีพาหนะเป็นของตัวเอง</span>
+                                <span className="text-sm font-bold">ความสามารถในการใช้เครื่องสำนักงาน</span>
+                                <span className="text-sm font-bold">สามารถไปปฏิบัติงานต่างจังหวัดได้</span>
+                                <span className="text-sm font-bold">ความสามารถอื่น</span>
+                                <span className="text-sm font-bold">ความสามารถพิเศษ</span>
                                 </div>
 
                                 {/* เส้นแบ่งตรงกลาง */}
                                 <div className="border-l border-gray-300 col-span-1"></div>
 
                                 {/* ฝั่งขวา: ตัวเลือกและช่องกรอก */}
-                                <div className="flex flex-col space-y-2 col-span-7">
-                                {/* มีพาหนะเป็นของตัวเอง */}
+                                <div className="flex flex-col space-y-4 col-span-8">
+                                {/* ✅ มีพาหนะเป็นของตัวเอง */}
                                 <div className="flex gap-4">
-                                    {["รถยนต์", "รถจักรยานยนต์", "ไม่มี"].map((option, index) => (
-                                    <label key={index} className="flex items-center text-sm">
-                                        <input type="checkbox" className="mr-1" /> {option}
+                                    <label className="flex items-center text-sm">
+                                        <input type="checkbox" className="mr-1" /> รถยนต์
                                     </label>
-                                    ))}
+                                    <label className="flex items-center text-sm">
+                                        <input type="checkbox" className="mr-1" /> รถจักรยานยนต์
+                                    </label>
+                                    <label className="flex items-center text-sm">
+                                        <input type="checkbox" className="mr-1" /> ไม่มี
+                                    </label>
                                 </div>
 
-                                {/* ความสามารถในการใช้เครื่องสำนักงาน */}
+                                {/* ✅ ความสามารถในการใช้เครื่องสำนักงาน */}
                                 <div className="flex gap-4">
-                                    {["ใช้ได้", "ใช้ไม่ได้"].map((option, index) => (
-                                    <label key={index} className="flex items-center text-sm">
-                                        <input type="checkbox" className="mr-1" /> {option}
+                                    <label className="flex items-center text-sm">
+                                        <input type="checkbox" className="mr-1" /> ใช้ได้
                                     </label>
-                                    ))}
+                                    <label className="flex items-center text-sm">
+                                        <input type="checkbox" className="mr-1" /> ใช้ไม่ได้
+                                    </label>
                                 </div>
 
-                                {/* สามารถไปปฏิบัติงานต่างจังหวัดได้ */}
+                                {/* ✅ สามารถไปปฏิบัติงานต่างจังหวัดได้ */}
                                 <div className="flex gap-4 items-center">
-                                    {["ได้", "ไม่ได้ ระบุ"].map((option, index) => (
-                                    <label key={index} className="flex items-center text-sm">
-                                        <input type="checkbox" className="mr-1" /> {option}
+                                    <label className="flex items-center text-sm">
+                                        <input type="checkbox" className="mr-1" /> ได้
                                     </label>
-                                    ))}
-                                    <input type="text" className="border p-1 text-xs w-32" placeholder="กรอกข้อมูล" />
+                                    <label className="flex items-center text-sm">
+                                        <input type="checkbox" className="mr-1" /> ไม่ได้ ระบุ
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        className="border p-1 text-xs w-100" 
+                                        placeholder="กรอกข้อมูล" 
+                                        name="workOtherProvincesRemark"
+                                        value={formData.workOtherProvincesRemark}
+                                        onChange={handleChange}
+                                    />
                                 </div>
 
-                                {/* ความสามารถอื่น */}
-                                <input type="text" className="border p-1 text-xs w-full" placeholder="กรอกข้อมูล" />
-
-                                {/* ความสามารถพิเศษ */}
-                                <input type="text" className="border p-1 text-xs w-full" placeholder="กรอกข้อมูล" />
+                                {/* ✅ ความสามารถอื่น */}
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="otherAbilities"
+                                    value={formData.otherAbilities}
+                                    onChange={handleChange}
+                                />
+                                {/* ✅ ความสามารถพิเศษ */}
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="talent"
+                                    value={formData.talent}
+                                    onChange={handleChange}
+                                />
                                 </div>
                             </div>
                         </div>
+
+
                         {(employeeType !== "O1" && employeeType !== "O3") && (
                             <>
                             <div className="border-t pt-4">
@@ -1188,13 +2449,27 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
                                 <label className="text-left font-bold text-xs mb-1">
                                 <FaUser className="mr-1 inline-block" /> Username
                                 </label>
-                                <input type="text" className="border p-1 w-full text-xs" maxLength={10} />
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="username"
+                                    value={formData.username}
+                                    onChange={handleChange}
+                                />
                             </div>
                             <div className="flex flex-col">
                                 <label className="text-left font-bold text-xs mb-1">
                                 <FaLock className="mr-1 inline-block" /> Password
                                 </label>
-                                <input type="password" className="border p-1 w-full text-xs" maxLength={10} />
+                                <input 
+                                    type="text" 
+                                    className="border p-1 w-full text-xs" 
+                                    placeholder="กรอกข้อมูล" 
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                />
                             </div>
                             </div>
                         </div>
@@ -1205,7 +2480,11 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
 
                             <div className="flex flex-col mt-3">
                             <label className="text-left font-bold text-xs mb-1">Backlist Detail</label>
-                            <textarea className="border p-2 w-full text-xs" rows={3}></textarea>
+                            <textarea 
+                                value={formData.blackListRemark}
+                                onChange={handleChange}
+                                className="border p-2 w-full text-xs" 
+                                rows={3}></textarea>
                             </div>
                         </div>
 
@@ -1229,7 +2508,7 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
 
             {/* Footer */}
             <div className="border-t gap-2 pt-3 flex justify-end">
-                <button onClick={onClose} className="bg-green-500 text-white cursor-pointer text-xs px-3 py-2 rounded flex items-center gap-2">
+                <button onClick={handleSaveUser} className="bg-green-500 text-white cursor-pointer text-xs px-3 py-2 rounded flex items-center gap-2">
                     <FaSave className="text-lg" /> บันทึก
                 </button>
                 <button onClick={onClose} className="bg-gray-500 text-white cursor-pointer text-xs px-3 py-2 rounded flex items-center gap-2">

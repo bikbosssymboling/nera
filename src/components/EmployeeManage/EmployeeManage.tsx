@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { FaPlus, FaEdit, FaTrash, FaFileExcel, FaWrench, FaUsers, FaIdCard
     ,FaSearch
- } from "react-icons/fa";
+} from "react-icons/fa";
 import * as XLSX from "xlsx";
 import EmployeeTypeModal from "./EmployeeTypeModal";
 import EmployeeChangeModal from "./EmployeeChangeModal";
