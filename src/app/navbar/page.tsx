@@ -146,7 +146,7 @@ export default function Layout() {
                     {activePage === "employee" && <EmployeeManage />}
                     {activePage === "planYexclusive" && <PlanYExclusive />}
                     {activePage === "planysetmasteraccount" && <PlanYSetMasterAccount />}
-                    {activePage === "region" && <PlanYSetMasterRegion />}
+                    {activePage === "planysetmasterregion" && <PlanYSetMasterRegion />}
                 </div>
             </div>
         </div>

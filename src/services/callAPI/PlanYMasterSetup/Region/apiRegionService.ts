@@ -10,9 +10,9 @@ export const regionList = async () => {
     }
 };
 
-export const regionAdd = async (regionCode: string, name: string, nameEng: string) => {
+export const regionAdd = async (regionCode: string, regionNameThai: string, regionNameEnglish: string, createdBy: string) => {
     try {
-        const response = await api.put("/PlanYMasterSetupRegion/region", { regionCode, name, nameEng });
+        const response = await api.put("/PlanYMasterSetupRegion/region", { regionCode, regionNameThai, regionNameEnglish, createdBy });
         return response.data;
     } catch (error) {
         console.error("Region Add API Error:", error);
@@ -28,12 +28,12 @@ export const regionEdit = async (regionCode: string, name: string, nameEng: stri
         throw error;
     }
 };
-// export const regionDelete = async (regionId: string) => {
-//     try {
-//         const response = await api.delete("/PlanYMasterSetupRegion/region", { regionId });
-//         return response.data;
-//     } catch (error) {
-//         console.error("Region Delete API Error:", error);
-//         throw error;
-//     }
-// };
+export const regionDelete = async (regionId: string) => {
+    try {
+        const response = await api.delete("/PlanYMasterSetupRegion/region", { regionId });
+        return response.data;
+    } catch (error) {
+        console.error("Region Delete API Error:", error);
+        throw error;
+    }
+};

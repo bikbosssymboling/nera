@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaBriefcase, FaEdit, FaPlus, FaSearch, FaTrash } from "react-icons/fa";
 import RegionModal from "./PlanYSetMasterRegionModalChange";
 import Swal from "sweetalert2";
-import { regionDelete } from "@/services/callAPI/PlanYMasterSetup/Region/apiRegionService";
+import { regionAdd, regionList } from "@/services/callAPI/PlanYMasterSetup/Region/apiRegionService";
 
 interface Region {
   id: number;
@@ -15,17 +15,18 @@ export default function PlanYMasterRegion() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editRegion, setEditRegion] = useState<Region | null>(null); // ✅ กำหนด Type
+  const [regions, setRegions] = useState<Region[]>([]);
 
-  const regions: Region[] = [
-    { id: 1, regionCode: "N", name: "ภาคเหนือ", nameEng: "Northern" },
-    { id: 2, regionCode: "C", name: "ภาคกลาง", nameEng: "Central" },
-    {
-      id: 3,
-      regionCode: "NT",
-      name: "ภาคตะวันออกเฉียงเหนือ",
-      nameEng: "Northeastern",
-    },
-  ];
+  // const regions: Region[] = [
+  //   { id: 1, regionCode: "N", name: "ภาคเหนือ", nameEng: "Northern" },
+  //   { id: 2, regionCode: "C", name: "ภาคกลาง", nameEng: "Central" },
+  //   {
+  //     id: 3,
+  //     regionCode: "NT",
+  //     name: "ภาคตะวันออกเฉียงเหนือ",
+  //     nameEng: "Northeastern",
+  //   },
+  // ];
 
   const filteredRegion = regions.filter(
     (region) =>
@@ -92,6 +93,26 @@ export default function PlanYMasterRegion() {
     });
   };
 
+  const getListData = async () => {
+    try {
+      const res = await regionList();
+      setRegions(
+        res.map((region: any) => ({
+          id: region.regionID,
+          regionCode: region.regionCode,
+          name: region.regionNameThai,
+          nameEng: region.regionNameEnglish,
+        }))
+      );
+      console.log(res);
+    } catch (error: unknown) { }
+  }
+
+
+  useEffect(() => {
+    getListData();
+  }, []);
+ 
   return (
     <div className="p-2">
       {/* Header */}

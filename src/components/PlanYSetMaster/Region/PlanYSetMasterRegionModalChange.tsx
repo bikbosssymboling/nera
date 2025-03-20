@@ -9,6 +9,8 @@ interface Region {
     regionCode: string;
     name: string;
     nameEng: string;
+    createdBy?: string;
+    updatedBy?: string;
 }
 
 interface RegionModalProps {
@@ -50,6 +52,7 @@ const RegionModal: React.FC<RegionModalProps> = ({
                 regionCode: region.regionCode,
                 name: region.name,
                 nameEng: region.nameEng,
+                createdBy: region.createdBy
             });
         } else {
             setFormData({ id: 0, regionCode: "", name: "", nameEng: "" });
@@ -105,7 +108,8 @@ const RegionModal: React.FC<RegionModalProps> = ({
                 response = await regionAdd(
                     formData.regionCode,
                     formData.name,
-                    formData.nameEng
+                    formData.nameEng,
+                    'cretedBy test'
                 );
             }
 
