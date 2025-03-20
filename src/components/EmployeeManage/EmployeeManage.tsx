@@ -3,9 +3,13 @@ import { useState, useEffect } from "react";
 import { FaPlus, FaEdit, FaTrash, FaFileExcel, FaWrench, FaUsers, FaIdCard
     ,FaSearch
  } from "react-icons/fa";
+import * as XLSX from "xlsx";
 import EmployeeTypeModal from "./EmployeeTypeModal";
 import EmployeeChangeModal from "./EmployeeChangeModal";
-import {useEmployeeFilterSearchState, useMasterDepartmentGETState} from "./Hook/EmployeeManageHook";
+import EmployeeDepartmentModal from "./EmployeeDepartmentModal";
+import EmployeeRoleModal from "./EmployeeRoleModal";
+import {useEmployeeFilterSearchState, useMasterDepartmentGETState, useMasterRoleGETState} from "./Hook/EmployeeManageHook";
+import type { DepartmentMasterData, RoleMasterData } from "../../types/EmployeeManage/Types"; // ✅ Import type จาก Hook
 
 const fixDataEmployee = [
     {"employeeID": 1, "employeeTypeName": "O1 - พนักงานประจำ MCA", "employeeCode": "100001", "fullName": "TEST1 TEST1", "departmentName": "Department Test 1", "roleName": "Role Test 1", "employeeStatus": "0", "personalCardExpired": "15/08/2026", "blackListDate": ""},
@@ -30,40 +34,37 @@ const fixDataEmployee = [
     {"employeeID": 20, "employeeTypeName": "O1 - พนักงาน Key Account", "employeeCode": "100020", "fullName": "TEST20 TEST20", "departmentName": "Department Test 20", "roleName": "Role Test 20", "employeeStatus": "2", "personalCardExpired": "", "blackListDate": ""}
 ];
 
-
-
-const arrDataDepartment = [
-    {departmentID: 1, departmentName: "Account Executive (BU1) "}
-    ,{departmentID: 2, departmentName: "Accounting&Finance"}
-    ,{departmentID: 3, departmentName: "B&O Support"}
-    ,{departmentID: 4, departmentName: "Business Development"}
-    ,{departmentID: 5, departmentName: "Data & IT Center"}
-];
-
-const arrDataRole = [
-    {departmentName: "Account Executive (BU1) ", roleID: 1, roleName: "Account Director "}
-    ,{departmentName: "Accounting&Finance", roleID: 6, roleName: "Account Payble Officer"}
-    ,{departmentName: "Accounting&Finance", roleID: 7, roleName: "Account Receivable Officer"}
-    ,{departmentName: "B&O Support", roleID: 26, roleName: "B&O Manager"}
-    ,{departmentName: "Business Development", roleID: 8, roleName: "Acting Assistant BD Manager"}
-    ,{departmentName: "Data & IT Center", roleID: 16, roleName: "Assistant Data & IT Manager"}
-    ,{departmentName: "Data & IT Center", roleID: 19, roleName: "Assistant IT Manager(DEV)"}
-];
-
-
 export default function EmployeeManage() {
-    // Hook ดึง Master Department
-    const hookuseMasterDepartmentGETState = useMasterDepartmentGETState();
-    const [department, setDepartment] = useState(hookuseMasterDepartmentGETState.departmentMasterData);
-    // Hook ดึงข้อมูล พนักงาน
+    const { departmentMasterData } = useMasterDepartmentGETState();
+    const [department, setDepartment] = useState<DepartmentMasterData[]>([]);
+    const { roleMasterData } = useMasterRoleGETState();
+    const [role, setRole] = useState<RoleMasterData[]>([]);
+    const [searchQuery, setSearchQuery] = useState("");
+
     const hookuseEmployeeFilterSearchState = useEmployeeFilterSearchState();
     const [employees, setEmployees] = useState(hookuseEmployeeFilterSearchState.employees);
-
 
     // ✅ State สำหรับเปิด/ปิด Modal
     const [isTypeModalOpen, setIsTypeModalOpen] = useState(false);
     const [isChangeModalOpen, setIsChangeModalOpen] = useState(false);
+    const [isDepartmentModalOpen, setIsDepartmentModalOpen] = useState(false);
+    const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
     const [selectedType, setSelectedType] = useState(""); // ✅ เก็บประเภทพนักงานที่เลือก
+
+    useEffect(() => {
+        setDepartment(departmentMasterData);
+    }, [departmentMasterData]);
+
+
+    useEffect(() => {
+        setRole(roleMasterData);
+    }, [roleMasterData]);
+    
+    const filteredData = fixDataEmployee.filter((emp) =>
+        Object.values(emp).some((val) =>
+            String(val).toLowerCase().includes(searchQuery.toLowerCase())
+        )
+    );
 
     // ✅ Handle State สำหรับค้นหาข้อมูลพนักงาน
     const handleSearchEmployeeALL = async () => {
@@ -78,7 +79,37 @@ export default function EmployeeManage() {
         setIsTypeModalOpen(false); // ปิด EmployeeTypeModal
         setTimeout(() => setIsChangeModalOpen(true), 300); // ✅ เปิด EmployeeChangeModal
     };
+    // ✅ Handle State สำหรับเปิด Modal Deparetment
+    const handleDepartment = () => {
+        setTimeout(() => setIsDepartmentModalOpen(true), 300); // ✅ เปิด DepartmentModal
+    };
+    // ✅ Handle State สำหรับเปิด Modal Role
+    const handleRole = () => {
+        setTimeout(() => setIsRoleModalOpen(true), 300); // ✅ เปิด RoleModal
+    };
 
+    
+    const handleExportExcel = () => {
+        const worksheet = XLSX.utils.json_to_sheet(fixDataEmployee);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "EmployeeData");
+    
+        // ✅ สร้างวันที่แบบ YYYYMMDD_HHMMSS
+        const now = new Date();
+        const formattedDate = `${now.getFullYear()}${(now.getMonth() + 1)
+            .toString()
+            .padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}_${now
+            .getHours()
+            .toString()
+            .padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}${now
+            .getSeconds()
+            .toString()
+            .padStart(2, '0')}`;
+    
+        // ✅ ใส่ชื่อไฟล์พร้อมวันที่
+        XLSX.writeFile(workbook, `EmployeeData_${formattedDate}.xlsx`);
+    };
+    
     return (
         <div className="p-2">
             {/* Header */}
@@ -98,6 +129,18 @@ export default function EmployeeManage() {
                 isOpen={isChangeModalOpen}
                 onClose={() => setIsChangeModalOpen(false)}
                 employeeType={selectedType} // ✅ ส่งประเภทพนักงานที่เลือกไป
+            />
+
+            {/* 🔹 EmployeeDepartmentModal (หน้าฟอร์ม) */}
+            <EmployeeDepartmentModal
+                isOpen={isDepartmentModalOpen} // ✅ ส่ง state ให้ตรง
+                onClose={() => setIsDepartmentModalOpen(false)} // ✅ onClose ต้องปิด modal
+            />
+
+            {/* 🔹 EmployeeRoleModal (หน้าฟอร์ม) */}
+            <EmployeeRoleModal
+                isOpen={isRoleModalOpen} // ✅ ส่ง state ให้ตรง
+                onClose={() => setIsRoleModalOpen(false)} // ✅ onClose ต้องปิด modal
             />
 
             {/* Filters */}
@@ -157,7 +200,7 @@ export default function EmployeeManage() {
                             onChange={(e) => hookuseEmployeeFilterSearchState.setFilterDepartment(e.target.value)} // ✅ ใช้ฟังก์ชันจาก filters
                         >
                             <option value="">ทั้งหมด</option>
-                            {arrDataDepartment.map((dep) => (
+                            {department.map((dep) => (
                                 <option key={dep.departmentID} value={dep.departmentID}>
                                     {dep.departmentName.trim()}
                                 </option>
@@ -174,7 +217,7 @@ export default function EmployeeManage() {
                             onChange={(e) => hookuseEmployeeFilterSearchState.setFilterPosition(e.target.value)} // ✅ ใช้ฟังก์ชันจาก filters
                         >
                             <option value="">ทั้งหมด</option>
-                            {arrDataRole.map((role) => (
+                            {role.map((role) => (
                                 <option key={role.roleID} value={role.roleID}>
                                     {role.roleName.trim()}
                                 </option>
@@ -190,8 +233,8 @@ export default function EmployeeManage() {
                             type="text"
                             className="border border-gray-300 rounded h-9 w-full px-3 py-1 text-sm text-gray-900 bg-white"
                             placeholder="พิมพ์เพื่อค้นหา..."
-                            value={hookuseEmployeeFilterSearchState.filterSearchQuery} // ✅ ใช้ filters
-                            onChange={(e) => hookuseEmployeeFilterSearchState.setFilterSearchQuery(e.target.value)}
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
                         />
                     </div>
 
@@ -215,18 +258,27 @@ export default function EmployeeManage() {
                     >
                         <FaPlus/> เพิ่มพนักงาน
                     </button>
-                    <button className="cursor-pointer bg-yellow-400 text-black text-xs px-3 py-2 rounded flex items-center gap-1 shadow-md">
+                    <button 
+                        onClick={handleDepartment}
+                        className="cursor-pointer bg-yellow-400 text-black text-xs px-3 py-2 rounded flex items-center gap-1 shadow-md"
+                    >
                         <FaWrench/> แผนก
                     </button>
-                    <button className="cursor-pointer bg-amber-500 text-black text-xs px-3 py-2 rounded flex items-center gap-1 shadow-md">
+                    <button 
+                        onClick={handleRole}
+                        className="cursor-pointer bg-amber-500 text-black text-xs px-3 py-2 rounded flex items-center gap-1 shadow-md"
+                    >
                         <FaWrench/> ตำแหน่ง
                     </button>
                     <button className="cursor-pointer bg-blue-500 text-white text-xs px-3 py-2 rounded flex items-center gap-1 shadow-md">
                         <FaWrench/> สัญญาจ้าง
                     </button>
                 </div>
-                <button className="cursor-pointer bg-cyan-500 text-white text-xs px-3 py-2 rounded flex items-center gap-1 shadow-md ml-auto">
-                    <FaFileExcel/> Export Excel
+                <button
+                    className="cursor-pointer bg-cyan-500 text-white text-xs px-3 py-2 rounded flex items-center gap-1 shadow-md ml-auto"
+                    onClick={handleExportExcel}
+                >
+                    <FaFileExcel /> Export Excel
                 </button>
             </div>
 
@@ -249,8 +301,8 @@ export default function EmployeeManage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
-                            {fixDataEmployee.length > 0 ? (
-                                fixDataEmployee.map((emp, index) => (
+                            {filteredData.length > 0 ? (
+                                filteredData.map((emp, index) => (
                                     <tr key={emp.employeeID} className="border border-gray-300 text-gray-900">
                                         <td className="border border-gray-300 p-3 text-center">{index + 1}</td>
                                         <td className="border border-gray-300 p-3 text-center">{emp.employeeTypeName}</td>

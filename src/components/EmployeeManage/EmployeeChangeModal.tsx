@@ -19,7 +19,7 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
         <Modal
             isOpen={isOpen}
             onRequestClose={onClose}
-            className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-[1400px] mx-auto relative z-50"
+            className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-[1500px] mx-auto relative z-50"
             overlayClassName="fixed inset-0 [background:var(--swal2-backdrop)] flex items-center justify-center z-40"
         >
 

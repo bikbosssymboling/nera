@@ -11,7 +11,6 @@ export default function Login() {
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-      
         if (!username || !password) {
             Swal.fire({
                 icon: "warning",
@@ -23,17 +22,16 @@ export default function Login() {
         } else {
             try {
                 const data = await authLogin(username, password); // ✅ เรียก API ผ่าน Service
-                console.log(data.Status)
-                if (data.Status === "Success") {
-                    console.log(data.Data)
-                    if (data.Data.statusLogin !== "Not Found") {
-                        localStorage.setItem("employeeID", data.Data.employeeID);
-                        localStorage.setItem("employeeCode", data.Data.employeeCode);
-                        localStorage.setItem("employeeFullName", data.Data.fullName);
-                        localStorage.setItem("employeeDepartmentName", data.Data.departmentName);
-                        localStorage.setItem("employeeRoleName", data.Data.roleName);
-                        localStorage.setItem("employeeTypeCode", data.Data.employeeTypeCode);
-                        localStorage.setItem("employeeTypeName", data.Data.employeeTypeName);
+                if (data.status === "Success") {
+                    console.log(data.data)
+                    if (data.data.statusLogin !== "Not Found") {
+                        localStorage.setItem("employeeID", data.data.employeeID);
+                        localStorage.setItem("employeeCode", data.data.employeeCode);
+                        localStorage.setItem("employeeFullName", data.data.fullName);
+                        localStorage.setItem("employeeDepartmentName", data.data.departmentName);
+                        localStorage.setItem("employeeRoleName", data.data.roleName);
+                        localStorage.setItem("employeeTypeCode", data.data.employeeTypeCode);
+                        localStorage.setItem("employeeTypeName", data.data.employeeTypeName);
                         router.push("/navbar");
                     } else {
                         Swal.fire({
