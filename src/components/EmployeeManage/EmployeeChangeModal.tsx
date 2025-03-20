@@ -169,9 +169,6 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
     };
 
     const handleSaveUser = async () => {
-        
-        // 👉 ตรงนี้ต่อ API หรือ Validation ได้
-        // ✅ Map employeeType ให้ตรง MasterEmployeeTypeID ก่อนยิง API
         const mapEmployeeType = (type: string) => {
             if (type === 'O1') return 1;
             if (type === 'O2') return 2;
@@ -179,40 +176,55 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
             if (type === 'Key Account') return 4;
             return 0; // Default เผื่อไม่มี
         };
-
+    
         const finalFormData = {
             ...formData,
             MasterEmployeeTypeID: mapEmployeeType(employeeType),
         };
+    
         console.log("✅ ข้อมูลพนักงาน:", finalFormData);
-        
-        try {
-            const data = await employeeINSERT(finalFormData); // ✅ ใช้ await ได้เพราะ async แล้ว
-            if (data.Status == "Success") {
-                Swal.fire({
-                    icon: "success",
-                    title: "บันทีกข้อมูลสำเร็จ",
-                    text: "เพิ่มพนักงานเรียบร้อย"
-                });
-            } else {
+    
+        const result = await Swal.fire({
+            title: "ยืนยันการบันทึกข้อมูล",
+            text: "คุณต้องการบันทึกข้อมูลพนักงานใช่หรือไม่",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "ยืนยัน",
+            cancelButtonText: "ยกเลิก"
+        });
+    
+        if (result.isConfirmed) {
+            try {
+                const data = await employeeINSERT(finalFormData);
+                if (data.Status === "Success") {
+                    Swal.fire({
+                        icon: "success",
+                        title: "บันทึกข้อมูลสำเร็จ",
+                        text: "เพิ่มพนักงานเรียบร้อย"
+                    });
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "ไม่สามารถค้นหาข้อมูลได้",
+                        text: data.error_message || ""
+                    });
+                }
+            } catch (error: unknown) {
+                let errorMessage = "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้<br>";
+                if (error instanceof Error) {
+                    errorMessage += `<span class="text-red-500">${error.message}</span>`;
+                }
                 Swal.fire({
                     icon: "error",
-                    title: "ไม่สามารถค้นหาข้อมูลได้",
-                    text: data.error_message || ""
+                    title: "เกิดข้อผิดพลาด",
+                    html: errorMessage
                 });
             }
-        } catch (error: unknown) {
-            let errorMessage = "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้<br>";
-            if (error instanceof Error) {
-                errorMessage += `<span class="text-red-500">${error.message}</span>`;
-            }
-            Swal.fire({
-                icon: "error",
-                title: "เกิดข้อผิดพลาด",
-                html: errorMessage
-            });
         }
     };
+    
 
     return (
         <Modal
