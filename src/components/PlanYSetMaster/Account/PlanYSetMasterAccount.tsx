@@ -50,13 +50,13 @@ export default function PlanYSetMasterAccount() {
         { id: 29, accountCode: "ROB01", name: "Robinson - BKK", nameEng: "Robinson - Bangkok" },
         { id: 30, accountCode: "ROB02", name: "Robinson - UPC", nameEng: "Robinson - UPC" },
     ];
-    
+
     const filteredAccounts = accounts.filter(account =>
         account.accountCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
         account.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         account.nameEng.toLowerCase().includes(searchQuery.toLowerCase())
     );
-    
+
 
     // ✅ ฟังก์ชันเปิด Modal สำหรับ "เพิ่ม" หรือ "แก้ไข"
     const handleEdit = (account?: Account) => {
