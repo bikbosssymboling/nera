@@ -120,6 +120,8 @@ export default function PlanYMasterRegion() {
           nameEng: region.regionNameEnglish,
         }));
         setRegions(formattedRegions);
+        if (isLoading) Swal.close();
+
       } else {
         // Swal.fire({
         //   icon: "error",
@@ -138,7 +140,7 @@ export default function PlanYMasterRegion() {
         html: errorMessage,
       });
     } finally {
-      if (isLoading) Swal.close();
+
     }
   };
 
