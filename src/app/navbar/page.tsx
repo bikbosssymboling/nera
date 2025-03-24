@@ -11,8 +11,8 @@ import Image from 'next/image';
 // Lazy Load Component
 const EmployeeManage = dynamic(() => import("@/app/employeemanage/page"));
 const PlanYExclusive = dynamic(() => import("@/app/planyexclusive/page"));
-const PlanYSetMasterAccount = dynamic(() => import("@/app/planymaster/account/page"));
-const PlanYSetMasterRegion = dynamic(() => import("@/app/planymaster/region/page"))
+const PlanYSetMasterAccount = dynamic(() => import("@/app/planysetmaster/account/page"));
+const PlanYSetMasterRegion = dynamic(() => import("@/app/planysetmaster/region/page"))
 
 
 export default function Layout() {

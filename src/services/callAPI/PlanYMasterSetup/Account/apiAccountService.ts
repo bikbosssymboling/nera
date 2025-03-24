@@ -1,28 +1,49 @@
 import api from "@/lib/api";
+import { checkErrorMassage } from "../../errorResponse";
 
-export const accountAdd = async (accountCode: string, name: string, nameEng: string) => {
+// ดึง user ที่ login อยู่ใน localStorage
+const loggedInUser = localStorage.getItem("employeeFullName") || "unknown user";
+
+
+export const accountList = async () => {
     try {
-        const response = await api.post("/PlanYMasterSetup/accountAdd", {accountCode, name, nameEng });
+        const response = await api.get("/PlanYMasterSetupAccount/account");
         return response.data;
-    } catch (error) {
-        console.error("Account Add API Error:", error);
-        throw error;
+    } catch (err: any) {
+        const message = await checkErrorMassage(err);
+        throw new Error(message);
     }
 };
-export const accountEdit = async (id: number, accountCode: string, name: string, nameEng: string) => {
+
+export const accountAdd = async (accountCode: string, accountNameThai: string, accountNameEnglish: string) => {
+    const CreatedBy = loggedInUser
     try {
-        const response = await api.post("/PlanYMasterSetup/accountEdit", { id, accountCode, name, nameEng });
+        const response = await api.post("/PlanYMasterSetupAccount/account", { accountCode, accountNameThai, accountNameEnglish, CreatedBy });
         return response.data;
-    } catch (error) {
-        console.error("Account Edit API Error:", error);
-        throw error;
+    } catch (err: any) {
+        const message = await checkErrorMassage(err);
+        throw new Error(message);
     }
 };
-export const accountDelete = async (accountID: string) => {
+export const accountEdit = async (AccountID: number, accountCode: string, accountNameThai: string, accountNameEnglish: string) => {
+    const updatedBy = loggedInUser
     try {
-        const response = await api.post("/PlanYMasterSetup/accountDelete", { accountID });
+        const response = await api.put("/PlanYMasterSetupAccount/account", { AccountID, accountCode, accountNameThai, accountNameEnglish, updatedBy });
         return response.data;
-    } catch (error) {
-        throw error;
+    } catch (err: any) {
+        const message = await checkErrorMassage(err);
+        throw new Error(message);
     }
 };
+
+export const accountDelete = async (accountId: number) => {
+    const updatedBy = loggedInUser
+    try {
+        const response = await api.delete(`/PlanYMasterSetupAccount/account`, { data: { accountId, updatedBy } });
+        return response.data;
+    } catch (err: any) {
+        const message = await checkErrorMassage(err);
+        throw new Error(message);
+    }
+};
+

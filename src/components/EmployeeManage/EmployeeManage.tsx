@@ -69,9 +69,9 @@ export default function EmployeeManage() {
     // ✅ Handle State สำหรับค้นหาข้อมูลพนักงาน
     const handleSearchEmployeeALL = async () => {
         const data = await hookuseEmployeeFilterSearchState.handleSearchEmployeeALL();
-        if (data) {
-            setEmployees(data);
-        }
+        // if (data) {
+        //     setEmployees(data);
+        // }
     }; 
     // ✅ Handle State สำหรับเปิด Modal ตรวจสอบข้อมูลพนักงาน
     const handleSelectTypeEmployeeForAdd = (type: string) => {

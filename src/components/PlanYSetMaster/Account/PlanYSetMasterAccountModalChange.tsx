@@ -7,10 +7,9 @@ import {
 } from "../../../services/callAPI/PlanYMasterSetup/Account/apiAccountService";
 import Swal from "sweetalert2";
 
-// ✅ กำหนด Type ให้กับ Props
 interface Account {
-    id: number; // เปลี่ยนจาก string เป็น number
-    accountCode: string; // เปลี่ยน id เดิมเป็น accountCode
+    id: number;
+    accountCode: string;
     name: string;
     nameEng: string;
 }
@@ -18,20 +17,22 @@ interface Account {
 interface AccountModalProps {
     isOpen: boolean;
     onClose: () => void;
-    account: Account | null; // ✅ รองรับข้อมูล Account ที่ต้องการแก้ไข
+    account: Account | null;
+    getListData: (showLoading: boolean) => void;
 }
 
 const AccountModal: React.FC<AccountModalProps> = ({
     isOpen,
     onClose,
     account,
+    getListData,
 }) => {
     const [mounted, setMounted] = useState(false);
-    const [errors, setErrors] = useState<{ accountCode?: string; name?: string }>(
+    const [errors, setErrors] = useState<{ accountCode?: string; name?: string; nameEng?: string }>(
         {}
     );
     const [formData, setFormData] = useState<Account>({
-        id: 0, // ✅ เปลี่ยนเป็น number
+        id: 0,
         accountCode: "",
         name: "",
         nameEng: "",
@@ -66,11 +67,9 @@ const AccountModal: React.FC<AccountModalProps> = ({
 
     // ✅ ฟังก์ชันบันทึกข้อมูล
     const handleSave = async () => {
-        let newErrors: { accountCode?: string; name?: string } = {};
+        let newErrors: { accountCode?: string; name?: string; } = {};
 
-        // ✅ ตรวจสอบค่าในฟอร์ม
-        if (!formData.accountCode.trim())
-            newErrors.accountCode = "กรุณากรอก Account Code";
+        if (!formData.accountCode.trim()) newErrors.accountCode = "กรุณากรอก Account Code";
         if (!formData.name.trim()) newErrors.name = "กรุณากรอก Account Name";
 
         // ✅ ถ้ามี Error ให้หยุดการทำงาน
@@ -81,6 +80,36 @@ const AccountModal: React.FC<AccountModalProps> = ({
 
         try {
             let response;
+
+            // Confirm action before continuing
+            const result = await Swal.fire({
+                title: account ? 'ยืนยันการแก้ไขข้อมูล' : 'ยืนยันการบันทึกข้อมูล',
+                icon: 'warning',
+                html: account ? 'คุณต้องการแก้ไขข้อมูล Account นี้หรือไม่?' : 'คุณต้องการบันทึกข้อมูล Account นี้หรือไม่?',
+                showCancelButton: true,
+                confirmButtonText: 'ยืนยัน',
+                cancelButtonText: 'ยกเลิก',
+                customClass: {
+                    confirmButton: 'bg-blue-500 text-white px-4 py-2 rounded me-2',
+                    cancelButton: 'bg-red-500 text-white px-4 py-2 rounded',
+                },
+                buttonsStyling: false,
+            });
+
+            if (!result.isConfirmed) return; // Exit if the user clicks "ยกเลิก"
+
+            // Show loading state while the operation is in progress
+            const loadingSwal = Swal.fire({
+                title: account ? "กำลังแก้ไขข้อมูล..." : "กำลังเพิ่มข้อมูล...",
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+            });
+
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            // Proceed with either adding or editing the region based on the `region` flag
             if (account) {
                 response = await accountEdit(
                     formData.id,
@@ -96,38 +125,42 @@ const AccountModal: React.FC<AccountModalProps> = ({
                 );
             }
 
-            if (response.status === "Success") {
-                Swal.fire({
-                    icon: "success",
-                    title: account ? "แก้ไขข้อมูลเรียบร้อย" : "เพิ่มข้อมูลเรียบร้อย",
-                });
-                onClose(); // ปิด Modal
-            } else {
-                Swal.fire({
-                    icon: "error",
-                    title: "ไม่สามารถบันทึกข้อมูลได้",
-                    text: response.error_message || "เกิดข้อผิดพลาด",
-                });
-            }
+            // After successful operation, show success message
+            Swal.fire({
+                icon: "success",
+                title: account ? "แก้ไขข้อมูลเรียบร้อย" : "เพิ่มข้อมูลเรียบร้อย",
+            });
+
+            getListData(false); // ✅ โหลดข้อมูลใหม่โดยไม่แสดง loading
+            handleClearForm(); // ✅ ล้างค่าในฟอร์ม
+            handleClearError(); // ✅ ล้าง Error
+            onClose(); // Close modal after 1 second
         } catch (error: unknown) {
-            let errorMessage = "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้<br>";
-            if (error instanceof Error) {
-                errorMessage += `<span class="text-red-500">${error.message}</span>`; // ✅ ใช้ `class` แทน `className`
-            }
+            let errorMessage = `<span class="text-red-500">${(error as Error).message}</span>`;
             Swal.fire({
                 icon: "error",
                 title: "เกิดข้อผิดพลาด",
-                html: errorMessage, // ✅ ใช้ `html` เพื่อให้ตีความเป็น HTML ได้
+                html: errorMessage,
             });
         }
     };
+    const handleClearError = () => {
+        setErrors({ accountCode: "", name: "" });
+    }
+    const handleClearForm = () => {
+        setFormData({ id: 0, accountCode: "", name: "", nameEng: "" });
+    }
+
 
     if (!mounted) return null;
 
     return (
         <Modal
             isOpen={isOpen}
-            onRequestClose={onClose}
+            onRequestClose={() => {
+                handleClearError();
+                onClose();
+            }}
             className="bg-white rounded-lg shadow-lg p-6 w-[400px] mx-auto transition-all duration-300 transform scale-100 opacity-100"
             overlayClassName="fixed inset-0 bg-black/50 flex items-center justify-center z-40"
         >
@@ -204,13 +237,17 @@ const AccountModal: React.FC<AccountModalProps> = ({
                     onClick={handleSave}
                     className="bg-green-500 text-white cursor-pointer text-xs px-3 py-2 rounded flex items-center gap-2"
                 >
-                    <FaSave className="text-lg" /> Save
+                    <FaSave className="text-lg" /> บันทึก
                 </button>
                 <button
-                    onClick={onClose}
+                    onClick={() => {
+                        handleClearError();
+                        handleClearForm();
+                        onClose();
+                    }}
                     className="bg-gray-500 text-white cursor-pointer text-xs px-3 py-2 rounded flex items-center gap-2"
                 >
-                    <FaTimes className="text-lg" /> Cancel
+                    <FaTimes className="text-lg" /> ยกเลิก
                 </button>
             </div>
         </Modal>
