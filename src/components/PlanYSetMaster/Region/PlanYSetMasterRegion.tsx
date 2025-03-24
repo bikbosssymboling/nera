@@ -16,18 +16,6 @@ export default function PlanYMasterRegion() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editRegion, setEditRegion] = useState<Region | null>(null); // ✅ กำหนด Type
   const [regions, setRegions] = useState<Region[]>([]);
-
-  // const regions: Region[] = [
-  //   { id: 1, regionCode: "N", name: "ภาคเหนือ", nameEng: "Northern" },
-  //   { id: 2, regionCode: "C", name: "ภาคกลาง", nameEng: "Central" },
-  //   {
-  //     id: 3,
-  //     regionCode: "NT",
-  //     name: "ภาคตะวันออกเฉียงเหนือ",
-  //     nameEng: "Northeastern",
-  //   },
-  // ];
-
   const filteredRegion = regions.filter(
     (region) =>
       region.regionCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -39,21 +27,22 @@ export default function PlanYMasterRegion() {
     setEditRegion(region || null);
     setIsModalOpen(true);
   };
-
-  // ✅ ฟังก์ชันลบข้อมูลออกจาก state
   const handleDelete = async (regionId: number) => {
     Swal.fire({
       icon: "warning",
-      text: "คุณต้องการลบ Region นี้ใช่หรือไม่?",
+      title: "ยืนยันการลบข้อมูล?",
+      text: "คุณต้องการลบข้อมูล region นี้ใช่หรือไม่",
       showCancelButton: true,
-      confirmButtonColor: "#007BFF",
-      cancelButtonColor: "#6C757D",
-      confirmButtonText: "ยืนยัน",
-      cancelButtonText: "ยกเลิก",
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก',
+      customClass: {
+        confirmButton: 'bg-blue-500 text-white px-4 py-2 rounded me-2',
+        cancelButton: 'bg-red-500 text-white px-4 py-2 rounded',
+      },
+      buttonsStyling: false,
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          // Show loading alert
           Swal.fire({
             title: "กำลังลบข้อมูล...",
             allowOutsideClick: false,
@@ -61,29 +50,15 @@ export default function PlanYMasterRegion() {
               Swal.showLoading();
             },
           });
-
-          // ✅ เรียก API ลบข้อมูล โดยส่ง `regionCode`
-          const data = await regionDelete(regionId);
-
-          // ✅ เช็คสถานะการลบ
-          if (data.status === "Success") {
-            getListData(); // ✅ โหลดข้อมูลใหม่
-            Swal.fire({
-              icon: "success",
-              title: "ลบข้อมูลเรียบร้อย",
-            });
-          } else {
-            Swal.fire({
-              icon: "error",
-              title: "ไม่สามารถลบข้อมูลได้",
-              text: data.error_message || "เกิดข้อผิดพลาด",
-            });
-          }
+          // await new Promise(resolve => setTimeout(resolve, 500));
+          await regionDelete(regionId);
+          getListData(false);
+          Swal.fire({
+            icon: "success",
+            title: "ลบข้อมูลสำเร็จ",
+          });
         } catch (error: unknown) {
-          let errorMessage = "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้<br>";
-          if (error instanceof Error) {
-            errorMessage += `<span class="text-red-500">${error.message}</span>`;
-          }
+          let errorMessage = `<span class="text-red-500">${(error as Error).message}</span>`;
           Swal.fire({
             icon: "error",
             title: "เกิดข้อผิดพลาด",
@@ -99,9 +74,9 @@ export default function PlanYMasterRegion() {
     getListData();
   }
 
-  const getListData = async (isLoading: boolean = true) => {
+  const getListData = async (showLoading: boolean = true) => {
     try {
-      if (isLoading) {
+      if (showLoading) {
         Swal.fire({
           title: "กำลังโหลดข้อมูล...",
           allowOutsideClick: false,
@@ -110,41 +85,28 @@ export default function PlanYMasterRegion() {
           },
         });
       }
-
       const res = await regionList();
-      if (res.status === "Success") {
-        const formattedRegions = res.data.map((region: any) => ({
-          id: region.regionID,
-          regionCode: region.regionCode,
-          name: region.regionNameThai,
-          nameEng: region.regionNameEnglish,
-        }));
-        setRegions(formattedRegions);
-        if (isLoading) Swal.close();
-
-      } else {
-        // Swal.fire({
-        //   icon: "error",
-        //   title: "ไม่สามารถโหลดข้อมูลได้",
-        //   text: res.error_message || "เกิดข้อผิดพลาด",
-        // });
+      const formattedRegions = res.map((region: any) => ({
+        id: region.regionID,
+        regionCode: region.regionCode,
+        name: region.regionNameThai,
+        nameEng: region.regionNameEnglish,
+      }));
+      setRegions(formattedRegions);
+      if (showLoading) {
+        setTimeout(() => {
+          Swal.close();
+        }, 500);
       }
     } catch (error: unknown) {
-      let errorMessage = "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้<br>";
-      if (error instanceof Error) {
-        errorMessage += `<span class="text-red-500">${error.message}</span>`;
-      }
+      let errorMessage = `<span class="text-red-500">${(error as Error).message}</span>`;
       Swal.fire({
         icon: "error",
         title: "เกิดข้อผิดพลาด",
         html: errorMessage,
       });
-    } finally {
-
     }
   };
-
-
 
   useEffect(() => {
     getListData();
@@ -170,14 +132,14 @@ export default function PlanYMasterRegion() {
           <button
             onClick={() => handleButtonSearch()}
             className="cursor-pointer bg-blue-500 text-white text-xs px-3 py-2 rounded flex items-center gap-1 shadow-md">
-            <FaSearch /> Search
+            <FaSearch /> ค้นหา
           </button>
         </div>
         <button
           className="cursor-pointer bg-green-500 text-white text-xs px-3 py-2 rounded flex items-center gap-1 shadow-md"
           onClick={() => handleEdit()} // ✅ เปิด Modal โดยไม่มีข้อมูล (เพิ่มใหม่)
         >
-          <FaPlus className="mr-1 inline-block" /> Add Region
+          <FaPlus className="mr-1 inline-block" /> เพิ่ม Region
         </button>
       </div>
 
@@ -233,6 +195,7 @@ export default function PlanYMasterRegion() {
           </table>
         </div>
       </div>
+
       <RegionModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

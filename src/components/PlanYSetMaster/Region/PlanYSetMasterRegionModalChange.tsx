@@ -28,7 +28,7 @@ const RegionModal: React.FC<RegionModalProps> = ({
 
 }) => {
     const [mounted, setMounted] = useState(false);
-    const [errors, setErrors] = useState<{ regionCode?: string; name?: string; nameEng?: string }>(
+    const [errors, setErrors] = useState<{ regionCode?: string; name?: string; }>(
         {}
     );
 
@@ -43,6 +43,7 @@ const RegionModal: React.FC<RegionModalProps> = ({
         setMounted(true);
         if (typeof window !== "undefined") {
             Modal.setAppElement(document.body);
+
         }
     }, []);
 
@@ -69,13 +70,10 @@ const RegionModal: React.FC<RegionModalProps> = ({
 
 
     const handleSave = async () => {
-        let newErrors: { regionCode?: string; name?: string; nameEng?: string } = {};
+        let newErrors: { regionCode?: string; name?: string; } = {};
 
-        if (!formData.regionCode.trim())
-            newErrors.regionCode = "กรุณากรอก Region Code";
+        if (!formData.regionCode.trim()) newErrors.regionCode = "กรุณากรอก Region Code";
         if (!formData.name.trim()) newErrors.name = "กรุณากรอก Region Name";
-        if (!formData.nameEng.trim()) newErrors.nameEng = "กรุณากรอก Region NameEng";
-
 
         // ✅ ถ้ามี Error ให้หยุดการทำงาน
         if (Object.keys(newErrors).length > 0) {
@@ -84,17 +82,38 @@ const RegionModal: React.FC<RegionModalProps> = ({
         }
 
         try {
-
             let response;
-            if (region) {
-                Swal.fire({
-                    title: "กำลังแก้ไขข้อมูล...",
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    },
-                });
 
+            // Confirm action before continuing
+            const result = await Swal.fire({
+                title: region ? 'ยืนยันการแก้ไขข้อมูล' : 'ยืนยันการบันทึกข้อมูล',
+                icon: 'warning',
+                html: region ? 'คุณต้องการแก้ไขข้อมูล Region นี้หรือไม่?' : 'คุณต้องการบันทึกข้อมูล Region นี้หรือไม่?',
+                showCancelButton: true,
+                confirmButtonText: 'ยืนยัน',
+                cancelButtonText: 'ยกเลิก',
+                customClass: {
+                    confirmButton: 'bg-blue-500 text-white px-4 py-2 rounded me-2',
+                    cancelButton: 'bg-red-500 text-white px-4 py-2 rounded',
+                },
+                buttonsStyling: false,
+            });
+
+            if (!result.isConfirmed) return; // Exit if the user clicks "ยกเลิก"
+
+            // Show loading state while the operation is in progress
+            const loadingSwal = Swal.fire({
+                title: region ? "กำลังแก้ไขข้อมูล..." : "กำลังเพิ่มข้อมูล...",
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+            });
+
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            // Proceed with either adding or editing the region based on the `region` flag
+            if (region) {
                 response = await regionEdit(
                     formData.id,
                     formData.regionCode,
@@ -102,53 +121,36 @@ const RegionModal: React.FC<RegionModalProps> = ({
                     formData.nameEng
                 );
             } else {
-                Swal.fire({
-                    title: "กำลังเพิ่มข้อมูล...",
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    },
-                });
-
                 response = await regionAdd(
                     formData.regionCode,
                     formData.name,
-                    formData.nameEng,
+                    formData.nameEng
                 );
             }
 
-            if (response.status === "Success") {
-                Swal.fire({
-                    icon: "success",
-                    title: region ? "แก้ไขข้อมูลเรียบร้อย" : "เพิ่มข้อมูลเรียบร้อย",
-                });
-                getListData(false); // ✅ โหลดข้อมูลใหม่โดยไม่แสดง loading
-                handleClearError(); // ✅ ล้าง Error หลังจากบันทึกข้อมูลสำเร็จ
-                handleClearForm(); // ✅ ล้างค่าในฟอร์ม
-                onClose(); // ปิด Modal
-            } else {
-                Swal.fire({
-                    icon: "error",
-                    title: "ไม่สามารถบันทึกข้อมูลได้",
-                    text: response.error_message || "เกิดข้อผิดพลาด",
-                });
-            }
+            // After successful operation, show success message
+            Swal.fire({
+                icon: "success",
+                title: region ? "แก้ไขข้อมูลเรียบร้อย" : "เพิ่มข้อมูลเรียบร้อย",
+            });
 
+            getListData(false); // ✅ โหลดข้อมูลใหม่โดยไม่แสดง loading
+            handleClearForm(); // ✅ ล้างค่าในฟอร์ม
+            handleClearError(); // ✅ ล้าง Error
+            onClose(); // Close modal after 1 second
         } catch (error: unknown) {
-            let errorMessage = "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้<br>";
-            if (error instanceof Error) {
-                errorMessage += `<span class="text-red-500">${error.message}</span>`; // ✅ ใช้ `class` แทน `className`
-            }
+            let errorMessage = `<span class="text-red-500">${(error as Error).message}</span>`;
             Swal.fire({
                 icon: "error",
                 title: "เกิดข้อผิดพลาด",
-                html: errorMessage, // ✅ ใช้ `html` เพื่อให้ตีความเป็น HTML ได้
+                html: errorMessage,
             });
         }
     };
 
+
     const handleClearError = () => {
-        setErrors({ regionCode: "", name: "", nameEng: "" });
+        setErrors({ regionCode: "", name: ""});
     }
     const handleClearForm = () => {
         setFormData({ id: 0, regionCode: "", name: "", nameEng: "" });
@@ -161,9 +163,11 @@ const RegionModal: React.FC<RegionModalProps> = ({
 
     return (
         <Modal
-            // add tailwind css show like swit alert
             isOpen={isOpen}
-            onRequestClose={onClose}
+            onRequestClose={() => {
+                handleClearError();
+                onClose();
+            }}
             className="bg-white rounded-lg shadow-lg p-6 w-[400px] mx-auto transition-all duration-300 transform scale-100 opacity-100"
             overlayClassName="fixed inset-0 bg-black/50 flex items-center justify-center z-40"
         >
@@ -231,9 +235,6 @@ const RegionModal: React.FC<RegionModalProps> = ({
                         value={formData.nameEng}
                         onChange={handleChange}
                     />
-                    {errors.nameEng && (
-                        <p className="text-red-500 text-xs mt-1">{errors.nameEng}</p>
-                    )}
                 </div>
             </div>
 
@@ -243,16 +244,17 @@ const RegionModal: React.FC<RegionModalProps> = ({
                     onClick={handleSave}
                     className="bg-green-500 text-white cursor-pointer text-xs px-3 py-2 rounded flex items-center gap-2"
                 >
-                    <FaSave className="text-lg" /> Save
+                    <FaSave className="text-lg" /> บันทึก
                 </button>
                 <button
                     onClick={() => {
                         handleClearError();
+                        handleClearForm();
                         onClose();
                     }}
                     className="bg-gray-500 text-white cursor-pointer text-xs px-3 py-2 rounded flex items-center gap-2"
                 >
-                    <FaTimes className="text-lg" /> Cancel
+                    <FaTimes className="text-lg" /> ยกเลิก
                 </button>
             </div>
         </Modal>
