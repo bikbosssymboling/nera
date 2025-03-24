@@ -13,7 +13,7 @@ const EmployeeManage = dynamic(() => import("@/app/employeemanage/page"));
 const PlanYExclusive = dynamic(() => import("@/app/planyexclusive/page"));
 const PlanYSetMasterAccount = dynamic(() => import("@/app/planysetmaster/account/page"));
 const PlanYSetMasterRegion = dynamic(() => import("@/app/planysetmaster/region/page"))
-
+const PlanYSetMasterPosition = dynamic(() => import("@/app/planysetmaster/position/page")); 
 
 export default function Layout() {
     const router = useRouter();
@@ -91,7 +91,7 @@ export default function Layout() {
                             <li className={`p-2 flex items-center gap-2 cursor-pointer text-sm ${activePage === "planysetmasterkpi" ? "bg-blue-500" : "hover:bg-gray-600"}`} onClick={() => setActivePage("planysetmasterkpi")}>
                                 <FaChartLine /> KPI
                             </li>
-                            <li className={`p-2 flex items-center gap-2 cursor-pointer text-sm ${activePage === "planysetmasterposition" ? "bg-blue-500" : "hover:bg-gray-600"}`} onClick={() => setActivePage("planysetmasterposition")}>
+                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm" onClick={() => setActivePage("planysetmasterposition")}>
                                 <FaClipboardList /> Position
                             </li>
                             <li className={`p-2 flex items-center gap-2 cursor-pointer text-sm ${activePage === "planysetmasterjob" ? "bg-blue-500" : "hover:bg-gray-600"}`} onClick={() => setActivePage("planysetmasterjob")}>
@@ -156,6 +156,7 @@ export default function Layout() {
                     {activePage === "planYexclusive" && <PlanYExclusive />}
                     {activePage === "planysetmasteraccount" && <PlanYSetMasterAccount />}
                     {activePage === "planysetmasterregion" && <PlanYSetMasterRegion />}
+                    {activePage === "planysetmasterposition" && <PlanYSetMasterPosition />}
                 </div>
             </div>
         </div>
