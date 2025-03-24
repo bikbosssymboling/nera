@@ -10,7 +10,8 @@ import dynamic from "next/dynamic";
 // Lazy Load Component
 const EmployeeManage = dynamic(() => import("@/app/employeemanage/page"));
 const PlanYExclusive = dynamic(() => import("@/app/planyexclusive/page"));
-const PlanYSetMasterAccount = dynamic(() => import("@/app/planysetmasteraccount/page"));
+const PlanYSetMasterAccount = dynamic(() => import("@/app/planysetmaster/account/page"));
+const PlanYSetMasterPosition = dynamic(() => import("@/app/planysetmaster/planysetmasterposition/page"));
 
 export default function Layout() {
     const router = useRouter();
@@ -88,7 +89,7 @@ export default function Layout() {
                             <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm" onClick={() => setActivePage("kpi")}>
                                 <FaChartLine /> KPI
                             </li>
-                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm" onClick={() => setActivePage("position")}>
+                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm" onClick={() => setActivePage("planysetmasterposition")}>
                                 <FaClipboardList /> Position
                             </li>
                             <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm" onClick={() => setActivePage("job")}>
@@ -144,6 +145,7 @@ export default function Layout() {
                     {activePage === "employee" && <EmployeeManage />}
                     {activePage === "planYexclusive" && <PlanYExclusive />}
                     {activePage === "planysetmasteraccount" && <PlanYSetMasterAccount />}
+                    {activePage === "planysetmasterposition" && <PlanYSetMasterPosition />}
                     {activePage !== "employee" && <div className="text-center text-gray-500 text-xl mt-20">🔧 กำลังพัฒนา...</div>}
                 </div>
             </div>
