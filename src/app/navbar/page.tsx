@@ -6,11 +6,14 @@ import {
     FaGlobe, FaMapMarkerAlt, FaStore, FaChartLine, FaClipboardList, FaUserCog, FaTools, FaSignOutAlt, FaEdit
 } from "react-icons/fa";
 import dynamic from "next/dynamic";
+import Image from 'next/image';
 
 // Lazy Load Component
 const EmployeeManage = dynamic(() => import("@/app/employeemanage/page"));
 const PlanYExclusive = dynamic(() => import("@/app/planyexclusive/page"));
-const PlanYSetMasterAccount = dynamic(() => import("@/app/planysetmasteraccount/page"));
+const PlanYSetMasterAccount = dynamic(() => import("@/app/planysetmaster/account/page"));
+const PlanYSetMasterRegion = dynamic(() => import("@/app/planysetmaster/region/page"))
+const PlanYSetMasterPosition = dynamic(() => import("@/app/planysetmaster/position/page")); 
 
 export default function Layout() {
     const router = useRouter();
@@ -35,31 +38,31 @@ export default function Layout() {
     };
 
     return (
-        <div className="flex h-screen">{/* overflow-hidden */} 
+        <div className="flex h-screen">{/* overflow-hidden */}
             {/* Sidebar */}
-            <div className={`bg-gray-600 text-white w-64 p-4 fixed top-0 left-0 h-full transition-transform duration-300 ${isSidebarOpen ? "translate-x-0" : "-translate-x-64"}`}>
+            <div className={`bg-gray-600 text-white w-64 p-4 fixed top-0 left-0 h-full transition-transform duration-300 z-30 ${isSidebarOpen ? "translate-x-0" : "-translate-x-64"}`}>
                 <h2 className="text-xl font-bold mb-4">Nera</h2>
                 <ul>
-                    <li className={`p-2 flex items-center gap-2 cursor-pointer ${activePage === "news" ? "bg-blue-500" : "hover:bg-gray-600"}`} 
+                    <li className={`p-2 flex items-center gap-2 cursor-pointer ${activePage === "news" ? "bg-blue-500" : "hover:bg-gray-600"}`}
                         onClick={() => setActivePage("news")}>
                         <FaHome /> หน้าแรก
                     </li>
-                    <li className={`p-2 flex items-center gap-2 cursor-pointer ${activePage === "employee" ? "bg-blue-500" : "hover:bg-gray-600"}`} 
+                    <li className={`p-2 flex items-center gap-2 cursor-pointer ${activePage === "employee" ? "bg-blue-500" : "hover:bg-gray-600"}`}
                         onClick={() => setActivePage("employee")}>
                         <FaUsers /> จัดการข้อมูลพนักงาน
                     </li>
                     {/* Exclusive */}
-                    <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600" 
+                    <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600"
                         onClick={() => toggleSubmenu("exclusive")}>
                         <FaCalendar /> Exclusive ▼
                     </li>
                     {submenuOpen["exclusive"] && (
                         <ul className="pl-6">
-                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm" 
+                            <li className={`p-2 flex items-center gap-2 cursor-pointer text-sm ${activePage === "planYexclusive" ? "bg-blue-500" : "hover:bg-gray-600"}`}  
                                 onClick={() => setActivePage("planYexclusive")}>
                                 <FaCalendar /> Plan Y Exclusive
                             </li>
-                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm" 
+                            <li className={`p-2 flex items-center gap-2 cursor-pointer text-sm ${activePage === "dashboardexclusive" ? "bg-blue-500" : "hover:bg-gray-600"}`} 
                                 onClick={() => setActivePage("dashboardexclusive")}>
                                 <FaCalendar /> Dashboard Exclusive
                             </li>
@@ -67,45 +70,45 @@ export default function Layout() {
                     )}
 
                     {/* PlanY Master Setup */}
-                    <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600" 
+                    <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600"
                         onClick={() => toggleSubmenu("setup")}>
                         <FaCogs /> PlanY Master Setup ▼
                     </li>
                     {submenuOpen["setup"] && (
                         <ul className="pl-6">
-                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm" onClick={() => setActivePage("planysetmasteraccount")}>
+                            <li className={`p-2 flex items-center gap-2 cursor-pointer text-sm ${activePage === "planysetmasteraccount" ? "bg-blue-500" : "hover:bg-gray-600"}`}  onClick={() => setActivePage("planysetmasteraccount")}>
                                 <FaBriefcase /> Account
                             </li>
-                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm" onClick={() => setActivePage("region")}>
+                            <li className={`p-2 flex items-center gap-2 cursor-pointer text-sm ${activePage === "planysetmasterregion" ? "bg-blue-500" : "hover:bg-gray-600"}`} onClick={() => setActivePage("planysetmasterregion")}>
                                 <FaGlobe /> Region
                             </li>
-                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm" onClick={() => setActivePage("province")}>
+                            <li className={`p-2 flex items-center gap-2 cursor-pointer text-sm ${activePage === "planysetmasterprovince" ? "bg-blue-500" : "hover:bg-gray-600"}`} onClick={() => setActivePage("planysetmasterprovince")}>
                                 <FaMapMarkerAlt /> Province
                             </li>
-                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm" onClick={() => setActivePage("store")}>
+                            <li className={`p-2 flex items-center gap-2 cursor-pointer text-sm ${activePage === "planysetmasterstore" ? "bg-blue-500" : "hover:bg-gray-600"}`} onClick={() => setActivePage("planysetmasterstore")}>
                                 <FaStore /> Store
                             </li>
-                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm" onClick={() => setActivePage("kpi")}>
+                            <li className={`p-2 flex items-center gap-2 cursor-pointer text-sm ${activePage === "planysetmasterkpi" ? "bg-blue-500" : "hover:bg-gray-600"}`} onClick={() => setActivePage("planysetmasterkpi")}>
                                 <FaChartLine /> KPI
                             </li>
-                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm" onClick={() => setActivePage("position")}>
+                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm" onClick={() => setActivePage("planysetmasterposition")}>
                                 <FaClipboardList /> Position
                             </li>
-                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm" onClick={() => setActivePage("job")}>
+                            <li className={`p-2 flex items-center gap-2 cursor-pointer text-sm ${activePage === "planysetmasterjob" ? "bg-blue-500" : "hover:bg-gray-600"}`} onClick={() => setActivePage("planysetmasterjob")}>
                                 <FaClipboardList /> Job
                             </li>
                         </ul>
                     )}
 
                     {/* System Setup */}
-                    <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600" 
+                    <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600"
                         onClick={() => toggleSubmenu("system")}>
                         <FaTools /> System Setup ▼
                     </li>
                     {submenuOpen["system"] && (
                         <ul className="pl-6">
-                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm" 
-                                onClick={() => setActivePage("system")}>
+                            <li className={`p-2 flex items-center gap-2 cursor-pointer text-sm ${activePage === "systempermission" ? "bg-blue-500" : "hover:bg-gray-600"}`} 
+                                onClick={() => setActivePage("systempermission")}>
                                 <FaUserCog /> System Permission
                             </li>
                         </ul>
@@ -120,7 +123,15 @@ export default function Layout() {
                     <button className="text-white cursor-pointer" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
                         <FaBars />
                     </button>
-                    <span className="text-xl font-bold">Nera</span>
+                    <div className="flex items-center gap-2">
+                        <Image
+                            src="/images/Logo/LogoNoBG2.png"
+                            alt="Nera Logo"
+                            width={60}   // ✅ เพิ่มขนาด
+                            height={60}  // ✅ เพิ่มขนาด
+                        />
+                    </div>
+
                     <div className="relative">
                         <button className="text-white cursor-pointer" onClick={() => setDropdownOpen(!dropdownOpen)}>
                             <FaUser />
@@ -130,7 +141,7 @@ export default function Layout() {
                                 <li className="flex items-center px-4 py-2 hover:bg-gray-200 cursor-pointer">
                                     <FaEdit className="mr-2" /> แก้ไขข้อมูล
                                 </li>
-                                <li className="flex items-center px-4 py-2 hover:bg-gray-200 cursor-pointer" 
+                                <li className="flex items-center px-4 py-2 hover:bg-gray-200 cursor-pointer"
                                     onClick={handleLogout}>
                                     <FaSignOutAlt className="mr-2" /> Logout
                                 </li>
@@ -144,7 +155,8 @@ export default function Layout() {
                     {activePage === "employee" && <EmployeeManage />}
                     {activePage === "planYexclusive" && <PlanYExclusive />}
                     {activePage === "planysetmasteraccount" && <PlanYSetMasterAccount />}
-                    {activePage !== "employee" && <div className="text-center text-gray-500 text-xl mt-20">🔧 กำลังพัฒนา...</div>}
+                    {activePage === "planysetmasterregion" && <PlanYSetMasterRegion />}
+                    {activePage === "planysetmasterposition" && <PlanYSetMasterPosition />}
                 </div>
             </div>
         </div>

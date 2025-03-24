@@ -1,13 +1,12 @@
 import api from "@/lib/api";
-
+import {checkErrorMassage} from "../errorResponse";
 // ฟังก์ชันล็อกอิน
 export const authLogin = async (username: string, password: string) => {
     try {
-        const response = await api.post("/AuthLogin/logins", { username, password });
-        console.log("Login Response:", response.data);
+        const response = await api.post("/Auth/logins", { username, password });
         return response.data;
-    } catch (error) {
-        console.error("Login API Error:", error);
-        throw error;
+    } catch (err: any) {
+        const message = await checkErrorMassage(err);
+        throw new Error(message);
     }
 };

@@ -1,39 +1,40 @@
-import React, { useEffect, useState } from "react";
-import Modal from "react-modal";
+import { regionAdd, regionEdit } from "@/services/callAPI/PlanYMasterSetup/Region/apiRegionService";
+import { useEffect, useState } from "react";
 import { FaBriefcase, FaSave, FaTimes } from "react-icons/fa";
-import {
-    accountAdd,
-    accountEdit,
-} from "../../../services/callAPI/PlanYMasterSetup/Account/apiAccountService";
+import Modal from "react-modal";
 import Swal from "sweetalert2";
 
-interface Account {
+interface Region {
     id: number;
-    accountCode: string;
+    regionCode: string;
     name: string;
     nameEng: string;
+    createdBy?: string;
+    updatedBy?: string;
 }
 
-interface AccountModalProps {
+interface RegionModalProps {
     isOpen: boolean;
     onClose: () => void;
-    account: Account | null;
+    region: Region | null;
     getListData: (showLoading: boolean) => void;
 }
 
-const AccountModal: React.FC<AccountModalProps> = ({
+const RegionModal: React.FC<RegionModalProps> = ({
     isOpen,
     onClose,
-    account,
+    region,
     getListData,
+
 }) => {
     const [mounted, setMounted] = useState(false);
-    const [errors, setErrors] = useState<{ accountCode?: string; name?: string; nameEng?: string }>(
+    const [errors, setErrors] = useState<{ regionCode?: string; name?: string; }>(
         {}
     );
-    const [formData, setFormData] = useState<Account>({
+
+    const [formData, setFormData] = useState<Region>({
         id: 0,
-        accountCode: "",
+        regionCode: "",
         name: "",
         nameEng: "",
     });
@@ -42,35 +43,37 @@ const AccountModal: React.FC<AccountModalProps> = ({
         setMounted(true);
         if (typeof window !== "undefined") {
             Modal.setAppElement(document.body);
+
         }
     }, []);
 
+
     // ✅ อัปเดตค่าเมื่อมีการแก้ไขข้อมูล
     useEffect(() => {
-        if (account) {
+        if (region) {
             setFormData({
-                id: account.id,
-                accountCode: account.accountCode,
-                name: account.name,
-                nameEng: account.nameEng,
+                id: region.id,
+                regionCode: region.regionCode,
+                name: region.name,
+                nameEng: region.nameEng,
+                createdBy: region.createdBy
             });
         } else {
-            setFormData({ id: 0, accountCode: "", name: "", nameEng: "" });
+            setFormData({ id: 0, regionCode: "", name: "", nameEng: "" });
         }
-    }, [account]);
-
+    }, [region]);
 
     // ✅ ฟังก์ชันเปลี่ยนค่า Input
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    // ✅ ฟังก์ชันบันทึกข้อมูล
-    const handleSave = async () => {
-        let newErrors: { accountCode?: string; name?: string; } = {};
 
-        if (!formData.accountCode.trim()) newErrors.accountCode = "กรุณากรอก Account Code";
-        if (!formData.name.trim()) newErrors.name = "กรุณากรอก Account Name";
+    const handleSave = async () => {
+        let newErrors: { regionCode?: string; name?: string; } = {};
+
+        if (!formData.regionCode.trim()) newErrors.regionCode = "กรุณากรอก Region Code";
+        if (!formData.name.trim()) newErrors.name = "กรุณากรอก Region Name";
 
         // ✅ ถ้ามี Error ให้หยุดการทำงาน
         if (Object.keys(newErrors).length > 0) {
@@ -83,9 +86,9 @@ const AccountModal: React.FC<AccountModalProps> = ({
 
             // Confirm action before continuing
             const result = await Swal.fire({
-                title: account ? 'ยืนยันการแก้ไขข้อมูล' : 'ยืนยันการบันทึกข้อมูล',
+                title: region ? 'ยืนยันการแก้ไขข้อมูล' : 'ยืนยันการบันทึกข้อมูล',
                 icon: 'warning',
-                html: account ? 'คุณต้องการแก้ไขข้อมูล Account นี้หรือไม่?' : 'คุณต้องการบันทึกข้อมูล Account นี้หรือไม่?',
+                html: region ? 'คุณต้องการแก้ไขข้อมูล Region นี้หรือไม่?' : 'คุณต้องการบันทึกข้อมูล Region นี้หรือไม่?',
                 showCancelButton: true,
                 confirmButtonText: 'ยืนยัน',
                 cancelButtonText: 'ยกเลิก',
@@ -100,7 +103,7 @@ const AccountModal: React.FC<AccountModalProps> = ({
 
             // Show loading state while the operation is in progress
             const loadingSwal = Swal.fire({
-                title: account ? "กำลังแก้ไขข้อมูล..." : "กำลังเพิ่มข้อมูล...",
+                title: region ? "กำลังแก้ไขข้อมูล..." : "กำลังเพิ่มข้อมูล...",
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading();
@@ -110,16 +113,16 @@ const AccountModal: React.FC<AccountModalProps> = ({
             await new Promise(resolve => setTimeout(resolve, 500));
 
             // Proceed with either adding or editing the region based on the `region` flag
-            if (account) {
-                response = await accountEdit(
+            if (region) {
+                response = await regionEdit(
                     formData.id,
-                    formData.accountCode,
+                    formData.regionCode,
                     formData.name,
                     formData.nameEng
                 );
             } else {
-                response = await accountAdd(
-                    formData.accountCode,
+                response = await regionAdd(
+                    formData.regionCode,
                     formData.name,
                     formData.nameEng
                 );
@@ -128,7 +131,7 @@ const AccountModal: React.FC<AccountModalProps> = ({
             // After successful operation, show success message
             Swal.fire({
                 icon: "success",
-                title: account ? "แก้ไขข้อมูลเรียบร้อย" : "เพิ่มข้อมูลเรียบร้อย",
+                title: region ? "แก้ไขข้อมูลเรียบร้อย" : "เพิ่มข้อมูลเรียบร้อย",
             });
 
             getListData(false); // ✅ โหลดข้อมูลใหม่โดยไม่แสดง loading
@@ -144,15 +147,19 @@ const AccountModal: React.FC<AccountModalProps> = ({
             });
         }
     };
+
+
     const handleClearError = () => {
-        setErrors({ accountCode: "", name: "" });
+        setErrors({ regionCode: "", name: ""});
     }
     const handleClearForm = () => {
-        setFormData({ id: 0, accountCode: "", name: "", nameEng: "" });
+        setFormData({ id: 0, regionCode: "", name: "", nameEng: "" });
     }
+
 
 
     if (!mounted) return null;
+
 
     return (
         <Modal
@@ -168,7 +175,7 @@ const AccountModal: React.FC<AccountModalProps> = ({
             <div className="border-b pb-3 flex justify-center">
                 <h3 className="text-2xl font-bold text-gray-600 flex items-center text-center">
                     <FaBriefcase className="mr-2 text-gray-600" />
-                    {account ? "Edit Account" : "Add Account"}
+                    {region ? "Edit Region" : "Add Region"}
                 </h3>
             </div>
 
@@ -176,30 +183,30 @@ const AccountModal: React.FC<AccountModalProps> = ({
             <div className="overflow-auto max-h-[70vh] p-4 space-y-4">
                 <div className="flex flex-col">
                     <label className="text-sm font-bold text-gray-700 mb-1">
-                        Account Code
+                        Region Code
                     </label>
                     <input
                         type="text"
                         name="accountCode"
-                        className={`border p-2 rounded w-full ${errors.accountCode ? "border-red-500" : ""
+                        className={`border p-2 rounded w-full ${errors.regionCode ? "border-red-500" : ""
                             }`}
-                        value={formData.accountCode}
+                        value={formData.regionCode}
                         onChange={(e) => {
-                            setFormData({ ...formData, accountCode: e.target.value });
+                            setFormData({ ...formData, regionCode: e.target.value });
 
                             // ✅ ล้าง Error เมื่อผู้ใช้เริ่มพิมพ์
-                            setErrors({ ...errors, accountCode: "" });
+                            setErrors({ ...errors, regionCode: "" });
                         }}
                     />
-                    {errors.accountCode && (
-                        <p className="text-red-500 text-xs mt-1">{errors.accountCode}</p>
+                    {errors.regionCode && (
+                        <p className="text-red-500 text-xs mt-1">{errors.regionCode}</p>
                     )}
                 </div>
 
-                {/* Account Name */}
+                {/* Region Name */}
                 <div className="flex flex-col">
                     <label className="text-sm font-bold text-gray-700 mb-1">
-                        Account Name
+                        Region Name
                     </label>
                     <input
                         type="text"
@@ -219,7 +226,7 @@ const AccountModal: React.FC<AccountModalProps> = ({
 
                 <div className="flex flex-col">
                     <label className="text-sm font-bold text-gray-700 mb-1">
-                        Account Name (English)
+                        Region Name (English)
                     </label>
                     <input
                         type="text"
@@ -254,4 +261,4 @@ const AccountModal: React.FC<AccountModalProps> = ({
     );
 };
 
-export default AccountModal;
+export default RegionModal;
