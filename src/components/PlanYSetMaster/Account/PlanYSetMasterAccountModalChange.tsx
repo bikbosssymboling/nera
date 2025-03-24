@@ -8,13 +8,8 @@ import {
 import Swal from "sweetalert2";
 
 interface Account {
-<<<<<<< HEAD
     id: number; // เปลี่ยนจาก string เป็น number
     accountCode: string; // เปลี่ยน id เดิมเป็น accountCode
-=======
-    id: number;
-    accountCode: string;
->>>>>>> e9a9e56b88b63b81190fe01bf82c1a21c9b8cdbc
     name: string;
     nameEng: string;
 }
@@ -30,16 +25,10 @@ const AccountModal: React.FC<AccountModalProps> = ({
     isOpen,
     onClose,
     account,
-<<<<<<< HEAD
-}) => {
-    const [mounted, setMounted] = useState(false);
-    const [errors, setErrors] = useState<{ accountCode?: string; name?: string }>(
-=======
     getListData,
 }) => {
     const [mounted, setMounted] = useState(false);
     const [errors, setErrors] = useState<{ accountCode?: string; name?: string; nameEng?: string }>(
->>>>>>> e9a9e56b88b63b81190fe01bf82c1a21c9b8cdbc
         {}
     );
     const [formData, setFormData] = useState<Account>({
@@ -79,14 +68,9 @@ const AccountModal: React.FC<AccountModalProps> = ({
     // ✅ ฟังก์ชันบันทึกข้อมูล
     const handleSave = async () => {
         let newErrors: { accountCode?: string; name?: string } = {};
-
-<<<<<<< HEAD
         // ✅ ตรวจสอบค่าในฟอร์ม
         if (!formData.accountCode.trim())
             newErrors.accountCode = "กรุณากรอก Account Code";
-=======
-        if (!formData.accountCode.trim()) newErrors.accountCode = "กรุณากรอก Account Code";
->>>>>>> e9a9e56b88b63b81190fe01bf82c1a21c9b8cdbc
         if (!formData.name.trim()) newErrors.name = "กรุณากรอก Account Name";
 
         // ✅ ถ้ามี Error ให้หยุดการทำงาน
@@ -161,16 +145,13 @@ const AccountModal: React.FC<AccountModalProps> = ({
             });
         }
     };
-<<<<<<< HEAD
-=======
+
     const handleClearError = () => {
         setErrors({ accountCode: "", name: "" });
     }
     const handleClearForm = () => {
         setFormData({ id: 0, accountCode: "", name: "", nameEng: "" });
     }
-
->>>>>>> e9a9e56b88b63b81190fe01bf82c1a21c9b8cdbc
 
     if (!mounted) return null;
 
@@ -257,15 +238,6 @@ const AccountModal: React.FC<AccountModalProps> = ({
                     onClick={handleSave}
                     className="bg-green-500 text-white cursor-pointer text-xs px-3 py-2 rounded flex items-center gap-2"
                 >
-<<<<<<< HEAD
-                    <FaSave className="text-lg" /> Save
-                </button>
-                <button
-                    onClick={onClose}
-                    className="bg-gray-500 text-white cursor-pointer text-xs px-3 py-2 rounded flex items-center gap-2"
-                >
-                    <FaTimes className="text-lg" /> Cancel
-=======
                     <FaSave className="text-lg" /> บันทึก
                 </button>
                 <button
@@ -277,7 +249,6 @@ const AccountModal: React.FC<AccountModalProps> = ({
                     className="bg-gray-500 text-white cursor-pointer text-xs px-3 py-2 rounded flex items-center gap-2"
                 >
                     <FaTimes className="text-lg" /> ยกเลิก
->>>>>>> e9a9e56b88b63b81190fe01bf82c1a21c9b8cdbc
                 </button>
             </div>
         </Modal>

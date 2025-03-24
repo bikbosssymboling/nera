@@ -16,88 +16,14 @@ interface Account {
 export default function PlanYSetMasterAccount() {
     const [searchQuery, setSearchQuery] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
-<<<<<<< HEAD
     const [editAccount, setEditAccount] = useState<Account | null>(null); 
-
-    const accounts: Account[] = [
-        { id: 1, accountCode: "TW01", name: "Thai Watsadu", nameEng: "Thai Watsadu" },
-        { id: 2, accountCode: "KIS002", name: "KIS - UPC", nameEng: "KIS - UPC" },
-        { id: 3, accountCode: "KIS001", name: "KIS - BKK", nameEng: "KIS - BKK" },
-        { id: 4, accountCode: "UFM002", name: "UFM - UPC", nameEng: "UFM - UPC" },
-        { id: 5, accountCode: "UFM001", name: "UFM - BKK", nameEng: "UFM - BKK" },
-        { id: 6, accountCode: "MH01", name: "Mega Home", nameEng: "Mega Home" },
-        { id: 7, accountCode: "HP01", name: "Homepro", nameEng: "Homepro" },
-        { id: 8, accountCode: "GH01", name: "Global House", nameEng: "Global House" },
-        { id: 9, accountCode: "Petshop01", name: "Pet Shop", nameEng: "Pet Shop" },
-        { id: 10, accountCode: "Center001", name: "Car Center", nameEng: "Car Center" },
-        { id: 11, accountCode: "Other29", name: "จังหวัดระนอง", nameEng: "Ranong Province" },
-        { id: 12, accountCode: "TFM002", name: "TFM - UPC", nameEng: "TFM - UPC" },
-        { id: 13, accountCode: "TFM001", name: "TFM - BKK", nameEng: "TFM - BKK" },
-        { id: 14, accountCode: "BANK001", name: "BANK - BKK", nameEng: "Bank - BKK" },
-        { id: 15, accountCode: "GOV", name: "Government center", nameEng: "Government Center" },
-        { id: 16, accountCode: "7UPC", name: "7-ELEVEN - UPC", nameEng: "7-Eleven - UPC" },
-        { id: 17, accountCode: "BIGC01", name: "Big C - BKK", nameEng: "Big C - Bangkok" },
-        { id: 18, accountCode: "BIGC02", name: "Big C - UPC", nameEng: "Big C - UPC" },
-        { id: 19, accountCode: "TESCO01", name: "Tesco Lotus - BKK", nameEng: "Tesco Lotus - Bangkok" },
-        { id: 20, accountCode: "TESCO02", name: "Tesco Lotus - UPC", nameEng: "Tesco Lotus - UPC" },
-        { id: 21, accountCode: "MAKRO01", name: "Makro - BKK", nameEng: "Makro - Bangkok" },
-        { id: 22, accountCode: "MAKRO02", name: "Makro - UPC", nameEng: "Makro - UPC" },
-        { id: 23, accountCode: "VILLA01", name: "Villa Market - BKK", nameEng: "Villa Market - Bangkok" },
-        { id: 24, accountCode: "VILLA02", name: "Villa Market - UPC", nameEng: "Villa Market - UPC" },
-        { id: 25, accountCode: "TOPS01", name: "Tops Market - BKK", nameEng: "Tops Market - Bangkok" },
-        { id: 26, accountCode: "TOPS02", name: "Tops Market - UPC", nameEng: "Tops Market - UPC" },
-        { id: 27, accountCode: "CENTRAL01", name: "Central - BKK", nameEng: "Central - Bangkok" },
-        { id: 28, accountCode: "CENTRAL02", name: "Central - UPC", nameEng: "Central - UPC" },
-        { id: 29, accountCode: "ROB01", name: "Robinson - BKK", nameEng: "Robinson - Bangkok" },
-        { id: 30, accountCode: "ROB02", name: "Robinson - UPC", nameEng: "Robinson - UPC" },
-    ];
-
-=======
-    const [editAccount, setEditAccount] = useState<Account | null>(null); // ✅ กำหนด Type
     const [accounts, setAccounts] = useState<Account[]>([]);
-    // const accounts: Account[] = [
-    //     { id: 1, accountCode: "TW01", name: "Thai Watsadu", nameEng: "Thai Watsadu" },
-    //     { id: 2, accountCode: "KIS002", name: "KIS - UPC", nameEng: "KIS - UPC" },
-    //     { id: 3, accountCode: "KIS001", name: "KIS - BKK", nameEng: "KIS - BKK" },
-    //     { id: 4, accountCode: "UFM002", name: "UFM - UPC", nameEng: "UFM - UPC" },
-    //     { id: 5, accountCode: "UFM001", name: "UFM - BKK", nameEng: "UFM - BKK" },
-    //     { id: 6, accountCode: "MH01", name: "Mega Home", nameEng: "Mega Home" },
-    //     { id: 7, accountCode: "HP01", name: "Homepro", nameEng: "Homepro" },
-    //     { id: 8, accountCode: "GH01", name: "Global House", nameEng: "Global House" },
-    //     { id: 9, accountCode: "Petshop01", name: "Pet Shop", nameEng: "Pet Shop" },
-    //     { id: 10, accountCode: "Center001", name: "Car Center", nameEng: "Car Center" },
-    //     { id: 11, accountCode: "Other29", name: "จังหวัดระนอง", nameEng: "Ranong Province" },
-    //     { id: 12, accountCode: "TFM002", name: "TFM - UPC", nameEng: "TFM - UPC" },
-    //     { id: 13, accountCode: "TFM001", name: "TFM - BKK", nameEng: "TFM - BKK" },
-    //     { id: 14, accountCode: "BANK001", name: "BANK - BKK", nameEng: "Bank - BKK" },
-    //     { id: 15, accountCode: "GOV", name: "Government center", nameEng: "Government Center" },
-    //     { id: 16, accountCode: "7UPC", name: "7-ELEVEN - UPC", nameEng: "7-Eleven - UPC" },
-    //     { id: 17, accountCode: "BIGC01", name: "Big C - BKK", nameEng: "Big C - Bangkok" },
-    //     { id: 18, accountCode: "BIGC02", name: "Big C - UPC", nameEng: "Big C - UPC" },
-    //     { id: 19, accountCode: "TESCO01", name: "Tesco Lotus - BKK", nameEng: "Tesco Lotus - Bangkok" },
-    //     { id: 20, accountCode: "TESCO02", name: "Tesco Lotus - UPC", nameEng: "Tesco Lotus - UPC" },
-    //     { id: 21, accountCode: "MAKRO01", name: "Makro - BKK", nameEng: "Makro - Bangkok" },
-    //     { id: 22, accountCode: "MAKRO02", name: "Makro - UPC", nameEng: "Makro - UPC" },
-    //     { id: 23, accountCode: "VILLA01", name: "Villa Market - BKK", nameEng: "Villa Market - Bangkok" },
-    //     { id: 24, accountCode: "VILLA02", name: "Villa Market - UPC", nameEng: "Villa Market - UPC" },
-    //     { id: 25, accountCode: "TOPS01", name: "Tops Market - BKK", nameEng: "Tops Market - Bangkok" },
-    //     { id: 26, accountCode: "TOPS02", name: "Tops Market - UPC", nameEng: "Tops Market - UPC" },
-    //     { id: 27, accountCode: "CENTRAL01", name: "Central - BKK", nameEng: "Central - Bangkok" },
-    //     { id: 28, accountCode: "CENTRAL02", name: "Central - UPC", nameEng: "Central - UPC" },
-    //     { id: 29, accountCode: "ROB01", name: "Robinson - BKK", nameEng: "Robinson - Bangkok" },
-    //     { id: 30, accountCode: "ROB02", name: "Robinson - UPC", nameEng: "Robinson - UPC" },
-    // ];
-
->>>>>>> e9a9e56b88b63b81190fe01bf82c1a21c9b8cdbc
     const filteredAccounts = accounts.filter(account =>
         (account.accountCode.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (account.name?.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (account.nameEng?.toLowerCase().includes(searchQuery.toLowerCase()))
     );
-<<<<<<< HEAD
 
-=======
->>>>>>> e9a9e56b88b63b81190fe01bf82c1a21c9b8cdbc
 
     const handleEdit = (account?: Account) => {
         setEditAccount(account || null);

@@ -11,10 +11,10 @@ import Image from 'next/image';
 // Lazy Load Component
 const EmployeeManage = dynamic(() => import("@/app/employeemanage/page"));
 const PlanYExclusive = dynamic(() => import("@/app/planyexclusive/page"));
-const PlanYSetMasterAccount = dynamic(() => import("@/app/planymaster/account/page"));
-const PlanYSetMasterPosition = dynamic(() => import("@/app/planymaster/position/page"));
-const PlanYSetMasterRegion = dynamic(() => import("@/app/planymaster/region/page"));
-const PlanYSetMasterKPI = dynamic(() => import("@/app/planymaster/KPI/page"));
+const PlanYSetMasterAccount = dynamic(() => import("@/app/planysetmaster/account/page"));
+const PlanYSetMasterPosition = dynamic(() => import("@/app/planysetmaster/position/page"));
+const PlanYSetMasterRegion = dynamic(() => import("@/app/planysetmaster/region/page"));
+const PlanYSetMasterKPI = dynamic(() => import("@/app/planysetmaster/KPI/page"));
 
 export default function Layout() {
     const router = useRouter();
@@ -159,7 +159,6 @@ export default function Layout() {
                     {activePage === "planysetmasteraccount" && <PlanYSetMasterAccount />}
                     {activePage === "planysetmasterregion" && <PlanYSetMasterRegion />}
                     {activePage === "planysetmasterposition" && <PlanYSetMasterPosition />}
-                    {activePage === "planysetmasterregion" && <PlanYSetMasterRegion />}
                     {activePage === "planysetmasterkpi" && <PlanYSetMasterKPI />}
                 </div>
             </div>
