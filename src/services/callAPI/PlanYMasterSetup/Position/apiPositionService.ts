@@ -45,13 +45,3 @@ export const PositionEdit = async (positionID:number, positionCode: string, posi
     }
 };
 
-export const regionDelete = async (regionId: number) => {
-    const updatedBy = loggedInUser
-    try {
-        const response = await api.delete(`/PlanYMasterSetupRegion/region`, { data: { regionId, updatedBy } });
-        return response.data;
-    } catch (error) {
-        console.error("Region Delete API Error:", error);
-        throw error;
-    }
-};

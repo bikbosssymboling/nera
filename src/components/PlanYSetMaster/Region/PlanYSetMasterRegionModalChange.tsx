@@ -1,38 +1,40 @@
-import React, { useEffect, useState } from "react";
-import Modal from "react-modal";
+import { regionAdd, regionEdit } from "@/services/callAPI/PlanYMasterSetup/Region/apiRegionService";
+import { useEffect, useState } from "react";
 import { FaBriefcase, FaSave, FaTimes } from "react-icons/fa";
-import {
-    accountAdd,
-    accountEdit,
-} from "../../../services/callAPI/PlanYMasterSetup/Account/apiAccountService";
+import Modal from "react-modal";
 import Swal from "sweetalert2";
 
-// ✅ กำหนด Type ให้กับ Props
-interface Account {
-    id: number; // เปลี่ยนจาก string เป็น number
-    accountCode: string; // เปลี่ยน id เดิมเป็น accountCode
+interface Region {
+    id: number;
+    regionCode: string;
     name: string;
     nameEng: string;
+    createdBy?: string;
+    updatedBy?: string;
 }
 
-interface AccountModalProps {
+interface RegionModalProps {
     isOpen: boolean;
     onClose: () => void;
-    account: Account | null; // ✅ รองรับข้อมูล Account ที่ต้องการแก้ไข
+    region: Region | null;
+    getListData: (showLoading: boolean) => void;
 }
 
-const AccountModal: React.FC<AccountModalProps> = ({
+const RegionModal: React.FC<RegionModalProps> = ({
     isOpen,
     onClose,
-    account,
+    region,
+    getListData,
+
 }) => {
     const [mounted, setMounted] = useState(false);
-    const [errors, setErrors] = useState<{ accountCode?: string; name?: string }>(
+    const [errors, setErrors] = useState<{ regionCode?: string; name?: string; nameEng?: string }>(
         {}
     );
-    const [formData, setFormData] = useState<Account>({
-        id: 0, // ✅ เปลี่ยนเป็น number
-        accountCode: "",
+
+    const [formData, setFormData] = useState<Region>({
+        id: 0,
+        regionCode: "",
         name: "",
         nameEng: "",
     });
@@ -44,34 +46,36 @@ const AccountModal: React.FC<AccountModalProps> = ({
         }
     }, []);
 
+
     // ✅ อัปเดตค่าเมื่อมีการแก้ไขข้อมูล
     useEffect(() => {
-        if (account) {
+        if (region) {
             setFormData({
-                id: account.id,
-                accountCode: account.accountCode,
-                name: account.name,
-                nameEng: account.nameEng,
+                id: region.id,
+                regionCode: region.regionCode,
+                name: region.name,
+                nameEng: region.nameEng,
+                createdBy: region.createdBy
             });
         } else {
-            setFormData({ id: 0, accountCode: "", name: "", nameEng: "" });
+            setFormData({ id: 0, regionCode: "", name: "", nameEng: "" });
         }
-    }, [account]);
-
+    }, [region]);
 
     // ✅ ฟังก์ชันเปลี่ยนค่า Input
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    // ✅ ฟังก์ชันบันทึกข้อมูล
-    const handleSave = async () => {
-        let newErrors: { accountCode?: string; name?: string } = {};
 
-        // ✅ ตรวจสอบค่าในฟอร์ม
-        if (!formData.accountCode.trim())
-            newErrors.accountCode = "กรุณากรอก Account Code";
-        if (!formData.name.trim()) newErrors.name = "กรุณากรอก Account Name";
+    const handleSave = async () => {
+        let newErrors: { regionCode?: string; name?: string; nameEng?: string } = {};
+
+        if (!formData.regionCode.trim())
+            newErrors.regionCode = "กรุณากรอก Region Code";
+        if (!formData.name.trim()) newErrors.name = "กรุณากรอก Region Name";
+        if (!formData.nameEng.trim()) newErrors.nameEng = "กรุณากรอก Region NameEng";
+
 
         // ✅ ถ้ามี Error ให้หยุดการทำงาน
         if (Object.keys(newErrors).length > 0) {
@@ -80,27 +84,47 @@ const AccountModal: React.FC<AccountModalProps> = ({
         }
 
         try {
+
             let response;
-            if (account) {
-                response = await accountEdit(
+            if (region) {
+                Swal.fire({
+                    title: "กำลังแก้ไขข้อมูล...",
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    },
+                });
+
+                response = await regionEdit(
                     formData.id,
-                    formData.accountCode,
+                    formData.regionCode,
                     formData.name,
                     formData.nameEng
                 );
             } else {
-                response = await accountAdd(
-                    formData.accountCode,
+                Swal.fire({
+                    title: "กำลังเพิ่มข้อมูล...",
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    },
+                });
+
+                response = await regionAdd(
+                    formData.regionCode,
                     formData.name,
-                    formData.nameEng
+                    formData.nameEng,
                 );
             }
 
             if (response.status === "Success") {
                 Swal.fire({
                     icon: "success",
-                    title: account ? "แก้ไขข้อมูลเรียบร้อย" : "เพิ่มข้อมูลเรียบร้อย",
+                    title: region ? "แก้ไขข้อมูลเรียบร้อย" : "เพิ่มข้อมูลเรียบร้อย",
                 });
+                getListData(false); // ✅ โหลดข้อมูลใหม่โดยไม่แสดง loading
+                handleClearError(); // ✅ ล้าง Error หลังจากบันทึกข้อมูลสำเร็จ
+                handleClearForm(); // ✅ ล้างค่าในฟอร์ม
                 onClose(); // ปิด Modal
             } else {
                 Swal.fire({
@@ -109,6 +133,7 @@ const AccountModal: React.FC<AccountModalProps> = ({
                     text: response.error_message || "เกิดข้อผิดพลาด",
                 });
             }
+
         } catch (error: unknown) {
             let errorMessage = "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้<br>";
             if (error instanceof Error) {
@@ -122,10 +147,21 @@ const AccountModal: React.FC<AccountModalProps> = ({
         }
     };
 
+    const handleClearError = () => {
+        setErrors({ regionCode: "", name: "", nameEng: "" });
+    }
+    const handleClearForm = () => {
+        setFormData({ id: 0, regionCode: "", name: "", nameEng: "" });
+    }
+
+
+
     if (!mounted) return null;
+
 
     return (
         <Modal
+            // add tailwind css show like swit alert
             isOpen={isOpen}
             onRequestClose={onClose}
             className="bg-white rounded-lg shadow-lg p-6 w-[400px] mx-auto transition-all duration-300 transform scale-100 opacity-100"
@@ -135,7 +171,7 @@ const AccountModal: React.FC<AccountModalProps> = ({
             <div className="border-b pb-3 flex justify-center">
                 <h3 className="text-2xl font-bold text-gray-600 flex items-center text-center">
                     <FaBriefcase className="mr-2 text-gray-600" />
-                    {account ? "Edit Account" : "Add Account"}
+                    {region ? "Edit Region" : "Add Region"}
                 </h3>
             </div>
 
@@ -143,30 +179,30 @@ const AccountModal: React.FC<AccountModalProps> = ({
             <div className="overflow-auto max-h-[70vh] p-4 space-y-4">
                 <div className="flex flex-col">
                     <label className="text-sm font-bold text-gray-700 mb-1">
-                        Account Code
+                        Region Code
                     </label>
                     <input
                         type="text"
                         name="accountCode"
-                        className={`border p-2 rounded w-full ${errors.accountCode ? "border-red-500" : ""
+                        className={`border p-2 rounded w-full ${errors.regionCode ? "border-red-500" : ""
                             }`}
-                        value={formData.accountCode}
+                        value={formData.regionCode}
                         onChange={(e) => {
-                            setFormData({ ...formData, accountCode: e.target.value });
+                            setFormData({ ...formData, regionCode: e.target.value });
 
                             // ✅ ล้าง Error เมื่อผู้ใช้เริ่มพิมพ์
-                            setErrors({ ...errors, accountCode: "" });
+                            setErrors({ ...errors, regionCode: "" });
                         }}
                     />
-                    {errors.accountCode && (
-                        <p className="text-red-500 text-xs mt-1">{errors.accountCode}</p>
+                    {errors.regionCode && (
+                        <p className="text-red-500 text-xs mt-1">{errors.regionCode}</p>
                     )}
                 </div>
 
-                {/* Account Name */}
+                {/* Region Name */}
                 <div className="flex flex-col">
                     <label className="text-sm font-bold text-gray-700 mb-1">
-                        Account Name
+                        Region Name
                     </label>
                     <input
                         type="text"
@@ -186,7 +222,7 @@ const AccountModal: React.FC<AccountModalProps> = ({
 
                 <div className="flex flex-col">
                     <label className="text-sm font-bold text-gray-700 mb-1">
-                        Account Name (English)
+                        Region Name (English)
                     </label>
                     <input
                         type="text"
@@ -195,6 +231,9 @@ const AccountModal: React.FC<AccountModalProps> = ({
                         value={formData.nameEng}
                         onChange={handleChange}
                     />
+                    {errors.nameEng && (
+                        <p className="text-red-500 text-xs mt-1">{errors.nameEng}</p>
+                    )}
                 </div>
             </div>
 
@@ -207,7 +246,10 @@ const AccountModal: React.FC<AccountModalProps> = ({
                     <FaSave className="text-lg" /> Save
                 </button>
                 <button
-                    onClick={onClose}
+                    onClick={() => {
+                        handleClearError();
+                        onClose();
+                    }}
                     className="bg-gray-500 text-white cursor-pointer text-xs px-3 py-2 rounded flex items-center gap-2"
                 >
                     <FaTimes className="text-lg" /> Cancel
@@ -217,4 +259,4 @@ const AccountModal: React.FC<AccountModalProps> = ({
     );
 };
 
-export default AccountModal;
+export default RegionModal;
