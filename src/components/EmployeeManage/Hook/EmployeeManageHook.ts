@@ -20,25 +20,16 @@ export function useEmployeeFilterSearchState() {
     const handleSearchEmployeeALL = async () => {
         try {
             const data = await employeeALLGET(filterEmployeeType, filterEmployeeStatus, filterBlackList, filterDepartment, filterPosition); // ✅ เรียก API ผ่าน Service
-            if (data.Status == "Success") {
-                setEmployees(data.data);
-            } else {
-                Swal.fire({
-                    icon: "error",
-                    title: "ไม่สามารถค้นหาข้อมูลได้",
-                    text: data.error_message || ""
-                });
-            }
-            return data.data;
-        }catch (error: unknown) {
-            let errorMessage = "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้<br>";
-            if (error instanceof Error) {
-                errorMessage += `<span class="text-red-500">${error.message}</span>`;
-            }
+                if (data.length > 0) {
+                    setEmployees(data);
+                } else {
+                    setEmployees([]);
+                }
+        } catch (error: unknown) {
             Swal.fire({
                 icon: "error",
                 title: "เกิดข้อผิดพลาด",
-                html: errorMessage
+                html: `<span class="text-red-500">${error}</span>`
             });
         }        
     };
@@ -61,25 +52,16 @@ export function useMasterDepartmentGETState() {
         const fetchData = async () => {
             try {
                 const data = await masterDepartmantGET();
-                console.log(data)
-                if (data.status === "Success") {
-                    setDepartmentMasterData(data.data);
+                if (data.length > 0) {
+                    setDepartmentMasterData(data);
                 } else {
-                    Swal.fire({
-                        icon: "error",
-                        title: "ไม่สามารถดึงข้อมูลได้",
-                        text: data.error_message || "เกิดข้อผิดพลาด",
-                    });
+                    setDepartmentMasterData([]);
                 }
             } catch (error: unknown) {
-                let errorMessage = "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้<br>";
-                if (error instanceof Error) {
-                    errorMessage += `<span class="text-red-500">${error.message}</span>`;
-                }
                 Swal.fire({
                     icon: "error",
                     title: "เกิดข้อผิดพลาด",
-                    html: errorMessage,
+                    html: `<span class="text-red-500">${error}</span>`
                 });
             }
         };
@@ -98,25 +80,16 @@ export function useMasterRoleGETState() {
         const fetchData = async () => {
             try {
                 const data = await masterRoleGET();
-                if (data.status === "Success") {
-                    console.log(data);
-                    setRoleMasterData(data.data);
+                if (data.length > 0) {
+                    setRoleMasterData(data);
                 } else {
-                    Swal.fire({
-                        icon: "error",
-                        title: "ไม่สามารถดึงข้อมูลได้",
-                        text: data.error_message || "เกิดข้อผิดพลาด",
-                    });
+                    setRoleMasterData([]);
                 }
             } catch (error: unknown) {
-                let errorMessage = "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้<br>";
-                if (error instanceof Error) {
-                    errorMessage += `<span class="text-red-500">${error.message}</span>`;
-                }
                 Swal.fire({
                     icon: "error",
                     title: "เกิดข้อผิดพลาด",
-                    html: errorMessage,
+                    html: `<span class="text-red-500">${error}</span>`
                 });
             }
         };

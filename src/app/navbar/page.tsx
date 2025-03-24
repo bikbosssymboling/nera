@@ -6,6 +6,7 @@ import {
     FaGlobe, FaMapMarkerAlt, FaStore, FaChartLine, FaClipboardList, FaUserCog, FaTools, FaSignOutAlt, FaEdit
 } from "react-icons/fa";
 import dynamic from "next/dynamic";
+import Image from 'next/image';
 
 // Lazy Load Component
 const EmployeeManage = dynamic(() => import("@/app/employeemanage/page"));
@@ -122,7 +123,15 @@ export default function Layout() {
                     <button className="text-white cursor-pointer" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
                         <FaBars />
                     </button>
-                    <span className="text-xl font-bold">Nera</span>
+                    <div className="flex items-center gap-2">
+                        <Image
+                            src="/images/Logo/LogoNoBG2.png"
+                            alt="Nera Logo"
+                            width={60}   // ✅ เพิ่มขนาด
+                            height={60}  // ✅ เพิ่มขนาด
+                        />
+                    </div>
+
                     <div className="relative">
                         <button className="text-white cursor-pointer" onClick={() => setDropdownOpen(!dropdownOpen)}>
                             <FaUser />

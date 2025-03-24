@@ -3,6 +3,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { authLogin } from "@/services/callAPI/Login/apiAuthService"; // ✅ เรียกใช้ Service กลาง
+import Image from 'next/image';
+
+
 
 export default function Login() {
     const router = useRouter();
@@ -22,16 +25,15 @@ export default function Login() {
         } else {
             try {
                 const data = await authLogin(username, password); // ✅ เรียก API ผ่าน Service
-                if (data.status === "Success") {
-                    console.log(data.data)
-                    if (data.data.statusLogin !== "Not Found") {
-                        localStorage.setItem("employeeID", data.data.employeeID);
-                        localStorage.setItem("employeeCode", data.data.employeeCode);
-                        localStorage.setItem("employeeFullName", data.data.fullName);
-                        localStorage.setItem("employeeDepartmentName", data.data.departmentName);
-                        localStorage.setItem("employeeRoleName", data.data.roleName);
-                        localStorage.setItem("employeeTypeCode", data.data.employeeTypeCode);
-                        localStorage.setItem("employeeTypeName", data.data.employeeTypeName);
+                if (data.statusLogin === "Success") {
+                    if (data.statusLogin !== "Not Found") {
+                        localStorage.setItem("employeeID", data.employeeID);
+                        localStorage.setItem("employeeCode", data.employeeCode);
+                        localStorage.setItem("employeeFullName", data.fullName);
+                        localStorage.setItem("employeeDepartmentName", data.departmentName);
+                        localStorage.setItem("employeeRoleName", data.roleName);
+                        localStorage.setItem("employeeTypeCode", data.employeeTypeCode);
+                        localStorage.setItem("employeeTypeName", data.employeeTypeName);
                         router.push("/navbar");
                     } else {
                         Swal.fire({
@@ -48,7 +50,6 @@ export default function Login() {
                         localStorage.removeItem("employeeTypeName");
                     }
                 } else {
-                    console.log(data)
                     Swal.fire({
                         icon: "warning",
                         title: "เข้าสู่ระบบไม่สำเร็จ",
@@ -62,11 +63,11 @@ export default function Login() {
                     localStorage.removeItem("employeeTypeCode");
                     localStorage.removeItem("employeeTypeName");
                 }
-            } catch (error) {
+            } catch (error: unknown) {
                 Swal.fire({
                     icon: "error",
                     title: "เกิดข้อผิดพลาด",
-                    text: "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้"
+                    html: `<span class="text-red-500">${error}</span>`
                 });
                 localStorage.removeItem("employeeID");
                 localStorage.removeItem("employeeCode");
@@ -75,7 +76,6 @@ export default function Login() {
                 localStorage.removeItem("employeeRoleName");
                 localStorage.removeItem("employeeTypeCode");
                 localStorage.removeItem("employeeTypeName");
-                router.push("/navbar");
             }
         }
     };
@@ -83,9 +83,16 @@ export default function Login() {
     return (
         <div className="bg-gradient-to-r from-blue-400 to-purple-400 flex justify-center items-center min-h-screen">
             <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-2xl text-center">
-                <h2 className="text-3xl font-extrabold text-gray-900 mb-6">Nera</h2>
+            <div className="flex justify-center">
+                <Image
+                    src="/images/Logo/LogoBG.png"
+                    alt="Nera Logo"
+                    width={150}
+                    height={80}
+                />
+            </div>
                 <form onSubmit={handleLogin}>
-                    <div className="mb-4 text-left">
+                    <div className="mb-4 mt-5 text-left">
                         <label htmlFor="username" className="block text-sm font-medium text-gray-900">
                             Username
                         </label>

@@ -160,7 +160,7 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
     });
     
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
             setFormData((prev) => ({
             ...prev,
@@ -212,16 +212,12 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
                     });
                 }
             } catch (error: unknown) {
-                let errorMessage = "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้<br>";
-                if (error instanceof Error) {
-                    errorMessage += `<span class="text-red-500">${error.message}</span>`;
-                }
                 Swal.fire({
                     icon: "error",
                     title: "เกิดข้อผิดพลาด",
-                    html: errorMessage
+                    html: `<span class="text-red-500">${error}</span>`
                 });
-            }
+            } 
         }
     };
     
@@ -251,7 +247,11 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
                             <div className="flex flex-col items-start gap-2">
                                 <div className="flex items-center gap-2">
                                     <label className="text-xs font-bold">วันที่ยกเลิกสิทธิ์:</label>
-                                    <input type="date" className="border p-1 text-xs w-40 rounded-md" />
+                                    <input 
+                                        type="text" 
+                                        className="border p-2 w-40 text-xs bg-gray-200 text-gray-500" 
+                                        disabled 
+                                    />
                                 </div>
                             </div>
 
@@ -2493,6 +2493,7 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
                             <div className="flex flex-col mt-3">
                             <label className="text-left font-bold text-xs mb-1">Backlist Detail</label>
                             <textarea 
+                                name="blackListRemark"
                                 value={formData.blackListRemark}
                                 onChange={handleChange}
                                 className="border p-2 w-full text-xs" 
@@ -2507,7 +2508,13 @@ const EmployeeChangeModal: React.FC<EmployeeChangeModalProps> = ({ isOpen, onClo
                             <div className="flex items-center mt-3">
                             <label className="text-sm font-bold text-left mr-2">UDID Number :</label>
 
-                            <input type="text" className="border p-2 w-1/3 text-xs" placeholder="กรอก UDID หมายเลขอุปกรณ์" />
+                            <input 
+                                type="text" 
+                                className="border p-2 w-1/3 text-xs bg-gray-200 text-gray-500" 
+                                placeholder="กรอก UDID หมายเลขอุปกรณ์" 
+                                disabled 
+                            />
+
 
                             <button className="bg-gray-500 text-white text-xs py-1 px-2 rounded ml-2 flex items-center">
                                 <FaUndo className="mr-1" /> Reset UDID
