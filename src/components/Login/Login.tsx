@@ -48,6 +48,7 @@ export default function Login() {
                         localStorage.removeItem("employeeRoleName");
                         localStorage.removeItem("employeeTypeCode");
                         localStorage.removeItem("employeeTypeName");
+                        router.push("/navbar");
                     }
                 } else {
                     Swal.fire({
@@ -62,6 +63,7 @@ export default function Login() {
                     localStorage.removeItem("employeeRoleName");
                     localStorage.removeItem("employeeTypeCode");
                     localStorage.removeItem("employeeTypeName");
+                    router.push("/navbar");
                 }
             } catch (error: unknown) {
                 Swal.fire({
@@ -76,6 +78,7 @@ export default function Login() {
                 localStorage.removeItem("employeeRoleName");
                 localStorage.removeItem("employeeTypeCode");
                 localStorage.removeItem("employeeTypeName");
+                router.push("/navbar");
             }
         }
     };

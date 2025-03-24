@@ -28,7 +28,11 @@ const RegionModal: React.FC<RegionModalProps> = ({
 
 }) => {
     const [mounted, setMounted] = useState(false);
+<<<<<<< HEAD
     const [errors, setErrors] = useState<{ regionCode?: string; name?: string; nameEng?: string }>(
+=======
+    const [errors, setErrors] = useState<{ regionCode?: string; name?: string; }>(
+>>>>>>> e9a9e56b88b63b81190fe01bf82c1a21c9b8cdbc
         {}
     );
 
@@ -43,6 +47,10 @@ const RegionModal: React.FC<RegionModalProps> = ({
         setMounted(true);
         if (typeof window !== "undefined") {
             Modal.setAppElement(document.body);
+<<<<<<< HEAD
+=======
+
+>>>>>>> e9a9e56b88b63b81190fe01bf82c1a21c9b8cdbc
         }
     }, []);
 
@@ -69,6 +77,7 @@ const RegionModal: React.FC<RegionModalProps> = ({
 
 
     const handleSave = async () => {
+<<<<<<< HEAD
         let newErrors: { regionCode?: string; name?: string; nameEng?: string } = {};
 
         if (!formData.regionCode.trim())
@@ -76,6 +85,12 @@ const RegionModal: React.FC<RegionModalProps> = ({
         if (!formData.name.trim()) newErrors.name = "กรุณากรอก Region Name";
         if (!formData.nameEng.trim()) newErrors.nameEng = "กรุณากรอก Region NameEng";
 
+=======
+        let newErrors: { regionCode?: string; name?: string; } = {};
+
+        if (!formData.regionCode.trim()) newErrors.regionCode = "กรุณากรอก Region Code";
+        if (!formData.name.trim()) newErrors.name = "กรุณากรอก Region Name";
+>>>>>>> e9a9e56b88b63b81190fe01bf82c1a21c9b8cdbc
 
         // ✅ ถ้ามี Error ให้หยุดการทำงาน
         if (Object.keys(newErrors).length > 0) {
@@ -84,6 +99,7 @@ const RegionModal: React.FC<RegionModalProps> = ({
         }
 
         try {
+<<<<<<< HEAD
 
             let response;
             if (region) {
@@ -95,6 +111,40 @@ const RegionModal: React.FC<RegionModalProps> = ({
                     },
                 });
 
+=======
+            let response;
+
+            // Confirm action before continuing
+            const result = await Swal.fire({
+                title: region ? 'ยืนยันการแก้ไขข้อมูล' : 'ยืนยันการบันทึกข้อมูล',
+                icon: 'warning',
+                html: region ? 'คุณต้องการแก้ไขข้อมูล Region นี้หรือไม่?' : 'คุณต้องการบันทึกข้อมูล Region นี้หรือไม่?',
+                showCancelButton: true,
+                confirmButtonText: 'ยืนยัน',
+                cancelButtonText: 'ยกเลิก',
+                customClass: {
+                    confirmButton: 'bg-blue-500 text-white px-4 py-2 rounded me-2',
+                    cancelButton: 'bg-red-500 text-white px-4 py-2 rounded',
+                },
+                buttonsStyling: false,
+            });
+
+            if (!result.isConfirmed) return; // Exit if the user clicks "ยกเลิก"
+
+            // Show loading state while the operation is in progress
+            const loadingSwal = Swal.fire({
+                title: region ? "กำลังแก้ไขข้อมูล..." : "กำลังเพิ่มข้อมูล...",
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+            });
+
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            // Proceed with either adding or editing the region based on the `region` flag
+            if (region) {
+>>>>>>> e9a9e56b88b63b81190fe01bf82c1a21c9b8cdbc
                 response = await regionEdit(
                     formData.id,
                     formData.regionCode,
@@ -102,6 +152,7 @@ const RegionModal: React.FC<RegionModalProps> = ({
                     formData.nameEng
                 );
             } else {
+<<<<<<< HEAD
                 Swal.fire({
                     title: "กำลังเพิ่มข้อมูล...",
                     allowOutsideClick: false,
@@ -143,12 +194,43 @@ const RegionModal: React.FC<RegionModalProps> = ({
                 icon: "error",
                 title: "เกิดข้อผิดพลาด",
                 html: errorMessage, // ✅ ใช้ `html` เพื่อให้ตีความเป็น HTML ได้
+=======
+                response = await regionAdd(
+                    formData.regionCode,
+                    formData.name,
+                    formData.nameEng
+                );
+            }
+
+            // After successful operation, show success message
+            Swal.fire({
+                icon: "success",
+                title: region ? "แก้ไขข้อมูลเรียบร้อย" : "เพิ่มข้อมูลเรียบร้อย",
+            });
+
+            getListData(false); // ✅ โหลดข้อมูลใหม่โดยไม่แสดง loading
+            handleClearForm(); // ✅ ล้างค่าในฟอร์ม
+            handleClearError(); // ✅ ล้าง Error
+            onClose(); // Close modal after 1 second
+        } catch (error: unknown) {
+            let errorMessage = `<span class="text-red-500">${(error as Error).message}</span>`;
+            Swal.fire({
+                icon: "error",
+                title: "เกิดข้อผิดพลาด",
+                html: errorMessage,
+>>>>>>> e9a9e56b88b63b81190fe01bf82c1a21c9b8cdbc
             });
         }
     };
 
+<<<<<<< HEAD
     const handleClearError = () => {
         setErrors({ regionCode: "", name: "", nameEng: "" });
+=======
+
+    const handleClearError = () => {
+        setErrors({ regionCode: "", name: ""});
+>>>>>>> e9a9e56b88b63b81190fe01bf82c1a21c9b8cdbc
     }
     const handleClearForm = () => {
         setFormData({ id: 0, regionCode: "", name: "", nameEng: "" });
@@ -161,9 +243,17 @@ const RegionModal: React.FC<RegionModalProps> = ({
 
     return (
         <Modal
+<<<<<<< HEAD
             // add tailwind css show like swit alert
             isOpen={isOpen}
             onRequestClose={onClose}
+=======
+            isOpen={isOpen}
+            onRequestClose={() => {
+                handleClearError();
+                onClose();
+            }}
+>>>>>>> e9a9e56b88b63b81190fe01bf82c1a21c9b8cdbc
             className="bg-white rounded-lg shadow-lg p-6 w-[400px] mx-auto transition-all duration-300 transform scale-100 opacity-100"
             overlayClassName="fixed inset-0 bg-black/50 flex items-center justify-center z-40"
         >
@@ -231,9 +321,12 @@ const RegionModal: React.FC<RegionModalProps> = ({
                         value={formData.nameEng}
                         onChange={handleChange}
                     />
+<<<<<<< HEAD
                     {errors.nameEng && (
                         <p className="text-red-500 text-xs mt-1">{errors.nameEng}</p>
                     )}
+=======
+>>>>>>> e9a9e56b88b63b81190fe01bf82c1a21c9b8cdbc
                 </div>
             </div>
 
@@ -243,16 +336,28 @@ const RegionModal: React.FC<RegionModalProps> = ({
                     onClick={handleSave}
                     className="bg-green-500 text-white cursor-pointer text-xs px-3 py-2 rounded flex items-center gap-2"
                 >
+<<<<<<< HEAD
                     <FaSave className="text-lg" /> Save
+=======
+                    <FaSave className="text-lg" /> บันทึก
+>>>>>>> e9a9e56b88b63b81190fe01bf82c1a21c9b8cdbc
                 </button>
                 <button
                     onClick={() => {
                         handleClearError();
+<<<<<<< HEAD
+=======
+                        handleClearForm();
+>>>>>>> e9a9e56b88b63b81190fe01bf82c1a21c9b8cdbc
                         onClose();
                     }}
                     className="bg-gray-500 text-white cursor-pointer text-xs px-3 py-2 rounded flex items-center gap-2"
                 >
+<<<<<<< HEAD
                     <FaTimes className="text-lg" /> Cancel
+=======
+                    <FaTimes className="text-lg" /> ยกเลิก
+>>>>>>> e9a9e56b88b63b81190fe01bf82c1a21c9b8cdbc
                 </button>
             </div>
         </Modal>

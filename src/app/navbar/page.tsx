@@ -157,6 +157,7 @@ export default function Layout() {
                     {activePage === "employee" && <EmployeeManage />}
                     {activePage === "planYexclusive" && <PlanYExclusive />}
                     {activePage === "planysetmasteraccount" && <PlanYSetMasterAccount />}
+                    {activePage === "planysetmasterregion" && <PlanYSetMasterRegion />}
                     {activePage === "planysetmasterposition" && <PlanYSetMasterPosition />}
                     {activePage === "planysetmasterregion" && <PlanYSetMasterRegion />}
                     {activePage === "planysetmasterkpi" && <PlanYSetMasterKPI />}
