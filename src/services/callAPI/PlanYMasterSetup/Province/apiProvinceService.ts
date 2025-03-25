@@ -2,7 +2,7 @@ import api from "@/lib/api";
 import { checkErrorMassage } from "../../errorResponse";
 
 // ดึง user ที่ login อยู่ใน localStorage
-const loggedInUser = localStorage.getItem("employeeFullName") || "unknown user";
+const loggedInUser = localStorage.getItem("employeeCode") || "unknown user";
 
 export const provinceList = async () => {
     try {
