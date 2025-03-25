@@ -1,5 +1,7 @@
 'use client'
-import { useState } from "react";
+import { permissionCriteriaGET } from "@/services/callAPI/SystemPermission/permissionService";
+import { DepartmentDto, PermissionDto, RoleDto } from "@/types/SystemPermission/PermissionDto";
+import { useEffect, useState } from "react";
 import { FaUserGear, FaFloppyDisk } from "react-icons/fa6";
 
 interface MenuFunction {
@@ -9,6 +11,28 @@ interface MenuFunction {
 }
 
 export default function SystemPermissionPage() {
+
+    const [departments,setDepartments] = useState<DepartmentDto[]>([]);
+    const [roles,setRoles] = useState<RoleDto[]>([]);
+    const [roleBydpm,setRoleByDpm] = useState<RoleDto[]>([]);
+    const [permission,setPermission] = useState<PermissionDto[]>([]);
+
+    //Initail page
+    useEffect(() => {
+        fetchPermissionCriteria();
+    }, []);
+
+    const fetchPermissionCriteria = async () => {
+        const data = await permissionCriteriaGET();
+        setDepartments(data.departments);
+        setRoles(data.roles);
+        setPermission(data.permissions);
+    };  
+
+    const handleClickDepartment =  (id : number) => {
+        setRoleByDpm(roles.filter(x =>x.departmentId === id));
+    }
+
   const plans: Record<string, string[]> = {
     "IT Department": ["IT Support", "System Administrator", "Network Admin", "Developer", "IT Manager"],
     "HR Department": ["HR Specialist", "Recruiter", "HR Manager", "Payroll Officer", "Training Officer"],
@@ -28,7 +52,7 @@ export default function SystemPermissionPage() {
   ];
 
   const [selectedDepartment, setSelectedDepartment] = useState<string>("");
-  const [selectedPosition, setSelectedPosition] = useState<string>("");
+  const [selectedPosition, setSelectedRole] = useState<string>("");
   const [permissions, setPermissions] = useState<Record<string, boolean>>({});
 
   const groupedMenus = menuFunctions.reduce((acc, item) => {
@@ -73,16 +97,16 @@ export default function SystemPermissionPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {Object.keys(plans).map((dept) => (
+                  {departments.map((dpm) => (
                     <tr
-                      key={dept}
-                      className={`cursor-pointer hover:bg-blue-100 ${selectedDepartment === dept ? 'bg-blue-200 font-semibold' : ''}`}
+                      key={dpm.departmentId}
+                      className={`cursor-pointer hover:bg-blue-100 ${selectedDepartment === dpm.departmentName ? 'bg-blue-200 font-semibold' : ''}`}
                       onClick={() => {
-                        setSelectedDepartment(dept);
-                        setSelectedPosition("");
-                      }}
+                         handleClickDepartment(dpm.departmentId!);
+                         setSelectedDepartment(dpm.departmentName!)
+                        }}
                     >
-                      <td className="border p-2 text-center">{dept}</td>
+                      <td className="border p-2 text-center">{dpm.departmentName}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -100,13 +124,13 @@ export default function SystemPermissionPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {plans[selectedDepartment]?.map((position) => (
+                  {roleBydpm.map((rol) => (
                     <tr
-                      key={position}
-                      className={`cursor-pointer hover:bg-green-100 ${selectedPosition === position ? 'bg-green-200 font-semibold' : ''}`}
-                      onClick={() => setSelectedPosition(position)}
+                      key={rol.roleId}
+                      className={`cursor-pointer hover:bg-green-100 ${selectedPosition === rol.roleName ? 'bg-green-200 font-semibold' : ''}`}
+                      onClick={() => setSelectedRole(rol.roleName!)}
                     >
-                      <td className="border p-2 text-center">{position}</td>
+                      <td className="border p-2 text-center">{rol.roleName}</td>
                     </tr>
                   ))}
                 </tbody>
