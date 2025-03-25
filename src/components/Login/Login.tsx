@@ -29,6 +29,7 @@ export default function Login() {
                     if (data.statusLogin !== "Not Found") {
                         localStorage.setItem("employeeID", data.employeeID);
                         localStorage.setItem("employeeCode", data.employeeCode);
+                        localStorage.setItem("employeeCodeCustomer", data.employeeCodeCustomer);
                         localStorage.setItem("employeeFullName", data.fullName);
                         localStorage.setItem("employeeDepartmentName", data.departmentName);
                         localStorage.setItem("employeeRoleName", data.roleName);
@@ -43,12 +44,12 @@ export default function Login() {
                         });
                         localStorage.removeItem("employeeID");
                         localStorage.removeItem("employeeCode");
+                        localStorage.removeItem("employeeCodeCustomer");
                         localStorage.removeItem("employeeFullName");
                         localStorage.removeItem("employeeDepartmentName");
                         localStorage.removeItem("employeeRoleName");
                         localStorage.removeItem("employeeTypeCode");
                         localStorage.removeItem("employeeTypeName");
-                        router.push("/navbar");
                     }
                 } else {
                     Swal.fire({
@@ -58,12 +59,12 @@ export default function Login() {
                     });
                     localStorage.removeItem("employeeID");
                     localStorage.removeItem("employeeCode");
+                    localStorage.removeItem("employeeCodeCustomer");
                     localStorage.removeItem("employeeFullName");
                     localStorage.removeItem("employeeDepartmentName");
                     localStorage.removeItem("employeeRoleName");
                     localStorage.removeItem("employeeTypeCode");
                     localStorage.removeItem("employeeTypeName");
-                    router.push("/navbar");
                 }
             } catch (error: unknown) {
                 Swal.fire({
@@ -73,12 +74,12 @@ export default function Login() {
                 });
                 localStorage.removeItem("employeeID");
                 localStorage.removeItem("employeeCode");
+                localStorage.removeItem("employeeCodeCustomer");
                 localStorage.removeItem("employeeFullName");
                 localStorage.removeItem("employeeDepartmentName");
                 localStorage.removeItem("employeeRoleName");
                 localStorage.removeItem("employeeTypeCode");
                 localStorage.removeItem("employeeTypeName");
-                router.push("/navbar");
             }
         }
     };

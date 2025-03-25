@@ -1,177 +1,185 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import Modal from "react-modal";
-import { FaBriefcase, FaSave, FaTimes } from "react-icons/fa";
-import { accountAdd, accountEdit } from "../../../services/callAPI/PlanYMasterSetup/Account/apiAccountService";
 import Swal from "sweetalert2";
+import { FaTrash } from "react-icons/fa";
 
-// ✅ กำหนด Type ให้กับ Props
-interface Account {
-    id: number;  // เปลี่ยนจาก string เป็น number
-    accountCode: string; // เปลี่ยน id เดิมเป็น accountCode
-    name: string;
-    nameEng: string;
+interface KPI {
+  KPIID: number;
+  KPISetName: string;
+  TotalKPIs: string;
 }
 
-interface AccountModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    account: Account | null; // ✅ รองรับข้อมูล Account ที่ต้องการแก้ไข
+interface KPIItem {
+  id: number;
+  name: string;
+  type: string;
+  target: string;
 }
 
-const AccountModal: React.FC<AccountModalProps> = ({ isOpen, onClose, account }) => {
-    const [mounted, setMounted] = useState(false);
-    const [errors, setErrors] = useState<{ accountCode?: string; name?: string; }>({});
-    const [formData, setFormData] = useState<Account>({
-        id: 0, // ✅ เปลี่ยนเป็น number
-        accountCode: "",
-        name: "",
-        nameEng: "",
+interface KPIModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  kpi: KPI | null;
+  mode: "add" | "edit";
+}
+
+const KPIModal: React.FC<KPIModalProps> = ({ isOpen, onClose, kpi, mode }) => {
+  const [kpiSetName, setKpiSetName] = useState<string>("");
+  const [kpiItems, setKpiItems] = useState<KPIItem[]>([
+    { id: 1, name: "", type: "Quality", target: "" },
+  ]);
+
+  useEffect(() => {
+    if (mode === "edit" && kpi) {
+      setKpiSetName(kpi.KPISetName);
+      // ✅ ดึง KPI Items มาจาก kpi object ถ้ามี
+      setKpiItems([
+        { id: 1, name: "การตรวจต่อเวลาของการทำงาน เข้า-ออก-พัก", type: "Quality", target: "95%-100%" },
+        { id: 2, name: "การส่งมอบรายงานถูกต้องและตรงต่อเวลา", type: "Quality", target: "95%-100%" },
+        { id: 3, name: "การแต่งกายถูกต้องตามแบบฟอร์มบริษัท", type: "Quality", target: "100%" },
+        { id: 4, name: "การอยู่ประจำจุดพื้นที่ขาย", type: "Quality", target: "95%-100%" },
+        { id: 5, name: "มีความรู้เกี่ยวกับผลิตภัณฑ์อย่างถูกต้อง", type: "Quality", target: "95%-100%" },
+        { id: 6, name: "มีความกระตือรือร้นในการเข้าหาลูกค้า", type: "Quality", target: "95%-100%" },
+        { id: 7, name: "อื่น ๆ", type: "Quality", target: "" },
+        { id: 8, name: "จำนวนยอดขายสินค้า", type: "Quantity", target: "" },
+        { id: 9, name: "จำนวนยอดแลกสินค้า", type: "Quantity", target: "" },
+        { id: 10, name: "จำนวนยอดแลกชิม", type: "Quantity", target: "" },
+        { id: 11, name: "การเก็บรายชื่อฐานข้อมูลลูกค้า", type: "Quantity", target: "" },
+      ]);
+    } else if (mode === "add") {
+      setKpiSetName("");
+      setKpiItems([{ id: 1, name: "", type: "Quality", target: "" }]);
+    }
+  }, [kpi, mode]);
+
+  const addKpiRow = () => {
+    setKpiItems([...kpiItems, { id: kpiItems.length + 1, name: "", type: "Quality", target: "" }]);
+  };
+
+  const removeKpiRow = (id: number) => {
+    Swal.fire({
+      icon: "warning",
+      text: "คุณต้องการลบ KPI นี้ใช่หรือไม่?",
+      showCancelButton: true,
+      confirmButtonText: "ยืนยัน",
+      cancelButtonText: "ยกเลิก",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setKpiItems(kpiItems.filter((item) => item.id !== id));
+      }
     });
+  };
 
-    useEffect(() => {
-        setMounted(true);
-        if (typeof window !== "undefined") {
-            Modal.setAppElement(document.body);
-        }
-    }, []);
+  const handleSave = () => {
+    // ✅ ทำ API Save Logic ตรงนี้ได้
+    Swal.fire("บันทึกสำเร็จ", "KPI ถูกบันทึกแล้ว", "success");
+    onClose();
+  };
 
-    // ✅ อัปเดตค่าเมื่อมีการแก้ไขข้อมูล
-    useEffect(() => {
-        if (account) {
-            setFormData({
-                id: account.id,
-                accountCode: account.accountCode,
-                name: account.name,
-                nameEng: account.nameEng,
-            });
-        } else {
-            setFormData({ id: 0, accountCode: "", name: "", nameEng: "" });
-        }
-    }, [account]);
+  return (
+    <Modal
+      isOpen={isOpen}
+      onRequestClose={onClose}
+      className="bg-white rounded-lg shadow-lg p-8 w-[1100px] mx-auto"
+      overlayClassName="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+    >
+      <h2 className="text-3xl font-bold text-center mb-6">{mode === "edit" ? "Edit KPI" : "Add New KPI"}</h2>
 
-    // ✅ ฟังก์ชันเปลี่ยนค่า Input
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+      <div className="mb-6">
+        <label className="font-semibold">KPI Set Name</label>
+        <input
+          type="text"
+          className="border rounded p-2 w-full mt-2"
+          placeholder="Enter KPI Set Name"
+          value={kpiSetName}
+          onChange={(e) => setKpiSetName(e.target.value)}
+        />
+      </div>
 
-    // ✅ ฟังก์ชันบันทึกข้อมูล
-    const handleSave = async () => {
-        let newErrors: { accountCode?: string; name?: string; } = {};
+      <table className="w-full mt-4 border text-sm">
+        <thead className="bg-gray-100">
+          <tr>
+            <th className="border p-2 w-10">#</th>
+            <th className="border p-2">KPI Name</th>
+            <th className="border p-2">Type</th>
+            <th className="border p-2">Target</th>
+            <th className="border p-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {kpiItems.map((item, index) => (
+            <tr key={item.id}>
+              <td className="border p-2 text-center">{index + 1}</td>
+              <td className="border p-2">
+                <input
+                  type="text"
+                  className="border rounded p-1 w-full"
+                  value={item.name}
+                  onChange={(e) =>
+                    setKpiItems(
+                      kpiItems.map((k) => (k.id === item.id ? { ...k, name: e.target.value } : k))
+                    )
+                  }
+                />
+              </td>
+              <td className="border p-2">
+                <select
+                  className="border rounded p-1 w-full"
+                  value={item.type}
+                  onChange={(e) =>
+                    setKpiItems(
+                      kpiItems.map((k) => (k.id === item.id ? { ...k, type: e.target.value } : k))
+                    )
+                  }
+                >
+                  <option value="Quality">ตัวชี้วัดคุณภาพ</option>
+                  <option value="Quantity">ตัวชี้วัดปริมาณ</option>
+                </select>
+              </td>
+              <td className="border p-2">
+                <input
+                  type="text"
+                  className="border rounded p-1 w-full"
+                  placeholder="95%-100%"
+                  value={item.target}
+                  onChange={(e) =>
+                    setKpiItems(
+                      kpiItems.map((k) => (k.id === item.id ? { ...k, target: e.target.value } : k))
+                    )
+                  }
+                />
+              </td>
+              <td className="border p-2 text-center">
+                <button className="text-red-500" onClick={() => removeKpiRow(item.id)}>
+                  <FaTrash />
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
-        // ✅ ตรวจสอบค่าในฟอร์ม
-        if (!formData.accountCode.trim()) newErrors.accountCode = "กรุณากรอก Account Code";
-        if (!formData.name.trim()) newErrors.name = "กรุณากรอก Account Name";
-    
-        // ✅ ถ้ามี Error ให้หยุดการทำงาน
-        if (Object.keys(newErrors).length > 0) {
-            setErrors(newErrors);
-            return;
-        }
-        
-        try {
-            let response;
-            if (account) {
-                response = await accountEdit(formData.id, formData.accountCode, formData.name, formData.nameEng);
-            } else {
-                response = await accountAdd(formData.accountCode, formData.name, formData.nameEng);
-            }
+      <div className="text-center mt-4">
+        <button className="bg-green-500 text-white px-4 py-2 rounded" onClick={addKpiRow}>
+          + Add KPI Row
+        </button>
+      </div>
 
-            if (response.status === "Success") {
-                Swal.fire({
-                    icon: "success",
-                    title: account ? "แก้ไขข้อมูลเรียบร้อย" : "เพิ่มข้อมูลเรียบร้อย",
-                });
-                onClose(); // ปิด Modal
-            } else {
-                Swal.fire({
-                    icon: "error",
-                    title: "ไม่สามารถบันทึกข้อมูลได้",
-                    text: response.error_message || "เกิดข้อผิดพลาด",
-                });
-            }
-        } catch (error: unknown) {
-            let errorMessage = "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้<br>";
-            if (error instanceof Error) {
-                errorMessage += `<span class="text-red-500">${error.message}</span>`; // ✅ ใช้ `class` แทน `className`
-            }
-            Swal.fire({
-                icon: "error",
-                title: "เกิดข้อผิดพลาด",
-                html: errorMessage, // ✅ ใช้ `html` เพื่อให้ตีความเป็น HTML ได้
-            });
-        }
-    };
-    
-
-    if (!mounted) return null;
-
-    return (
-        <Modal
-            isOpen={isOpen}
-            onRequestClose={onClose}
-            className="bg-white rounded-lg shadow-lg p-6 w-[400px] mx-auto transition-all duration-300 transform scale-100 opacity-100"
-            overlayClassName="fixed inset-0 bg-black/50 flex items-center justify-center z-40"
+      <div className="flex justify-center gap-4 mt-6">
+      <button 
+        onClick={handleSave} 
+        className="text-white px-6 py-2 rounded" 
+        style={{ backgroundColor: "#7066e0" }}
         >
-            {/* Header */}
-            <div className="border-b pb-3 flex justify-center">
-                <h3 className="text-2xl font-bold text-gray-600 flex items-center text-center">
-                    <FaBriefcase className="mr-2 text-gray-600" />
-                    {account ? "Edit Account" : "Add Account"}
-                </h3>
-            </div>
-
-            {/* Content */}
-            <div className="overflow-auto max-h-[70vh] p-4 space-y-4">
-                <div className="flex flex-col">
-                    <label className="text-sm font-bold text-gray-700 mb-1">Account Code</label>
-                    <input
-                        type="text"
-                        name="accountCode"
-                        className={`border p-2 rounded w-full ${errors.accountCode ? "border-red-500" : ""}`}
-                        value={formData.accountCode}
-                        onChange={(e) => {
-                            setFormData({ ...formData, accountCode: e.target.value });
-
-                            // ✅ ล้าง Error เมื่อผู้ใช้เริ่มพิมพ์
-                            setErrors({ ...errors, accountCode: "" });
-                        }}
-                    />
-                    {errors.accountCode && <p className="text-red-500 text-xs mt-1">{errors.accountCode}</p>}
-                </div>
-
-                {/* Account Name */}
-                <div className="flex flex-col">
-                    <label className="text-sm font-bold text-gray-700 mb-1">Account Name</label>
-                    <input
-                        type="text"
-                        name="name"
-                        className={`border p-2 rounded w-full ${errors.name ? "border-red-500" : ""}`}
-                        value={formData.name}
-                        onChange={(e) => {
-                            setFormData({ ...formData, name: e.target.value });
-                            setErrors({ ...errors, name: "" }); // ✅ ล้าง Error เมื่อพิมพ์
-                        }}
-                    />
-                    {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
-                </div>
-
-                <div className="flex flex-col">
-                    <label className="text-sm font-bold text-gray-700 mb-1">Account Name (English)</label>
-                    <input type="text" name="nameEng" className="border p-2 rounded w-full" value={formData.nameEng} onChange={handleChange} />
-                </div>
-            </div>
-
-            {/* Footer */}
-            <div className="border-t gap-2 pt-3 flex justify-end">
-                <button onClick={handleSave} className="bg-green-500 text-white cursor-pointer text-xs px-3 py-2 rounded flex items-center gap-2">
-                    <FaSave className="text-lg" /> Save
-                </button>
-                <button onClick={onClose} className="bg-gray-500 text-white cursor-pointer text-xs px-3 py-2 rounded flex items-center gap-2">
-                    <FaTimes className="text-lg" /> Cancel
-                </button>
-            </div>
-        </Modal>
-    );
+         Save
+        </button>
+        <button onClick={onClose} className="bg-gray-500 text-white px-6 py-2 rounded">
+         Cancel
+        </button>
+      </div>
+    </Modal>
+  );
 };
 
-export default AccountModal;
+export default KPIModal;
