@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { FaPlus, FaEdit, FaTrash, FaFileExcel, FaWrench, FaUsers, FaIdCard
     ,FaSearch
 } from "react-icons/fa";
-import * as XLSX from "xlsx";
+//import * as XLSX from "xlsx";
 import EmployeeTypeModal from "./EmployeeTypeModal";
 import EmployeeChangeModal from "./EmployeeChangeModal";
 import EmployeeDepartmentModal from "./EmployeeDepartmentModal";
@@ -90,9 +90,9 @@ export default function EmployeeManage() {
 
     
     const handleExportExcel = () => {
-        const worksheet = XLSX.utils.json_to_sheet(fixDataEmployee);
+        /* const worksheet = XLSX.utils.json_to_sheet(fixDataEmployee);
         const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "EmployeeData");
+        XLSX.utils.book_append_sheet(workbook, worksheet, "EmployeeData"); */
     
         // ✅ สร้างวันที่แบบ YYYYMMDD_HHMMSS
         const now = new Date();
@@ -107,7 +107,7 @@ export default function EmployeeManage() {
             .padStart(2, '0')}`;
     
         // ✅ ใส่ชื่อไฟล์พร้อมวันที่
-        XLSX.writeFile(workbook, `EmployeeData_${formattedDate}.xlsx`);
+        //XLSX.writeFile(workbook, `EmployeeData_${formattedDate}.xlsx`);
     };
     
     return (
