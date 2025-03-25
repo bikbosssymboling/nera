@@ -12,14 +12,12 @@ interface Region {
     createdBy?: string;
     updatedBy?: string;
 }
-
 interface RegionModalProps {
     isOpen: boolean;
     onClose: () => void;
     region: Region | null;
     getListData: (showLoading: boolean) => void;
 }
-
 const RegionModal: React.FC<RegionModalProps> = ({
     isOpen,
     onClose,
@@ -31,7 +29,6 @@ const RegionModal: React.FC<RegionModalProps> = ({
     const [errors, setErrors] = useState<{ regionCode?: string; name?: string; }>(
         {}
     );
-
     const [formData, setFormData] = useState<Region>({
         id: 0,
         regionCode: "",
