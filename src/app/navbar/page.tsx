@@ -15,6 +15,7 @@ const PlanYSetMasterAccount = dynamic(() => import("@/app/planysetmaster/account
 const PlanYSetMasterPosition = dynamic(() => import("@/app/planysetmaster/position/page"));
 const PlanYSetMasterRegion = dynamic(() => import("@/app/planysetmaster/region/page"));
 const PlanYSetMasterKPI = dynamic(() => import("@/app/planysetmaster/KPI/page"));
+const SystemPermissionPage = dynamic(() => import("@/app/systempermission/page"));
 
 export default function Layout() {
     const router = useRouter();
@@ -160,6 +161,7 @@ export default function Layout() {
                     {activePage === "planysetmasterregion" && <PlanYSetMasterRegion />}
                     {activePage === "planysetmasterposition" && <PlanYSetMasterPosition />}
                     {activePage === "planysetmasterkpi" && <PlanYSetMasterKPI />}
+                    {activePage === "systempermission" && <SystemPermissionPage />}
                 </div>
             </div>
         </div>
