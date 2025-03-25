@@ -14,6 +14,7 @@ const PlanYExclusive = dynamic(() => import("@/app/planyexclusive/page"));
 const PlanYSetMasterAccount = dynamic(() => import("@/app/planysetmaster/account/page"));
 const PlanYSetMasterRegion = dynamic(() => import("@/app/planysetmaster/region/page"))
 const PlanYSetMasterPosition = dynamic(() => import("@/app/planysetmaster/position/page")); 
+const PlanYSetMasterProvince = dynamic(() => import("@/app/planysetmaster/province/page"));
 
 export default function Layout() {
     const router = useRouter();
@@ -157,6 +158,7 @@ export default function Layout() {
                     {activePage === "planysetmasteraccount" && <PlanYSetMasterAccount />}
                     {activePage === "planysetmasterregion" && <PlanYSetMasterRegion />}
                     {activePage === "planysetmasterposition" && <PlanYSetMasterPosition />}
+                    {activePage === "planysetmasterprovince" && <PlanYSetMasterProvince />}
                 </div>
             </div>
         </div>
