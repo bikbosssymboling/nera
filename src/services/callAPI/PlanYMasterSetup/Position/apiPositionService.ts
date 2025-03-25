@@ -1,5 +1,5 @@
 import api from "@/lib/api";
-const loggedInUser = localStorage.getItem("employeeFullName") || "unknown user";
+const loggedInUser = localStorage.getItem("employeeCode") || "unknown user";
 
 export const PositionList = async () => {
     try {
