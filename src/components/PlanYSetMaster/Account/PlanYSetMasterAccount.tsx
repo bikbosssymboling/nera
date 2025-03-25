@@ -4,15 +4,12 @@ import { FaBriefcase, FaEdit, FaPlus, FaSearch, FaTrash } from "react-icons/fa";
 import Swal from "sweetalert2";
 import { accountDelete, accountList } from "../../../services/callAPI/PlanYMasterSetup/Account/apiAccountService";
 import AccountModal from "./PlanYSetMasterAccountModalChange";
-
-// 🔧 ปรับ Interface ให้รองรับ `id: number` และ `accountCode`
 interface Account {
     id: number;
     accountCode: string;
     name: string;
     nameEng: string;
 }
-
 export default function PlanYSetMasterAccount() {
     const [searchQuery, setSearchQuery] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -52,7 +49,7 @@ export default function PlanYSetMasterAccount() {
                             Swal.showLoading();
                         },
                     });
-                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    await new Promise(resolve => setTimeout(resolve, 500));
                     await accountDelete(accountID);
                     getListData(false);
                     Swal.fire({
@@ -70,7 +67,6 @@ export default function PlanYSetMasterAccount() {
             }
         });
     };
-
     const handleButtonSearch = () => {
         setSearchQuery("");
         getListData();
@@ -112,14 +108,12 @@ export default function PlanYSetMasterAccount() {
         getListData();
     }, []);
 
-
     return (
         <div className="p-2">
             {/* Header */}
             <h2 className="text-2xl font-bold flex items-center mb-4 text-black">
                 <FaBriefcase className="mr-2" /> Setup Master Account
             </h2>
-
             {/* Search and Add Section */}
             <div className="flex justify-between items-center mb-4">
                 <div className="flex space-x-2">
@@ -131,7 +125,7 @@ export default function PlanYSetMasterAccount() {
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
                     <button onClick={handleButtonSearch} className="cursor-pointer bg-blue-500 text-white text-xs px-3 py-2 rounded flex items-center gap-1 shadow-md">
-                        <FaSearch /> Search
+                        <FaSearch /> ค้นหา
                     </button>
                 </div>
                 <button
@@ -141,7 +135,6 @@ export default function PlanYSetMasterAccount() {
                     <FaPlus className="mr-1 inline-block" /> เพิ่ม Account
                 </button>
             </div>
-
             {/* Account Table */}
             <div className="bg-white rounded-lg shadow-md p-4">
                 <div className="max-h-[500px] overflow-y-auto">
@@ -150,7 +143,7 @@ export default function PlanYSetMasterAccount() {
                             <tr className="bg-gray-200 text-xs">
                                 <th className="border border-gray-300 p-2">#</th>
                                 <th className="border border-gray-300 p-2">Account Code</th>
-                                <th className="border border-gray-300 p-2">Account Name</th>
+                                <th className="border border-gray-300 p-2">Account Name (Thai)</th>
                                 <th className="border border-gray-300 p-2">Account Name (English)</th>
                                 <th className="border border-gray-300 p-2">Manage</th>
                             </tr>
@@ -184,8 +177,6 @@ export default function PlanYSetMasterAccount() {
                     </table>
                 </div>
             </div>
-
-
             {/* ✅ Modal */}
             <AccountModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} account={editAccount} getListData={getListData} />
         </div>
