@@ -2,7 +2,7 @@ import api from "@/lib/api";
 import { checkErrorMassage } from "../../errorResponse";
 
 // ดึง user ที่ login อยู่ใน localStorage
-const loggedInUser = localStorage.getItem("employeeFullName") || "unknown user";
+const loggedInUser = localStorage.getItem("employeeCode") || "unknown user";
 
 export const regionList = async () => {
     try {
@@ -16,7 +16,7 @@ export const regionList = async () => {
 export const regionAdd = async (regionCode: string, regionNameThai: string, regionNameEnglish: string) => {
     let createdBy = loggedInUser;
     try {
-        const response = await api.post("/PlanYMasterSetupRegion/region", { regionCode, regionNameThai, regionNameEnglish, createdBy });
+        const response = await api.post("/PlanYMasterSetupRegion/region", { RegionCode: regionCode, RegionNameThai: regionNameThai, RegionNameEnglish: regionNameEnglish, CreatedBy: createdBy });
         return response.data;
     } catch (err: any) {
         const message = await checkErrorMassage(err);
