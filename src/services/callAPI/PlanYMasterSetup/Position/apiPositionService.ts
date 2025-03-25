@@ -10,7 +10,6 @@ export const PositionList = async () => {
         throw error;
     }
 };
-
 export const PositionAdd = async (positionCode: string, positionName: string, positionDescription: string) => {
 
     let createdBy = loggedInUser; 
@@ -22,7 +21,6 @@ export const PositionAdd = async (positionCode: string, positionName: string, po
         throw error;
     }
 };
-  
 export const PositionEdit = async (positionID:number, positionCode: string, positionName: string, positionDescription: string ) => {
     const updatedBy = loggedInUser
     try {
@@ -33,8 +31,7 @@ export const PositionEdit = async (positionID:number, positionCode: string, posi
         throw error;
     }
 };
-
-  export const PositionDelete = async (positionID: number) => {
+export const PositionDelete = async (positionID: number) => {
     const updatedBy = loggedInUser
     try {
         const response = await api.delete("/PlanYMasterSetupPosition/position", { data: { positionID, updatedBy } });
