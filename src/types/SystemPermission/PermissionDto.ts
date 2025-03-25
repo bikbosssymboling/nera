@@ -30,3 +30,8 @@ export interface PermissionCriteria {
     roles: RoleDto[];
     permissions : PermissionDto[];
 }
+
+export interface PermissionConditionDto {
+    departmentId: number;
+    roleId: number;
+}

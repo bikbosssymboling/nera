@@ -1,6 +1,6 @@
 'use client'
-import { permissionCriteriaGET } from "@/services/callAPI/SystemPermission/permissionService";
-import { DepartmentDto, PermissionDto, RoleDto } from "@/types/SystemPermission/PermissionDto";
+import { permissionCriteriaGET,permissionConditionGET } from "@/services/callAPI/SystemPermission/permissionService";
+import { DepartmentDto, PermissionConditionDto, PermissionDto, RoleDto } from "@/types/SystemPermission/PermissionDto";
 import { useEffect, useState } from "react";
 import { FaUserGear, FaFloppyDisk } from "react-icons/fa6";
 
@@ -17,6 +17,11 @@ export default function SystemPermissionPage() {
     const [roleBydpm,setRoleByDpm] = useState<RoleDto[]>([]);
     const [permission,setPermission] = useState<PermissionDto[]>([]);
 
+    const [condition,setCondition] = useState<PermissionConditionDto>({
+        departmentId:5,
+        roleId:19
+    });
+
     //Initail page
     useEffect(() => {
         fetchPermissionCriteria();
@@ -24,6 +29,8 @@ export default function SystemPermissionPage() {
 
     const fetchPermissionCriteria = async () => {
         const data = await permissionCriteriaGET();
+        const data1 = await permissionConditionGET(condition);
+        debugger;
         setDepartments(data.departments);
         setRoles(data.roles);
         setPermission(data.permissions);
