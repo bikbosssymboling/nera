@@ -16,7 +16,7 @@ const PlanYSetMasterRegion = dynamic(() => import("@/app/planysetmaster/region/p
 const PlanYSetMasterPosition = dynamic(() => import("@/app/planysetmaster/position/page")); 
 const PlanYSetMasterProvince = dynamic(() => import("@/app/planysetmaster/province/page"));
 const PlanYSetMasterKPI = dynamic(() => import("@/app/planysetmaster/KPI/page"));
-
+const PlanYSetMasterStore = dynamic(() => import("@/app/planysetmaster/StoreSetup/page"));
 
 export default function Layout() {
     const router = useRouter();
@@ -163,6 +163,8 @@ export default function Layout() {
                     {activePage === "planysetmasterposition" && <PlanYSetMasterPosition />}
                     {activePage === "planysetmasterprovince" && <PlanYSetMasterProvince />}
                     {activePage === "planysetmasterkpi" && <PlanYSetMasterKPI />}
+                    {activePage === "planysetmasterstore" && <PlanYSetMasterStore />}
+                    
                     
                 </div>
             </div>
