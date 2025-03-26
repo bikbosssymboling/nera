@@ -12,7 +12,7 @@ export const permissionCriteriaGET = async (): Promise<PermissionCriteria> => {
     }
 };
 
-export const permissionConditionGET = async (condition : PermissionConditionDto): Promise<PermissionDto> => {
+export const permissionConditionGET = async (condition : PermissionConditionDto): Promise<PermissionDto[]> => {
     
     try {
         const response = await api.get("/permission",{
