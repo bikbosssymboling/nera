@@ -38,7 +38,7 @@ const AccountModal: React.FC<AccountModalProps> = ({
 
     const handleSave = async () => {
         let newErrors: { accountCode?: string; name?: string } = {};
-        if (!formData.accountCode.trim()) newErrors.accountCode = "กรุณากรอก Account Code";
+        if (!formData.accountCode.toString().trim()) newErrors.accountCode = "กรุณากรอก Account Code";
         if (!formData.name.trim()) newErrors.name = "กรุณากรอก Account Name";
 
         if (Object.keys(newErrors).length > 0) {

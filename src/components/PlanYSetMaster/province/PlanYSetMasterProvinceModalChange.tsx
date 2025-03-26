@@ -44,7 +44,7 @@ const ProvinceModal: React.FC<ProvinceModalProps> = ({
     const handleSave = async () => {
         let newErrors: { regionID?: string; provinceCode?: string; provinceName?: string; } = {};
 
-        if (!formData.regionID.trim()) newErrors.regionID = "กรุณาเลือก Region";
+        if (!formData.regionID.toString().trim()) newErrors.regionID = "กรุณาเลือก Region";
         if (!formData.provinceCode.trim()) newErrors.provinceCode = "กรุณากรอก Province Code";
         if (!formData.provinceName.trim()) newErrors.provinceName = "กรุณากรอก Province Name";
 

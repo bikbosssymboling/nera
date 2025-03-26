@@ -94,9 +94,9 @@ const StoreModal: React.FC<StoreModalProps> = ({
         if (!formData.storeCode.trim()) newErrors.storeCode = "กรุณากรอก Store Code";
         if (!formData.storeNameThai.trim()) newErrors.storeNameThai = "กรุณากรอก Store Name (Thai)";
         if (!formData.storeNameEnglish.trim()) newErrors.storeNameEnglish = "กรุณากรอก Store Name (English)";
-        if (!formData.latitude.trim() || formData.latitude === "0") newErrors.latitude = "กรุณากรอก Latitude";
-        if (!formData.longtitude.trim() || formData.longtitude === "0") newErrors.longtitude = "กรุณากรอก Longitude";
-        if (formData.distance === 0) newErrors.distance = "กรุณากรอก Distance";
+        if (!formData.latitude.toString().trim() || formData.latitude === "0") newErrors.latitude = "กรุณากรอก Latitude";
+        if (!formData.longtitude.toString().trim() || formData.longtitude === "0") newErrors.longtitude = "กรุณากรอก Longitude";
+        if (!formData.distance || formData.distance === 0) newErrors.distance = "กรุณากรอก Distance";
 
         // ✅ ถ้ามี Error ให้หยุดการทำงาน
         if (Object.keys(newErrors).length > 0) {
@@ -138,8 +138,8 @@ const StoreModal: React.FC<StoreModalProps> = ({
                     formData.regionID,
                     formData.provinceID,
                     formData.accountID,
-                    formData.latitude,
-                    formData.longtitude,
+                    String(formData.latitude),  
+                    String(formData.longtitude), 
                     formData.distance
                 );
             } else {
@@ -332,7 +332,7 @@ const StoreModal: React.FC<StoreModalProps> = ({
                 </div>
                 <div className="flex flex-col">
                     <label className="text-sm font-bold text-gray-700 mb-1">
-                        Store
+                        Province
                     </label>
                     <select
                         className="appearance-none border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
