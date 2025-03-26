@@ -12,10 +12,14 @@ interface MenuFunction {
 
 export default function SystemPermissionPage() {
 
+    //for select
     const [departments, setDepartments] = useState<DepartmentDto[]>([]);
     const [roles, setRoles] = useState<RoleDto[]>([]);
     const [roleBydpm, setRoleByDpm] = useState<RoleDto[]>([]);
-    const [permissionArr, setPermission] = useState<PermissionDto[]>([]);
+    const [permissionArr, setPermissionArr] = useState<PermissionDto[]>([]);
+
+    const [permissionSystem, setPermissionSystem] = useState<PermissionDto[]>([]);
+    const [permissionInput, setPermissionInput] = useState<PermissionDto[]>([]);
 
     const [condition, setCondition] = useState<PermissionConditionDto>({
         departmentId: 5,
@@ -33,10 +37,10 @@ export default function SystemPermissionPage() {
     const fetchPermissionCriteria = async () => {
         const data = await permissionCriteriaGET();
         const data1 = await permissionConditionGET(condition);
-
+        debugger
         setDepartments(data.departments);
         setRoles(data.roles);
-        setPermission(data.permissions);
+        setPermissionArr(data1);
 
         if (data.departments.length > 0) {
             setSelectedDepartment(data.departments[0].departmentName!);
@@ -45,10 +49,15 @@ export default function SystemPermissionPage() {
                 debugger
                 setRoleByDpm(rol)
                 setSelectedRole(rol[0].roleName!)
+                systemNameDistinct(data1)
             }
         }
 
     };
+
+    const systemNameDistinct = (per: PermissionDto[]) => {
+        setPermissionSystem(per.filter((p, i, self) => i === self.findIndex(t => t.systemName === p.systemName)));
+    }
 
     const handleClickDepartment = async (id: number) => {
         setRoleByDpm(roles.filter(x => x.departmentId === id));
@@ -182,31 +191,34 @@ export default function SystemPermissionPage() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {permissionArr.length === 0 ? (
+                                {permissionSystem.length === 0 ? (
                                     <tr>
                                         <td colSpan={6} className="text-center p-4 text-gray-500">ไม่พบข้อมูล</td>
                                     </tr>
                                 ) : (
-                                    permissionArr.map((per) => (
+                                    permissionSystem.map((per) => ( // system name
                                         <>
-                                            <tr key={per.permissionID}>
-                                                <td colSpan={6} className="bg-gray-300 font-semibold text-left p-2">{per.roleName}</td>
+                                            <tr key={per.systemID}>
+                                                <td colSpan={6} className="bg-gray-300 font-semibold text-left p-2">{per.systemName}</td>
                                             </tr>
-                                            {/* {groupedMenus[per].map((item, index) => (
-                            <tr key={`${module}-${item.menuName}`} className="hover:bg-gray-50">
-                              <td className="border p-2">{item.menuName}</td>
-                              <td className="border p-2">{item.functionName}</td>
-                              {['ค้นหา', 'เพิ่ม', 'ลบ', 'แก้ไข'].map((action) => (
-                                <td key={action} className={`border p-2 text-center ${action === 'ค้นหา' ? 'bg-blue-50' : action === 'เพิ่ม' ? 'bg-green-50' : action === 'ลบ' ? 'bg-red-50' : 'bg-yellow-50'}`}>
-                                  <input
-                                    type="checkbox"
-                                    checked={permissions[`${action}-${index}`] || false}
-                                    onChange={() => handleCheckboxChange(`${action}-${index}`)}
-                                  />
-                                </td>
-                              ))}
-                            </tr>
-                          ))} */}
+                                            {
+                                            permissionArr.filter(x =>x.systemID === per.systemID).map((perFn) => (
+                                            <tr key={perFn.systemFunctionID} className="hover:bg-gray-50">
+                                                <td className="border p-2">{perFn.systemFunctionName}</td>
+                                                <td className="border p-2">{`test`}</td>
+                                                {['ค้นหา', 'เพิ่ม', 'ลบ', 'แก้ไข'].map((action) => (
+                                                    <td key={action} className={`border p-2 text-center ${action === 'ค้นหา' ? 'bg-blue-50' : action === 'เพิ่ม' ? 'bg-green-50' : action === 'ลบ' ? 'bg-red-50' : 'bg-yellow-50'}`}>
+                                                        <input
+                                                            type="checkbox"
+                                                            //checked={''}
+                                                            //onChange={() => handleCheckboxChange(`${action}-${index}`)}
+                                                        />
+                                                    </td>
+                                                ))}
+                                            </tr>
+                                            ))
+
+                                            }
                                         </>
                                     ))
                                 )}
