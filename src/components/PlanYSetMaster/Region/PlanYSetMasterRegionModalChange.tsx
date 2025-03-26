@@ -5,21 +5,19 @@ import Modal from "react-modal";
 import Swal from "sweetalert2";
 
 interface Region {
-    id: number;
+    id: string;
     regionCode: string;
     name: string;
     nameEng: string;
     createdBy?: string;
     updatedBy?: string;
 }
-
 interface RegionModalProps {
     isOpen: boolean;
     onClose: () => void;
     region: Region | null;
     getListData: (showLoading: boolean) => void;
 }
-
 const RegionModal: React.FC<RegionModalProps> = ({
     isOpen,
     onClose,
@@ -31,9 +29,8 @@ const RegionModal: React.FC<RegionModalProps> = ({
     const [errors, setErrors] = useState<{ regionCode?: string; name?: string; }>(
         {}
     );
-
     const [formData, setFormData] = useState<Region>({
-        id: 0,
+        id: "",
         regionCode: "",
         name: "",
         nameEng: "",
@@ -46,9 +43,6 @@ const RegionModal: React.FC<RegionModalProps> = ({
 
         }
     }, []);
-
-
-    // ✅ อัปเดตค่าเมื่อมีการแก้ไขข้อมูล
     useEffect(() => {
         if (region) {
             setFormData({
@@ -59,32 +53,21 @@ const RegionModal: React.FC<RegionModalProps> = ({
                 createdBy: region.createdBy
             });
         } else {
-            setFormData({ id: 0, regionCode: "", name: "", nameEng: "" });
+            setFormData({ id: "", regionCode: "", name: "", nameEng: "" });
         }
     }, [region]);
-
-    // ✅ ฟังก์ชันเปลี่ยนค่า Input
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
 
     const handleSave = async () => {
         let newErrors: { regionCode?: string; name?: string; } = {};
 
         if (!formData.regionCode.trim()) newErrors.regionCode = "กรุณากรอก Region Code";
         if (!formData.name.trim()) newErrors.name = "กรุณากรอก Region Name";
-
-        // ✅ ถ้ามี Error ให้หยุดการทำงาน
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             return;
         }
-
         try {
             let response;
-
-            // Confirm action before continuing
             const result = await Swal.fire({
                 title: region ? 'ยืนยันการแก้ไขข้อมูล' : 'ยืนยันการบันทึกข้อมูล',
                 icon: 'warning',
@@ -100,8 +83,6 @@ const RegionModal: React.FC<RegionModalProps> = ({
             });
 
             if (!result.isConfirmed) return; // Exit if the user clicks "ยกเลิก"
-
-            // Show loading state while the operation is in progress
             const loadingSwal = Swal.fire({
                 title: region ? "กำลังแก้ไขข้อมูล..." : "กำลังเพิ่มข้อมูล...",
                 allowOutsideClick: false,
@@ -109,10 +90,7 @@ const RegionModal: React.FC<RegionModalProps> = ({
                     Swal.showLoading();
                 },
             });
-
             await new Promise(resolve => setTimeout(resolve, 500));
-
-            // Proceed with either adding or editing the region based on the `region` flag
             if (region) {
                 response = await regionEdit(
                     formData.id,
@@ -127,17 +105,15 @@ const RegionModal: React.FC<RegionModalProps> = ({
                     formData.nameEng
                 );
             }
-
             // After successful operation, show success message
             Swal.fire({
                 icon: "success",
                 title: region ? "แก้ไขข้อมูลเรียบร้อย" : "เพิ่มข้อมูลเรียบร้อย",
             });
-
-            getListData(false); // ✅ โหลดข้อมูลใหม่โดยไม่แสดง loading
-            handleClearForm(); // ✅ ล้างค่าในฟอร์ม
-            handleClearError(); // ✅ ล้าง Error
-            onClose(); // Close modal after 1 second
+            getListData(false);
+            handleClearForm();
+            handleClearError();
+            onClose();
         } catch (error: unknown) {
             let errorMessage = `<span class="text-red-500">${(error as Error).message}</span>`;
             Swal.fire({
@@ -147,20 +123,13 @@ const RegionModal: React.FC<RegionModalProps> = ({
             });
         }
     };
-
-
     const handleClearError = () => {
-        setErrors({ regionCode: "", name: ""});
+        setErrors({ regionCode: "", name: "" });
     }
     const handleClearForm = () => {
-        setFormData({ id: 0, regionCode: "", name: "", nameEng: "" });
+        setFormData({ id: "", regionCode: "", name: "", nameEng: "" });
     }
-
-
-
     if (!mounted) return null;
-
-
     return (
         <Modal
             isOpen={isOpen}
@@ -169,8 +138,7 @@ const RegionModal: React.FC<RegionModalProps> = ({
                 onClose();
             }}
             className="bg-white rounded-lg shadow-lg p-6 w-[400px] mx-auto transition-all duration-300 transform scale-100 opacity-100"
-            overlayClassName="fixed inset-0 bg-black/50 flex items-center justify-center z-40"
-        >
+            overlayClassName="fixed inset-0 bg-black/50 flex items-center justify-center z-40">
             {/* Header */}
             <div className="border-b pb-3 flex justify-center">
                 <h3 className="text-2xl font-bold text-gray-600 flex items-center text-center">
@@ -178,7 +146,6 @@ const RegionModal: React.FC<RegionModalProps> = ({
                     {region ? "Edit Region" : "Add Region"}
                 </h3>
             </div>
-
             {/* Content */}
             <div className="overflow-auto max-h-[70vh] p-4 space-y-4">
                 <div className="flex flex-col">
@@ -193,8 +160,6 @@ const RegionModal: React.FC<RegionModalProps> = ({
                         value={formData.regionCode}
                         onChange={(e) => {
                             setFormData({ ...formData, regionCode: e.target.value });
-
-                            // ✅ ล้าง Error เมื่อผู้ใช้เริ่มพิมพ์
                             setErrors({ ...errors, regionCode: "" });
                         }}
                     />
@@ -202,8 +167,6 @@ const RegionModal: React.FC<RegionModalProps> = ({
                         <p className="text-red-500 text-xs mt-1">{errors.regionCode}</p>
                     )}
                 </div>
-
-                {/* Region Name */}
                 <div className="flex flex-col">
                     <label className="text-sm font-bold text-gray-700 mb-1">
                         Region Name
@@ -216,7 +179,7 @@ const RegionModal: React.FC<RegionModalProps> = ({
                         value={formData.name}
                         onChange={(e) => {
                             setFormData({ ...formData, name: e.target.value });
-                            setErrors({ ...errors, name: "" }); // ✅ ล้าง Error เมื่อพิมพ์
+                            setErrors({ ...errors, name: "" });
                         }}
                     />
                     {errors.name && (
@@ -233,11 +196,12 @@ const RegionModal: React.FC<RegionModalProps> = ({
                         name="nameEng"
                         className="border p-2 rounded w-full"
                         value={formData.nameEng}
-                        onChange={handleChange}
+                        onChange={(e) => {
+                            setFormData({ ...formData, nameEng: e.target.value });
+                        }}
                     />
                 </div>
             </div>
-
             {/* Footer */}
             <div className="border-t gap-2 pt-3 flex justify-end">
                 <button

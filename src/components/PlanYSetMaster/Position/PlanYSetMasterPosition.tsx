@@ -3,45 +3,45 @@ import { useEffect, useState } from "react";
 import { FaBriefcase, FaEdit, FaPlus, FaSearch, FaTrash } from "react-icons/fa";
 import PositionModal from "./PlanYSetMasterPositionModalChange";
 import Swal from "sweetalert2";
-import { PositionAdd, PositionList, PositionDelete } from "@/services/callAPI/PlanYMasterSetup/Position/apiPositionService";
-
-export interface Positions {
+import { PositionList, PositionDelete } from "@/services/callAPI/PlanYMasterSetup/Position/apiPositionService";
+interface Positions {
     positionID: number;
     positionCode: string;
     positionName: string;
     positionDescription: string;
   }
-
 export default function PlanYSetMasterPosition() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editPosition, setEditPosition] = useState<Positions | null>(null);
   const [positions, setPositions] = useState<Positions[]>([]);
-
   const filteredPosition = positions.filter(
     (pos) =>
       pos.positionCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
       pos.positionName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       pos.positionDescription.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
   const handleEdit = (pos?: Positions) => {
     setEditPosition(pos || null);
     setIsModalOpen(true);
   };
-
   const handleDelete = async (positionID: number) => {
     Swal.fire({
       icon: "warning",
+      title: "ยืนยันการลบข้อมูล?",
       text: "คุณต้องการลบ Position นี้ใช่หรือไม่?",
       showCancelButton: true,
       confirmButtonColor: "#007BFF",
       cancelButtonColor: "#6C757D",
-      confirmButtonText: "ยืนยัน",
-      cancelButtonText: "ยกเลิก",
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก',
+      customClass: {
+        confirmButton: 'bg-blue-500 text-white px-4 py-2 rounded me-2',
+        cancelButton: 'bg-red-500 text-white px-4 py-2 rounded',
+      },
+      buttonsStyling: false,
     }).then(async (result) => {
       if (result.isConfirmed) {
-    
     try {
       Swal.fire({
         title: "กำลังลบข้อมูล...",
@@ -50,47 +50,30 @@ export default function PlanYSetMasterPosition() {
           Swal.showLoading();
         },
       });
-
-      // ✅ เรียก API ลบข้อมูล โดยส่ง `regionCode`
-      const data = await PositionDelete(positionID);
-
-      // ✅ เช็คสถานะการลบ
-      if (data.status === "Success") {
-        getListData(); // ✅ โหลดข้อมูลใหม่
+      await PositionDelete(positionID);
+      getListData(false);
         Swal.fire({
           icon: "success",
           title: "ลบข้อมูลเรียบร้อย",
         });
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "ไม่สามารถลบข้อมูลได้",
-          text: data.error_message || "เกิดข้อผิดพลาด",
-        });
-      }
-    } catch (error: unknown) {
-      let errorMessage = "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้<br>";
-      if (error instanceof Error) {
-        errorMessage += `<span class="text-red-500">${error.message}</span>`;
-      }
-      Swal.fire({
-        icon: "error",
-        title: "เกิดข้อผิดพลาด",
-        html: errorMessage,
-      });
+          } catch (error: unknown) {
+            let errorMessage = `<span class="text-red-500">${(error as Error).message}</span>`;
+            Swal.fire({
+              icon: "error",
+              title: "เกิดข้อผิดพลาด",
+              html: errorMessage,
+            });
     }
   }
 });
 };
-
   const handleButtonSearch = () => {
     setSearchQuery("");
     getListData();
-  };
-
-  const getListData = async (isLoading: boolean = true) => {
+  }
+  const getListData = async (showLoading: boolean = true) => {
     try {
-      if (isLoading)  {
+      if (showLoading)  {
         Swal.fire({
           title: "กำลังโหลดข้อมูล...",
           allowOutsideClick: false,
@@ -99,37 +82,31 @@ export default function PlanYSetMasterPosition() {
           },
         });
       }
-
       const res = await PositionList();
-      if (res.status === "Success") {
-        const formattedPosition = res.data.map((pos: any) => ({
+      const formattedPosition = res.map((pos: any) => ({
             positionID: pos.positionID,
             positionCode: pos.positionCode,
             positionName: pos.positionName,       
             positionDescription: pos.positionDescription,
         }));
         setPositions(formattedPosition);
-      } else {
-      }
-    } catch (error: unknown) {
-      let errorMessage = "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้<br>";
-      if (error instanceof Error) {
-        errorMessage += `<span class='text-red-500'>${error.message}</span>`;
-      }
-      Swal.fire({
-        icon: "error",
-        title: "เกิดข้อผิดพลาด",
-        html: errorMessage,
-      });
-    } finally {
-      if (isLoading) Swal.close();
-    }
-  };
-
+              if (showLoading) {
+                setTimeout(() => {
+                  Swal.close();
+                }, 500);
+              }
+            } catch (error: unknown) {
+              let errorMessage = `<span class="text-red-500">${(error as Error).message}</span>`;
+              Swal.fire({
+                icon: "error",
+                title: "เกิดข้อผิดพลาด",
+                html: errorMessage,
+              });
+            }
+          };
   useEffect(() => {
     getListData();
   }, []);
-
   return (
     <div className="p-2">
       {/* Header */}
@@ -155,12 +132,11 @@ export default function PlanYSetMasterPosition() {
           </div>
         <button
           className="cursor-pointer bg-green-500 text-white text-xs px-3 py-2 rounded flex items-center gap-1 shadow-md"
-          onClick={() => handleEdit()} // ✅ เปิด Modal โดยไม่มีข้อมูล (เพิ่มใหม่)
+          onClick={() => handleEdit()} 
         >
           <FaPlus className="mr-1 inline-block" /> Add Region
         </button>
       </div>
-
       {/* Position Table */}
       <div className="bg-white rounded-lg shadow-md p-4">
         <div className="max-h-[500px] overflow-y-auto">
@@ -200,8 +176,7 @@ export default function PlanYSetMasterPosition() {
             </tbody>
           </table>
         </div>
-      </div>
-            
+      </div> 
       <PositionModal 
       isOpen={isModalOpen} 
       onClose={() => setIsModalOpen(false)} 

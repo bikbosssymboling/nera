@@ -2,7 +2,7 @@ import api from "@/lib/api";
 import { checkErrorMassage } from "../../errorResponse";
 
 // ดึง user ที่ login อยู่ใน localStorage
-const loggedInUser = localStorage.getItem("employeeFullName") || "unknown user";
+const loggedInUser = localStorage.getItem("employeeCode") || "unknown user";
 
 
 export const accountList = async () => {
@@ -25,7 +25,7 @@ export const accountAdd = async (accountCode: string, accountNameThai: string, a
         throw new Error(message);
     }
 };
-export const accountEdit = async (AccountID: number, accountCode: string, accountNameThai: string, accountNameEnglish: string) => {
+export const accountEdit = async (AccountID: string, accountCode: string, accountNameThai: string, accountNameEnglish: string) => {
     const updatedBy = loggedInUser
     try {
         const response = await api.put("/PlanYMasterSetupAccount/account", { AccountID, accountCode, accountNameThai, accountNameEnglish, updatedBy });
@@ -36,7 +36,7 @@ export const accountEdit = async (AccountID: number, accountCode: string, accoun
     }
 };
 
-export const accountDelete = async (accountId: number) => {
+export const accountDelete = async (accountId: string) => {
     const updatedBy = loggedInUser
     try {
         const response = await api.delete(`/PlanYMasterSetupAccount/account`, { data: { accountId, updatedBy } });

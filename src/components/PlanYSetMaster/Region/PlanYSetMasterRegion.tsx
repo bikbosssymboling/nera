@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { FaBriefcase, FaEdit, FaPlus, FaSearch, FaTrash } from "react-icons/fa";
 import RegionModal from "./PlanYSetMasterRegionModalChange";
 import Swal from "sweetalert2";
-import { regionAdd, regionDelete, regionList } from "@/services/callAPI/PlanYMasterSetup/Region/apiRegionService";
+import { regionDelete, regionList } from "@/services/callAPI/PlanYMasterSetup/Region/apiRegionService";
 
 interface Region {
-  id: number;
+  id: string;
   regionCode: string;
   name: string;
   nameEng: string;
@@ -27,7 +27,7 @@ export default function PlanYMasterRegion() {
     setEditRegion(region || null);
     setIsModalOpen(true);
   };
-  const handleDelete = async (regionId: number) => {
+  const handleDelete = async (regionId: string) => {
     Swal.fire({
       icon: "warning",
       title: "ยืนยันการลบข้อมูล?",
@@ -50,7 +50,7 @@ export default function PlanYMasterRegion() {
               Swal.showLoading();
             },
           });
-          // await new Promise(resolve => setTimeout(resolve, 500));
+          await new Promise(resolve => setTimeout(resolve, 500));
           await regionDelete(regionId);
           getListData(false);
           Swal.fire({
@@ -68,12 +68,10 @@ export default function PlanYMasterRegion() {
       }
     });
   };
-
   const handleButtonSearch = () => {
-    setSearchQuery(""); // ✅ ล้างค่า searchQuery
+    setSearchQuery("");
     getListData();
   }
-
   const getListData = async (showLoading: boolean = true) => {
     try {
       if (showLoading) {
@@ -118,7 +116,6 @@ export default function PlanYMasterRegion() {
       <h2 className="text-2xl font-bold flex items-center mb-4 text-black">
         <FaBriefcase className="mr-2" /> Setup Master Region
       </h2>
-
       {/* Search and Add Section */}
       <div className="flex justify-between items-center mb-4">
         <div className="flex space-x-2">
@@ -137,12 +134,11 @@ export default function PlanYMasterRegion() {
         </div>
         <button
           className="cursor-pointer bg-green-500 text-white text-xs px-3 py-2 rounded flex items-center gap-1 shadow-md"
-          onClick={() => handleEdit()} // ✅ เปิด Modal โดยไม่มีข้อมูล (เพิ่มใหม่)
+          onClick={() => handleEdit()}
         >
           <FaPlus className="mr-1 inline-block" /> เพิ่ม Region
         </button>
       </div>
-
       {/* Region Table */}
       <div className="bg-white rounded-lg shadow-md p-4">
         <div className="max-h-[500px] overflow-y-auto">
@@ -183,7 +179,7 @@ export default function PlanYMasterRegion() {
                       </button>
                       <button
                         className="bg-red-500 text-white px-2 py-1 rounded-md text-xs shadow-md cursor-pointer"
-                        onClick={() => handleDelete(region.id)} // ✅ ส่ง `regionId` ไปลบ
+                        onClick={() => handleDelete(region.id)}
                       >
                         <FaTrash />
                       </button>
@@ -200,7 +196,7 @@ export default function PlanYMasterRegion() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         region={editRegion}
-        getListData={getListData} // ✅ ส่ง function getListData เข้าไป
+        getListData={getListData}
       />
     </div>
   );

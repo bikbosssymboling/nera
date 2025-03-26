@@ -1,33 +1,40 @@
 "use client";
+import { provinceDelete, provinceList } from "@/services/callAPI/PlanYMasterSetup/Province/apiProvinceService";
 import { useEffect, useState } from "react";
 import { FaBriefcase, FaEdit, FaPlus, FaSearch, FaTrash } from "react-icons/fa";
 import Swal from "sweetalert2";
-import { accountDelete, accountList } from "../../../services/callAPI/PlanYMasterSetup/Account/apiAccountService";
-import AccountModal from "./PlanYSetMasterAccountModalChange";
-interface Account {
-    id: string;
-    accountCode: string;
-    name: string;
-    nameEng: string;
+import ProvinceModal from "./PlanYSetMasterProvinceModalChange";
+import { regionList } from "@/services/callAPI/PlanYMasterSetup/Region/apiRegionService";
+interface Province {
+    provinceID: string;
+    provinceCode: string;
+    provinceName: string;
+    provinceNameEng: string;
+    regionID: string;
+    regionCode: string;
+    regionName: string;
+
 }
-export default function PlanYSetMasterAccount() {
+export default function PlanYSetMasterProvince() {
     const [searchQuery, setSearchQuery] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editAccount, setEditAccount] = useState<Account | null>(null); 
-    const [accounts, setAccounts] = useState<Account[]>([]);
+    const [editProvince, setEditProvince] = useState<Province | null>(null);
+    const [province, setProvince] = useState<Province[]>([]);
+    const [listRegion, setListRegion] = useState<any[]>([]);
 
-    const filteredAccounts = accounts.filter(account =>
-        (account.accountCode.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (account.name?.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (account.nameEng?.toLowerCase().includes(searchQuery.toLowerCase()))
+    const filteredProvince = province.filter(province =>
+        (province.provinceCode.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (province.provinceName?.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (province.provinceNameEng?.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (province.regionCode?.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (province.regionName?.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
-
-    const handleEdit = (account?: Account) => {
-        setEditAccount(account || null);
+    const handleEdit = (province?: Province) => {
+        setEditProvince(province || null);
         setIsModalOpen(true);
     };
-    const handleDelete = async (accountID: string) => {
+    const handleDelete = async (provinceID: string) => {
         Swal.fire({
             icon: "warning",
             title: "ยืนยันการลบข้อมูล?",
@@ -51,7 +58,7 @@ export default function PlanYSetMasterAccount() {
                         },
                     });
                     await new Promise(resolve => setTimeout(resolve, 500));
-                    await accountDelete(accountID);
+                    await provinceDelete(provinceID);
                     getListData(false);
                     Swal.fire({
                         icon: "success",
@@ -83,14 +90,18 @@ export default function PlanYSetMasterAccount() {
                     },
                 });
             }
-            const res = await accountList();
-            const formattedAccount = res.map((account: any) => ({
-                id: account.accountID,
-                accountCode: account.accountCode,
-                name: account.accountNameThai,
-                nameEng: account.accountNameEnglish,
+            const res = await provinceList();
+            const formattedAccount = res.map((province: any) => ({
+                regionID: province.regionID,
+                regionCode: province.regionCode,
+                regionName: province.regionNameThai,
+                provinceID: province.provinceID,
+                provinceCode: province.provinceCode,
+                provinceName: province.provinceNameThai,
+                provinceNameEng: province.provinceNameEnglish,
+
             }));
-            setAccounts(formattedAccount);
+            setProvince(formattedAccount);
             if (showLoading) {
                 setTimeout(() => {
                     Swal.close();
@@ -105,68 +116,86 @@ export default function PlanYSetMasterAccount() {
             });
         }
     };
+    const getListRegion = async () => {
+        const res = await regionList();
+        const formattedRegions = res.map((region: any) => ({
+            id: region.regionID,
+            regionCode: region.regionCode,
+            name: region.regionNameThai,
+            nameEng: region.regionNameEnglish,
+        }));
+        setListRegion(formattedRegions);
+
+    };
+
     useEffect(() => {
-        getListData();
+        Promise.all([getListData(), getListRegion()]);
     }, []);
 
     return (
         <div className="p-2">
             {/* Header */}
             <h2 className="text-2xl font-bold flex items-center mb-4 text-black">
-                <FaBriefcase className="mr-2" /> Setup Master Account
+                <FaBriefcase className="mr-2" /> Setup Master Province
             </h2>
             {/* Search and Add Section */}
             <div className="flex justify-between items-center mb-4">
                 <div className="flex space-x-2">
                     <input
                         type="text"
-                        placeholder="ค้นหา Account..."
+                        placeholder="ค้นหา Province..."
                         className="border p-2 rounded-md w-72"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
-                    <button onClick={handleButtonSearch} className="cursor-pointer bg-blue-500 text-white text-xs px-3 py-2 rounded flex items-center gap-1 shadow-md">
+                    <button
+                        onClick={handleButtonSearch}
+                        className="cursor-pointer bg-blue-500 text-white text-xs px-3 py-2 rounded flex items-center gap-1 shadow-md">
                         <FaSearch /> ค้นหา
                     </button>
                 </div>
                 <button
                     className="cursor-pointer bg-green-500 text-white text-xs px-3 py-2 rounded flex items-center gap-1 shadow-md"
-                    onClick={() => handleEdit()} // ✅ เปิด Modal โดยไม่มีข้อมูล (เพิ่มใหม่)
+                    onClick={() => handleEdit()}
                 >
-                    <FaPlus className="mr-1 inline-block" /> เพิ่ม Account
+                    <FaPlus className="mr-1 inline-block" /> เพิ่ม Province
                 </button>
             </div>
-            {/* Account Table */}
+            {/* Province Table */}
             <div className="bg-white rounded-lg shadow-md p-4">
                 <div className="max-h-[500px] overflow-y-auto">
                     <table className="min-w-full bg-white border rounded-md text-xs divide-y divide-gray-300">
                         <thead className="bg-gray-200 text-gray-900 text-center sticky top-0 z-10">
                             <tr className="bg-gray-200 text-xs">
                                 <th className="border border-gray-300 p-2">#</th>
-                                <th className="border border-gray-300 p-2">Account Code</th>
-                                <th className="border border-gray-300 p-2">Account Name (Thai)</th>
-                                <th className="border border-gray-300 p-2">Account Name (English)</th>
+                                <th className="border border-gray-300 p-2">Region Code</th>
+                                <th className="border border-gray-300 p-2">Region Name (Thai)</th>
+                                <th className="border border-gray-300 p-2">Province Code</th>
+                                <th className="border border-gray-300 p-2">Province Name (Thai)</th>
+                                <th className="border border-gray-300 p-2">Province Name (English)</th>
                                 <th className="border border-gray-300 p-2">Manage</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredAccounts.map((account, index) => (
-                                <tr key={account.id} className="text-xs text-gray-900">
+                            {filteredProvince.map((province, index) => (
+                                <tr key={province.provinceID} className="text-xs text-gray-900">
                                     <td className="border p-2 border-gray-300 text-center">{index + 1}</td>
-                                    <td className="border p-2 border-gray-300">{account.accountCode}</td>
-                                    <td className="border p-2 border-gray-300">{account.name}</td>
-                                    <td className="border p-2 border-gray-300">{account.nameEng}</td>
+                                    <td className="border p-2 border-gray-300">{province.regionCode}</td>
+                                    <td className="border p-2 border-gray-300">{province.regionName}</td>
+                                    <td className="border p-2 border-gray-300">{province.provinceCode}</td>
+                                    <td className="border p-2 border-gray-300">{province.provinceName}</td>
+                                    <td className="border p-2 border-gray-300">{province.provinceNameEng}</td>
                                     <td className="border p-2 border-gray-300">
                                         <div className="flex justify-center items-center space-x-1">
                                             <button
                                                 className="bg-yellow-500 text-white px-2 py-1 rounded-md text-xs shadow-md cursor-pointer"
-                                                onClick={() => handleEdit(account)}
+                                                onClick={() => handleEdit(province)}
                                             >
                                                 <FaEdit />
                                             </button>
                                             <button
                                                 className="bg-red-500 text-white px-2 py-1 rounded-md text-xs shadow-md cursor-pointer"
-                                                onClick={() => handleDelete(account.id)}
+                                                onClick={() => handleDelete(province.provinceID)}
                                             >
                                                 <FaTrash />
                                             </button>
@@ -179,7 +208,7 @@ export default function PlanYSetMasterAccount() {
                 </div>
             </div>
             {/* ✅ Modal */}
-            <AccountModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} account={editAccount} getListData={getListData} />
+            <ProvinceModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} province={editProvince} getListData={getListData} listRegion={listRegion} />
         </div>
     );
 }

@@ -14,6 +14,9 @@ const PlanYExclusive = dynamic(() => import("@/app/planyexclusive/page"));
 const PlanYSetMasterAccount = dynamic(() => import("@/app/planysetmaster/account/page"));
 const PlanYSetMasterRegion = dynamic(() => import("@/app/planysetmaster/region/page"))
 const PlanYSetMasterPosition = dynamic(() => import("@/app/planysetmaster/position/page")); 
+const PlanYSetMasterProvince = dynamic(() => import("@/app/planysetmaster/province/page"));
+const PlanYSetMasterKPI = dynamic(() => import("@/app/planysetmaster/KPI/page"));
+const PlanYSetMasterStore = dynamic(() => import("@/app/planysetmaster/storeSetup/page"));
 
 export default function Layout() {
     const router = useRouter();
@@ -91,7 +94,7 @@ export default function Layout() {
                             <li className={`p-2 flex items-center gap-2 cursor-pointer text-sm ${activePage === "planysetmasterkpi" ? "bg-blue-500" : "hover:bg-gray-600"}`} onClick={() => setActivePage("planysetmasterkpi")}>
                                 <FaChartLine /> KPI
                             </li>
-                            <li className="p-2 flex items-center gap-2 cursor-pointer hover:bg-gray-600 text-sm" onClick={() => setActivePage("planysetmasterposition")}>
+                            <li className={`p-2 flex items-center gap-2 cursor-pointer text-sm ${activePage === "planysetmasterposition" ? "bg-blue-500" : "hover:bg-gray-600"}`} onClick={() => setActivePage("planysetmasterposition")}>
                                 <FaClipboardList /> Position
                             </li>
                             <li className={`p-2 flex items-center gap-2 cursor-pointer text-sm ${activePage === "planysetmasterjob" ? "bg-blue-500" : "hover:bg-gray-600"}`} onClick={() => setActivePage("planysetmasterjob")}>
@@ -123,13 +126,14 @@ export default function Layout() {
                     <button className="text-white cursor-pointer" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
                         <FaBars />
                     </button>
+                    {/* <span className="text-xl font-bold">Nera</span> */}
                     <div className="flex items-center gap-2">
                         <Image
                             src="/images/Logo/LogoNoBG2.png"
                             alt="Nera Logo"
-                            width={60}   // ✅ เพิ่มขนาด
-                            height={60}  // ✅ เพิ่มขนาด
-                        />
+                            width={60}   
+                            height={60} 
+                            />
                     </div>
 
                     <div className="relative">
@@ -157,6 +161,11 @@ export default function Layout() {
                     {activePage === "planysetmasteraccount" && <PlanYSetMasterAccount />}
                     {activePage === "planysetmasterregion" && <PlanYSetMasterRegion />}
                     {activePage === "planysetmasterposition" && <PlanYSetMasterPosition />}
+                    {activePage === "planysetmasterprovince" && <PlanYSetMasterProvince />}
+                    {activePage === "planysetmasterkpi" && <PlanYSetMasterKPI />}
+                    {activePage === "planysetmasterstore" && <PlanYSetMasterStore />}
+                    
+                    
                 </div>
             </div>
         </div>
