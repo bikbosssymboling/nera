@@ -6,11 +6,11 @@ import Swal from "sweetalert2";
 import ProvinceModal from "./PlanYSetMasterProvinceModalChange";
 import { regionList } from "@/services/callAPI/PlanYMasterSetup/Region/apiRegionService";
 interface Province {
-    provinceID: number;
+    provinceID: string;
     provinceCode: string;
     provinceName: string;
     provinceNameEng: string;
-    regionID: number;
+    regionID: string;
     regionCode: string;
     regionName: string;
 
@@ -34,7 +34,7 @@ export default function PlanYSetMasterProvince() {
         setEditProvince(province || null);
         setIsModalOpen(true);
     };
-    const handleDelete = async (provinceID: number) => {
+    const handleDelete = async (provinceID: string) => {
         Swal.fire({
             icon: "warning",
             title: "ยืนยันการลบข้อมูล?",

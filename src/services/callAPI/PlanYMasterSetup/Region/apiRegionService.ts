@@ -23,7 +23,7 @@ export const regionAdd = async (regionCode: string, regionNameThai: string, regi
         throw new Error(message);
     }
 };
-export const regionEdit = async (regionId: number, regionCode: string, regionNameThai: string, regionNameEnglish: string,) => {
+export const regionEdit = async (regionId: string, regionCode: string, regionNameThai: string, regionNameEnglish: string,) => {
     const updatedBy = loggedInUser
     try {
         const response = await api.put("/PlanYMasterSetupRegion/region", { regionId, regionCode, regionNameThai, regionNameEnglish, updatedBy });
@@ -33,7 +33,7 @@ export const regionEdit = async (regionId: number, regionCode: string, regionNam
         throw new Error(message);
     }
 };
-export const regionDelete = async (regionId: number) => {
+export const regionDelete = async (regionId: string) => {
     const updatedBy = loggedInUser
     try {
         const response = await api.delete(`/PlanYMasterSetupRegion/region`, { data: { regionId, updatedBy } });

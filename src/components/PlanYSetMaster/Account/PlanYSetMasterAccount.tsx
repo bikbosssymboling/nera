@@ -5,7 +5,7 @@ import Swal from "sweetalert2";
 import { accountDelete, accountList } from "../../../services/callAPI/PlanYMasterSetup/Account/apiAccountService";
 import AccountModal from "./PlanYSetMasterAccountModalChange";
 interface Account {
-    id: number;
+    id: string;
     accountCode: string;
     name: string;
     nameEng: string;
@@ -27,7 +27,7 @@ export default function PlanYSetMasterAccount() {
         setEditAccount(account || null);
         setIsModalOpen(true);
     };
-    const handleDelete = async (accountID: number) => {
+    const handleDelete = async (accountID: string) => {
         Swal.fire({
             icon: "warning",
             title: "ยืนยันการลบข้อมูล?",

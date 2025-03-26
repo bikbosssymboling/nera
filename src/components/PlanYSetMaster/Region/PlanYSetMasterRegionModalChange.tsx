@@ -5,7 +5,7 @@ import Modal from "react-modal";
 import Swal from "sweetalert2";
 
 interface Region {
-    id: number;
+    id: string;
     regionCode: string;
     name: string;
     nameEng: string;
@@ -30,7 +30,7 @@ const RegionModal: React.FC<RegionModalProps> = ({
         {}
     );
     const [formData, setFormData] = useState<Region>({
-        id: 0,
+        id: "",
         regionCode: "",
         name: "",
         nameEng: "",
@@ -53,7 +53,7 @@ const RegionModal: React.FC<RegionModalProps> = ({
                 createdBy: region.createdBy
             });
         } else {
-            setFormData({ id: 0, regionCode: "", name: "", nameEng: "" });
+            setFormData({ id: "", regionCode: "", name: "", nameEng: "" });
         }
     }, [region]);
 
@@ -127,7 +127,7 @@ const RegionModal: React.FC<RegionModalProps> = ({
         setErrors({ regionCode: "", name: "" });
     }
     const handleClearForm = () => {
-        setFormData({ id: 0, regionCode: "", name: "", nameEng: "" });
+        setFormData({ id: "", regionCode: "", name: "", nameEng: "" });
     }
     if (!mounted) return null;
     return (

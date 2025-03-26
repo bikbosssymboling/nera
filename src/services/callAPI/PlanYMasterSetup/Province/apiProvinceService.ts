@@ -14,7 +14,7 @@ export const provinceList = async () => {
     }
 };
 
-export const provinceAdd = async (provinceCode: string, provinceNameThai: string, provinceNameEnglish: string, regionID:number) => {
+export const provinceAdd = async (provinceCode: string, provinceNameThai: string, provinceNameEnglish: string, regionID:string) => {
     const CreatedBy = loggedInUser;
     try {
         const response = await api.post("/PlanYMasterSetupProvince/province", { provinceCode, provinceNameThai, provinceNameEnglish, regionID, CreatedBy });
@@ -25,7 +25,7 @@ export const provinceAdd = async (provinceCode: string, provinceNameThai: string
     }
 };
 
-export const provinceEdit = async (provinceID: number, provinceCode: string, provinceNameThai: string, provinceNameEnglish: string, regionID:number) => {
+export const provinceEdit = async (provinceID: string, provinceCode: string, provinceNameThai: string, provinceNameEnglish: string, regionID:string) => {
     const updatedBy = loggedInUser;
     try {
         const response = await api.put("/PlanYMasterSetupProvince/province", { provinceID, provinceCode, provinceNameThai, provinceNameEnglish, regionID, updatedBy });
@@ -37,7 +37,7 @@ export const provinceEdit = async (provinceID: number, provinceCode: string, pro
 };
 
 
-export const provinceDelete = async (provinceId: number) => {
+export const provinceDelete = async (provinceId: string) => {
     const updatedBy = loggedInUser;
     try {
         const response = await api.delete("/PlanYMasterSetupProvince/province", { data: { provinceId, updatedBy } });

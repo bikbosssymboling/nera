@@ -5,7 +5,7 @@ import Swal from "sweetalert2";
 import { regionDelete, regionList } from "@/services/callAPI/PlanYMasterSetup/Region/apiRegionService";
 
 interface Region {
-  id: number;
+  id: string;
   regionCode: string;
   name: string;
   nameEng: string;
@@ -27,7 +27,7 @@ export default function PlanYMasterRegion() {
     setEditRegion(region || null);
     setIsModalOpen(true);
   };
-  const handleDelete = async (regionId: number) => {
+  const handleDelete = async (regionId: string) => {
     Swal.fire({
       icon: "warning",
       title: "ยืนยันการลบข้อมูล?",

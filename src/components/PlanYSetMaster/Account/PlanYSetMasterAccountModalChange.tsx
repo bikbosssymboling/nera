@@ -8,17 +8,19 @@ import {
 import Swal from "sweetalert2";
 
 interface Account {
-    id: number; // เปลี่ยนจาก string เป็น number
-    accountCode: string; // เปลี่ยน id เดิมเป็น accountCode
+    id: string;
+    accountCode: string;
     name: string;
     nameEng: string;
 }
+
 interface AccountModalProps {
     isOpen: boolean;
     onClose: () => void;
     account: Account | null;
     getListData: (showLoading: boolean) => void;
 }
+
 const AccountModal: React.FC<AccountModalProps> = ({
     isOpen,
     onClose,
@@ -26,28 +28,25 @@ const AccountModal: React.FC<AccountModalProps> = ({
     getListData,
 }) => {
     const [mounted, setMounted] = useState(false);
-    const [errors, setErrors] = useState<{ accountCode?: string; name?: string; nameEng?: string }>({});
+    const [errors, setErrors] = useState<{ accountCode?: string; name?: string }>({});
     const [formData, setFormData] = useState<Account>({
-        id: 0,
+        id: "",
         accountCode: "",
         name: "",
         nameEng: "",
     });
+
     const handleSave = async () => {
         let newErrors: { accountCode?: string; name?: string } = {};
-        // ✅ ตรวจสอบค่าในฟอร์ม
-        if (!formData.accountCode.trim())
-            newErrors.accountCode = "กรุณากรอก Account Code";
+        if (!formData.accountCode.trim()) newErrors.accountCode = "กรุณากรอก Account Code";
         if (!formData.name.trim()) newErrors.name = "กรุณากรอก Account Name";
 
-        // ✅ ถ้ามี Error ให้หยุดการทำงาน
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             return;
         }
+
         try {
-            let response;
-            // Confirm action before continuing
             const result = await Swal.fire({
                 title: account ? 'ยืนยันการแก้ไขข้อมูล' : 'ยืนยันการบันทึกข้อมูล',
                 icon: 'warning',
@@ -61,35 +60,39 @@ const AccountModal: React.FC<AccountModalProps> = ({
                 },
                 buttonsStyling: false,
             });
-            if (!result.isConfirmed) return; // Exit if the user clicks "ยกเลิก"
-            const loadingSwal = Swal.fire({
+
+            if (!result.isConfirmed) return;
+
+            Swal.fire({
                 title: account ? "กำลังแก้ไขข้อมูล..." : "กำลังเพิ่มข้อมูล...",
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading();
                 },
             });
+
             await new Promise(resolve => setTimeout(resolve, 500));
-            // Proceed with either adding or editing the region based on the `region` flag
+
             if (account) {
-                response = await accountEdit(
+                await accountEdit(
                     formData.id,
                     formData.accountCode,
                     formData.name,
                     formData.nameEng
                 );
             } else {
-                response = await accountAdd(
+                await accountAdd(
                     formData.accountCode,
                     formData.name,
                     formData.nameEng
                 );
             }
-            // After successful operation, show success message
+
             Swal.fire({
                 icon: "success",
                 title: account ? "แก้ไขข้อมูลเรียบร้อย" : "เพิ่มข้อมูลเรียบร้อย",
             });
+
             getListData(false);
             handleClearForm();
             handleClearError();
@@ -106,17 +109,19 @@ const AccountModal: React.FC<AccountModalProps> = ({
 
     const handleClearError = () => {
         setErrors({ accountCode: "", name: "" });
-    }
+    };
+
     const handleClearForm = () => {
-        setFormData({ id: 0, accountCode: "", name: "", nameEng: "" });
-    }
-    
+        setFormData({ id: "", accountCode: "", name: "", nameEng: "" });
+    };
+
     useEffect(() => {
         setMounted(true);
         if (typeof window !== "undefined") {
             Modal.setAppElement(document.body);
         }
     }, []);
+
     useEffect(() => {
         if (account) {
             setFormData({
@@ -126,7 +131,7 @@ const AccountModal: React.FC<AccountModalProps> = ({
                 nameEng: account.nameEng,
             });
         } else {
-            setFormData({ id: 0, accountCode: "", name: "", nameEng: "" });
+            handleClearForm();
         }
     }, [account]);
 
@@ -140,71 +145,58 @@ const AccountModal: React.FC<AccountModalProps> = ({
                 onClose();
             }}
             className="bg-white rounded-lg shadow-lg p-6 w-[400px] mx-auto transition-all duration-300 transform scale-100 opacity-100"
-            overlayClassName="fixed inset-0 bg-black/50 flex items-center justify-center z-40">
-            {/* Header */}
+            overlayClassName="fixed inset-0 bg-black/50 flex items-center justify-center z-40"
+        >
             <div className="border-b pb-3 flex justify-center">
                 <h3 className="text-2xl font-bold text-gray-600 flex items-center text-center">
                     <FaBriefcase className="mr-2 text-gray-600" />
                     {account ? "Edit Account" : "Add Account"}
                 </h3>
             </div>
-            {/* Content */}
+
             <div className="overflow-auto max-h-[70vh] p-4 space-y-4">
                 <div className="flex flex-col">
-                    <label className="text-sm font-bold text-gray-700 mb-1">
-                        Account Code
-                    </label>
+                    <label className="text-sm font-bold text-gray-700 mb-1">Account Code</label>
                     <input
                         type="text"
                         name="accountCode"
-                        className={`border p-2 rounded w-full ${errors.accountCode ? "border-red-500" : ""
-                            }`}
+                        className={`border p-2 rounded w-full ${errors.accountCode ? "border-red-500" : ""}`}
                         value={formData.accountCode}
                         onChange={(e) => {
                             setFormData({ ...formData, accountCode: e.target.value });
                             setErrors({ ...errors, accountCode: "" });
                         }}
                     />
-                    {errors.accountCode && (
-                        <p className="text-red-500 text-xs mt-1">{errors.accountCode}</p>
-                    )}
-                </div>
-                <div className="flex flex-col">
-                    <label className="text-sm font-bold text-gray-700 mb-1">
-                        Account Name
-                    </label>
-                    <input
-                        type="text"
-                        name="name"
-                        className={`border p-2 rounded w-full ${errors.name ? "border-red-500" : ""
-                            }`}
-                        value={formData.name}
-                        onChange={(e) => {
-                            setFormData({ ...formData, name: e.target.value });
-                            setErrors({ ...errors, name: "" }); // ✅ ล้าง Error เมื่อพิมพ์
-                        }}
-                    />
-                    {errors.name && (
-                        <p className="text-red-500 text-xs mt-1">{errors.name}</p>
-                    )}
+                    {errors.accountCode && <p className="text-red-500 text-xs mt-1">{errors.accountCode}</p>}
                 </div>
 
                 <div className="flex flex-col">
-                    <label className="text-sm font-bold text-gray-700 mb-1">
-                        Account Name (English)
-                    </label>
+                    <label className="text-sm font-bold text-gray-700 mb-1">Account Name</label>
+                    <input
+                        type="text"
+                        name="name"
+                        className={`border p-2 rounded w-full ${errors.name ? "border-red-500" : ""}`}
+                        value={formData.name}
+                        onChange={(e) => {
+                            setFormData({ ...formData, name: e.target.value });
+                            setErrors({ ...errors, name: "" });
+                        }}
+                    />
+                    {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+                </div>
+
+                <div className="flex flex-col">
+                    <label className="text-sm font-bold text-gray-700 mb-1">Account Name (English)</label>
                     <input
                         type="text"
                         name="nameEng"
                         className="border p-2 rounded w-full"
                         value={formData.nameEng}
-                        onChange={(e) => {
-                            setFormData({ ...formData, nameEng: e.target.value });
-                        }}
+                        onChange={(e) => setFormData({ ...formData, nameEng: e.target.value })}
                     />
                 </div>
             </div>
-            {/* Footer */}
+
             <div className="border-t gap-2 pt-3 flex justify-end">
                 <button
                     onClick={handleSave}
@@ -224,4 +216,5 @@ const AccountModal: React.FC<AccountModalProps> = ({
         </Modal>
     );
 };
+
 export default AccountModal;
