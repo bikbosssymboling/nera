@@ -4,12 +4,6 @@ import { DepartmentDto, PermissionConditionDto, PermissionDto, RoleDto } from "@
 import { useEffect, useState } from "react";
 import { FaUserGear, FaFloppyDisk } from "react-icons/fa6";
 
-interface MenuFunction {
-    module: string;
-    menuName: string;
-    functionName: string;
-}
-
 export default function SystemPermissionPage() {
 
     //for select
@@ -52,7 +46,6 @@ export default function SystemPermissionPage() {
                 systemNameDistinct(data1)
             }
         }
-
     };
 
     const systemNameDistinct = (per: PermissionDto[]) => {
@@ -63,48 +56,18 @@ export default function SystemPermissionPage() {
         setRoleByDpm(roles.filter(x => x.departmentId === id));
     }
 
-    const plans: Record<string, string[]> = {
-        "IT Department": ["IT Support", "System Administrator", "Network Admin", "Developer", "IT Manager"],
-        "HR Department": ["HR Specialist", "Recruiter", "HR Manager", "Payroll Officer", "Training Officer"],
-        "Finance Department": ["Finance Officer", "Accountant", "Financial Analyst", "Auditor", "Finance Manager"],
-        "Finance Department1": ["Finance Officer", "Accountant", "Financial Analyst", "Auditor", "Finance Manager"],
-        "Finance Department2": ["Finance Officer", "Accountant", "Financial Analyst", "Auditor", "Finance Manager"],
-        "Finance Department3": ["Finance Officer", "Accountant", "Financial Analyst", "Auditor", "Finance Manager"],
-    };
-
-    const menuFunctions: MenuFunction[] = [
-        { module: "Transaction", menuName: "Setup Labour", functionName: "Setup Labour Plan" },
-        { module: "Transaction", menuName: "Labour To Pay", functionName: "Process Employee Payment" },
-        { module: "Transaction", menuName: "Reject Status(RO)", functionName: "Review Rejected Requests" },
-        { module: "Master", menuName: "Setup Outsource", functionName: "Manage External Workers" },
-        { module: "Master", menuName: "Setup KPI", functionName: "Define KPI Metrics" },
-        { module: "Report", menuName: "Report Labour", functionName: "Generate Labour Report" },
-    ];
-
-
     const [permissions, setPermissions] = useState<Record<string, boolean>>({});
-
-    const groupedMenus = menuFunctions.reduce((acc, item) => {
-        acc[item.module] = acc[item.module] || [];
-        acc[item.module].push(item);
-        return acc;
-    }, {} as Record<string, MenuFunction[]>);
 
     const handleCheckboxChange = (id: string) => {
         setPermissions((prev) => ({ ...prev, [id]: !prev[id] }));
     };
 
     const toggleAll = (type: string) => {
-        const newPermissions = { ...permissions };
-        menuFunctions.forEach((_, index) => {
-            newPermissions[`${type}-${index}`] = !permissions[`selectAll-${type}`];
-        });
-        newPermissions[`selectAll-${type}`] = !permissions[`selectAll-${type}`];
-        setPermissions(newPermissions);
+        
     };
 
     const savePermissions = () => {
-        console.log("Saved Permissions:", permissions);
+
     };
 
     return (
@@ -202,21 +165,24 @@ export default function SystemPermissionPage() {
                                                 <td colSpan={6} className="bg-gray-300 font-semibold text-left p-2">{per.systemName}</td>
                                             </tr>
                                             {
-                                            permissionArr.filter(x =>x.systemID === per.systemID).map((perFn) => (
-                                            <tr key={perFn.systemFunctionID} className="hover:bg-gray-50">
-                                                <td className="border p-2">{perFn.systemFunctionName}</td>
-                                                <td className="border p-2">{`test`}</td>
-                                                {['ค้นหา', 'เพิ่ม', 'ลบ', 'แก้ไข'].map((action) => (
-                                                    <td key={action} className={`border p-2 text-center ${action === 'ค้นหา' ? 'bg-blue-50' : action === 'เพิ่ม' ? 'bg-green-50' : action === 'ลบ' ? 'bg-red-50' : 'bg-yellow-50'}`}>
-                                                        <input
-                                                            type="checkbox"
-                                                            //checked={''}
-                                                            //onChange={() => handleCheckboxChange(`${action}-${index}`)}
-                                                        />
-                                                    </td>
-                                                ))}
-                                            </tr>
-                                            ))
+                                                permissionArr.filter(x => x.systemID === per.systemID).map((perFn) => (
+                                                    <tr key={perFn.systemFunctionID} className="hover:bg-gray-50">
+                                                        <td className="border p-2">{perFn.systemFunctionName}</td>
+                                                        <td className="border p-2">{`test`}</td>
+                                                        <td className="border p-2 text-center bg-blue-50">
+                                                            <input type="checkbox" name="" id="" />
+                                                        </td>
+                                                        <td className="border p-2 text-center bg-green-50">
+                                                            <input type="checkbox" name="" id="" />
+                                                        </td>
+                                                        <td className="border p-2 text-center bg-red-50">
+                                                            <input type="checkbox" name="" id="" />
+                                                        </td>
+                                                        <td className="border p-2 text-center bg-yellow-50">
+                                                            <input type="checkbox" name="" id="" />
+                                                        </td>
+                                                    </tr>
+                                                ))
 
                                             }
                                         </>
