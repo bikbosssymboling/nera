@@ -16,7 +16,7 @@ const PlanYSetMasterRegion = dynamic(() => import("@/app/planysetmaster/region/p
 const PlanYSetMasterPosition = dynamic(() => import("@/app/planysetmaster/position/page")); 
 const PlanYSetMasterProvince = dynamic(() => import("@/app/planysetmaster/province/page"));
 const PlanYSetMasterKPI = dynamic(() => import("@/app/planysetmaster/KPI/page"));
-const PlanYSetMasterStore = dynamic(() => import("@/app/planysetmaster/StoreSetup/page"));
+const PlanYSetMasterStore = dynamic(() => import("@/app/planysetmaster/storeSetup/page"));
 
 export default function Layout() {
     const router = useRouter();
