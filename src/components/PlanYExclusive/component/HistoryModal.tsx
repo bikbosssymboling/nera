@@ -287,7 +287,7 @@ export default function HistoryModal({
         </div>
         <div className="flex-1 overflow-auto mx-6">
           <table className="table-auto w-full border-collapse border border-gray-300">
-            <thead className="sticky top-0 bg-gray-100">
+            <thead className="sticky top-[-1] bg-gray-100">
               <tr>
                 <th className="border border-gray-300 px-4 py-3 text-sm font-semibold text-gray-700">ID.</th>
                 <th className="border border-gray-300 px-4 py-3 text-sm font-semibold text-gray-700">Outsource</th>

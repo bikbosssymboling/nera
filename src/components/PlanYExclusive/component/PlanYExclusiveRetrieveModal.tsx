@@ -95,7 +95,7 @@ export default function PlanYExclusiveRetrieveModal({
         }`}
       >
         {/* Fixed Header */}
-        <div className="p-6 border-b border-gray-300 bg-gradient-to-r from-gray-50 to-gray-100">
+        <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
           <h1 className="text-2xl font-semibold text-gray-800">เลือกโปรเจค</h1>
         </div>
 
@@ -111,7 +111,7 @@ export default function PlanYExclusiveRetrieveModal({
         {/* Scrollable Table Container */}
         <div className="flex-1 overflow-auto mx-6 mt-4">
           <table className="table-auto w-full border-collapse border border-gray-300">
-            <thead className="sticky top-0 bg-gray-100">
+            <thead className="sticky top-[-1] bg-gray-100">
               <tr>
                 <th className="border border-gray-300 px-4 py-3 text-sm font-semibold text-gray-700">
                   AL NO
