@@ -1,6 +1,6 @@
 import Modal from "react-modal";
 import { useEffect, useState } from "react";
-import { FaTrash } from "react-icons/fa";
+import { FaPlus, FaPlusCircle, FaTrash } from "react-icons/fa";
 import Swal from 'sweetalert2';
 
 export default function SetPositionModal({
@@ -199,7 +199,7 @@ export default function SetPositionModal({
           <h1 className="text-center text-2xl font-bold text-gray-800">
             Set Position and KPI
           </h1>
-          <div className="mt-4 flex justify-end">
+          <div className="mt-4 mx-2 flex justify-end">
             <select
               value={selectedKPI}
               onChange={(e) => setSelectedKPI(e.target.value)}
@@ -297,13 +297,13 @@ export default function SetPositionModal({
             </tbody>
           </table>
         </div>
-        <div className="border-t border-gray-200 p-4">
-          <button 
+        <div className="border-t border-gray-200 p-2 flex justify-center">
+            <button 
             onClick={handleAddRow}
-            className="bg-green-600 text-white px-4 py-2 rounded shadow-sm hover:bg-green-700 transition-colors duration-150"
-          >
-            เพิ่มแถว
-          </button>
+            className="bg-green-500 text-white px-3 py-1.5 text-sm rounded shadow-sm hover:bg-green-600 transition-colors duration-150 flex items-center gap-1"
+            >
+            <FaPlus size={12} /> เพิ่มแถว
+            </button>
         </div>
         <div className="py-4 flex justify-center border-t border-gray-200 gap-3 bg-gray-50">
           <button 
