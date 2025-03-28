@@ -14,15 +14,11 @@ export default function SystemPermissionPage() {
     const [roleBydpm, setRoleByDpm] = useState<RoleDto[]>([]);
     const [permissionArr, setPermissionArr] = useState<PermissionDto[]>([]);
 
-    const [permissionSystem, setPermissionSystem] = useState<PermissionDto[]>([]);/* 
-    const [permissionInput, setPermissionInput] = useState<PermissionDto[]>([]); */
+    const [permissionSystem, setPermissionSystem] = useState<PermissionDto[]>([]);
 
     const [selectedDepartment, setSelectedDepartment] = useState<string>("");
     const [selectedRole, setSelectedRole] = useState<string>("");
-
-    // เพิ่ม State เก็บค่าการ check แต่ละ permissionFunctionID + action
-    const [checkedPermissions, setCheckedPermissions] = useState<Record<string, boolean>>({});
-
+    
     //Initail page
     useEffect(() => {
         fetchPermissionCriteria();
@@ -35,10 +31,6 @@ export default function SystemPermissionPage() {
         setDepartments(data.departments);
         setRoles(data.roles);
         setPermissionArr(data.permissions);
-       /*  updateSelectAllStatus('canSearch' as (typeof PERMISSION_FIELDS_SETTING)[number] , data.permissions);
-        updateSelectAllStatus('canAdd' as (typeof PERMISSION_FIELDS_SETTING)[number] , data.permissions);
-        updateSelectAllStatus('canEdit' as (typeof PERMISSION_FIELDS_SETTING)[number] , data.permissions);
-        updateSelectAllStatus('canDelete' as (typeof PERMISSION_FIELDS_SETTING)[number] , data.permissions); */
 
         if (data.departments.length > 0) {
             setSelectedDepartment(data.departments[0].departmentName!);
@@ -68,16 +60,13 @@ export default function SystemPermissionPage() {
 
     const handleClickRole = async (idDpm: number, idRol: number) => {
         setPermissionArr([]);
-
         const condition: PermissionConditionDto = {
             departmentId: idDpm,
             roleId: idRol
         }
 
         const per = await permissionConditionGET(condition);
-        
         setPermissionArr(per)
-  /*       setPermissionInput(per.map(p => ({ ...p }))); // << เก็บไว้เป็น working state */
         systemNameDistinct(per);
     }
 
@@ -91,9 +80,9 @@ export default function SystemPermissionPage() {
             }
             return item;
         });
-    
+
         setPermissionArr(updatedPermissions);
-    
+
         // ✅ ใช้ updatedPermissions แทน permissionArr เดิม
         if (PERMISSION_FIELDS_SETTING.includes(field as typeof PERMISSION_FIELDS_SETTING[number])) {
             updateSelectAllStatus(field as (typeof PERMISSION_FIELDS_SETTING)[number], updatedPermissions);
@@ -105,7 +94,7 @@ export default function SystemPermissionPage() {
     const toggleAll = (field: typeof PERMISSION_FIELDS_SETTING[number]) => {
         // เช็คสถานะก่อนหน้า
         const isChecked = permissions[`selectAll-${field}`] || false;
-    
+
         // อัปเดต permissionArr ทั้งหมด
         setPermissionArr(prev =>
             prev.map(item => ({
@@ -113,7 +102,7 @@ export default function SystemPermissionPage() {
                 [field]: isChecked ? 0 : 1 // toggle: ถ้าเคยติ๊กไว้แล้วก็ยกเลิก, ถ้ายังไม่ติ๊กก็ให้ติ๊กทั้งหมด
             }))
         );
-    
+
         // toggle ค่าใน selectAll
         setPermissions(prev => ({
             ...prev,
@@ -126,7 +115,7 @@ export default function SystemPermissionPage() {
         updatedArr: PermissionDto[]
     ) => {
         const isAllChecked = updatedArr.every(p => p[field] === 1);
-    
+
         setPermissions(prev => ({
             ...prev,
             [`selectAll-${field}`]: isAllChecked
@@ -242,29 +231,29 @@ export default function SystemPermissionPage() {
                                                         <td className="border p-2 text-center bg-blue-50">
                                                             <input
                                                                 type="checkbox"
-                                                                checked={ perFn.canSearch === 1 ? true : false }
-                                                                onChange={() => handleCheckboxChange(perFn,`canSearch`)}
+                                                                checked={perFn.canSearch === 1 ? true : false}
+                                                                onChange={() => handleCheckboxChange(perFn, `canSearch`)}
                                                             />
                                                         </td>
                                                         <td className="border p-2 text-center bg-green-50">
                                                             <input
                                                                 type="checkbox"
-                                                                checked={ perFn.canAdd === 1 ? true : false }
-                                                                onChange={() => handleCheckboxChange(perFn,`canAdd`)}
+                                                                checked={perFn.canAdd === 1 ? true : false}
+                                                                onChange={() => handleCheckboxChange(perFn, `canAdd`)}
                                                             />
                                                         </td>
                                                         <td className="border p-2 text-center bg-red-50">
                                                             <input
                                                                 type="checkbox"
-                                                                checked={ perFn.canDelete === 1 ? true : false  }
-                                                                onChange={() => handleCheckboxChange(perFn,`canDelete`)}
+                                                                checked={perFn.canDelete === 1 ? true : false}
+                                                                onChange={() => handleCheckboxChange(perFn, `canDelete`)}
                                                             />
                                                         </td>
                                                         <td className="border p-2 text-center bg-yellow-50">
                                                             <input
                                                                 type="checkbox"
-                                                                checked={ perFn.canEdit === 1 ? true : false  }
-                                                                onChange={() => handleCheckboxChange(perFn,`canEdit`)}
+                                                                checked={perFn.canEdit === 1 ? true : false}
+                                                                onChange={() => handleCheckboxChange(perFn, `canEdit`)}
                                                             />
                                                         </td>
                                                     </tr>
