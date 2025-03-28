@@ -18,7 +18,7 @@ export default function SystemPermissionPage() {
 
     const [selectedDepartment, setSelectedDepartment] = useState<string>("");
     const [selectedRole, setSelectedRole] = useState<string>("");
-    
+
     //Initail page
     useEffect(() => {
         fetchPermissionCriteria();
@@ -68,6 +68,15 @@ export default function SystemPermissionPage() {
         const per = await permissionConditionGET(condition);
         setPermissionArr(per)
         systemNameDistinct(per);
+
+        // ✅ เช็คว่าคอลัมน์ไหนติ๊กครบ → ให้ selectAll เป็น true
+        const updatedPermissionsStatus: Record<string, boolean> = {};
+        PERMISSION_FIELDS_SETTING.forEach((field) => {
+            const isAllChecked = per.every(p => p[field] === 1);
+            updatedPermissionsStatus[`selectAll-${field}`] = isAllChecked;
+        });
+
+        setPermissions(updatedPermissionsStatus);
     }
 
     const handleCheckboxChange = (per: PermissionDto, field: keyof PermissionDto) => {
