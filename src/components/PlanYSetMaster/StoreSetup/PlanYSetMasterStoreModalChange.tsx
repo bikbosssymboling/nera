@@ -296,7 +296,7 @@ const StoreModal: React.FC<StoreModalProps> = ({
                 handleClearError();
                 onClose();
             }}
-            className="bg-white rounded-lg shadow-lg p-6 w-[400px] mx-auto transition-all duration-300 transform scale-100 opacity-100"
+            className="bg-white rounded-lg shadow-lg p-6 w-[500px] mx-auto pop-out"
             overlayClassName="fixed inset-0 bg-black/50 flex items-center justify-center z-40">
             {/* Header */}
             <div className="border-b pb-3 flex justify-center">

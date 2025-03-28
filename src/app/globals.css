@@ -25,17 +25,64 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-input, select, textarea {
-  border: 1px solid #ddd;  /* ทำให้ขอบจางลง */
+input,
+select,
+textarea {
+  border: 1px solid #ddd; /* ทำให้ขอบจางลง */
   padding: 4px;
   border-radius: 2px; /* ขอบมนเล็กน้อย */
   background-color: white; /* ป้องกันสีเทากลืนกันเกินไป */
 }
 
-input:focus, select:focus, textarea:focus {
+input:focus,
+select:focus,
+textarea:focus {
   border-color: #bbb; /* ขอบเข้มขึ้นเมื่อโฟกัส */
   outline: none; /* เอาเส้นขอบสีฟ้าออก */
 }
 
+select {
+  appearance: none; 
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  background-color: white; 
+  border: 1px solid #ddd;
+  padding: 4px;
+  border-radius: 2px; 
+}
 
+.pop-out {
+  animation: swalIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* เด้งนุ่มแบบ Swal */
+}
 
+.pop-out-reverse {
+  animation: swalOut 0.4s ease-in forwards;
+}
+
+@keyframes swalIn {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  45% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  80% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes swalOut {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+}
