@@ -284,7 +284,6 @@ export default function PlanYExclusiveDetail() {
                 <span className="text-indigo-600">11:00 - 20:00</span>
               </p>
             </div>
-
             {/* Row 2: Project, Job Type, Remark */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
               <p>
@@ -305,75 +304,72 @@ export default function PlanYExclusiveDetail() {
           </div>
         </div>
 
-        <div
-          className="bg-white p-6 rounded-lg shadow-lg mb-6"
-          id="project-info-sum"
-        >
+        <div className="bg-white p-6 rounded-lg shadow-lg mb-6" id="project-info-sum">
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-4 text-xs w-full">
             {[
               {
                 label: "จำนวนวันทำงาน",
                 code: "Y",
                 value: 100,
-                color: "bg-gray-500",
+                color: "bg-gray-600 hover:bg-gray-700",
               },
               {
                 label: "ทำงานเต็มวัน",
                 code: "1",
                 value: 20,
-                color: "bg-green-500",
+                color: "bg-green-600 hover:bg-green-700",
               },
               {
                 label: "ทำงานครึ่งวัน",
                 code: "0.5",
                 value: 12,
-                color: "bg-green-500",
+                color: "bg-green-600 hover:bg-green-700",
               },
-              { label: "ภายใน", code: "S", value: 8, color: "bg-red-500" },
+              { label: "ภายใน", code: "S", value: 8, color: "bg-red-600 hover:bg-red-700" },
               {
                 label: "เช็คอินเเล้วรอคีย์ยอด",
                 code: "W",
                 value: 8,
-                color: "bg-orange-500",
+                color: "bg-orange-600 hover:bg-orange-700",
               },
               {
-                label: "คีย์ยอดเเล้วรอ Monitor ตรวจสอบ",
+                label: "คีย์ยอดเเล้วรอ Monitor",
                 code: "W1",
                 value: 8,
-                color: "bg-yellow-500",
+                color: "bg-yellow-600 hover:bg-yellow-700",
               },
               {
                 label: "รอ Data ตรวจสอบ",
                 code: "W2",
                 value: 8,
-                color: "bg-blue-500",
+                color: "bg-blue-600 hover:bg-blue-700",
               },
               {
                 label: "รอแก้ไขยอด",
                 code: "WE",
                 value: 8,
-                color: "bg-fuchsia-500",
+                color: "bg-fuchsia-600 hover:bg-fuchsia-700",
               },
               {
                 label: "อนุมัติส่งข้อมูลให้เเล้ว",
                 code: "P",
                 value: 8,
-                color: "bg-emerald-500",
+                color: "bg-emerald-600 hover:bg-emerald-700",
               },
             ].map((item, index) => (
               <div
                 key={index}
-                className={`flex flex-col items-center pl-4 border-l border-gray-300 first:border-l-0`}
+                className="flex flex-col items-center pl-4 border-l border-gray-200 first:border-l-0 transition-all duration-200 hover:shadow-md rounded-lg py-2"
               >
-                <span className="text-gray-600 text-[10px] mb-1">
+                <span className="text-gray-700 text-[12px] font-medium mb-1.5">
                   {item.label}
                 </span>
-                <div className="flex items-center gap-1">
-                  <span className="font-semibold text-gray-700">
+                <div className="flex items-center gap-1.5">
+                  <span className="font-semibold text-gray-800">
                     {item.code}:
                   </span>
                   <span
-                    className={`text-white font-medium px-3 py-0.5 rounded-md ${item.color}`}
+                    className={`text-white font-medium px-3 py-1 rounded-md transition-colors duration-200 ${item.color}`}
                   >
                     {item.value}
                   </span>
@@ -383,70 +379,70 @@ export default function PlanYExclusiveDetail() {
           </div>
         </div>
 
-        <div className="bg-white  p-6 w-full rounded-lg shadow-lg mx-auto">
+        <div className="bg-white p-8 w-full rounded-lg shadow-lg mx-auto">
           {/* Header */}
-          <div className="flex items-center justify-between mb-4">
-            <h4 className="text-lg font-semibold text-black">
+          <div className="flex items-center justify-between mb-6 border-b pb-4">
+            <h4 className="text-xl font-semibold text-gray-800">
               📅 Work Schedule [PlanY]
             </h4>
-            <div className="flex gap-2">
+            <div className="flex gap-2.5">
               {[
                 {
                   icon: FaCheckSquare,
                   text: "Request Approve",
-                  color: "bg-green-500",
+                  color: "bg-green-600 hover:bg-green-700",
                   onClick: () => console.log("Request Approve button clicked"),
                 },
                 {
                   icon: FaUserCog,
                   text: "Position/KPI",
-                  color: "bg-fuchsia-500",
+                  color: "bg-fuchsia-600 hover:bg-fuchsia-700",
                   onClick: () => setShowPositionModal(true),
                 },
                 {
                   icon: FaPlay,
                   text: "PlanY Start",
-                  color: "bg-violet-500",
+                  color: "bg-violet-600 hover:bg-violet-700",
                   onClick: () => console.log("start"),
                 },
                 {
                   icon: FaFileImport,
                   text: "Import PlanY",
-                  color: "bg-sky-500",
+                  color: "bg-sky-600 hover:bg-sky-700",
                   onClick: () => console.log("Import PlanY button clicked"),
                 },
                 {
                   icon: FaFileExcel,
                   text: "Template",
-                  color: "bg-amber-500",
+                  color: "bg-amber-600 hover:bg-amber-700",
                   onClick: () => console.log("Template button clicked"),
                 },
                 {
                   icon: FaDollarSign,
                   text: "To Pay",
-                  color: "bg-yellow-500",
+                  color: "bg-yellow-600 hover:bg-yellow-700",
                   onClick: () => console.log("To Pay button clicked"),
                 },
                 {
                   icon: FaHistory,
                   text: "History",
-                  color: "bg-blue-500",
+                  color: "bg-blue-600 hover:bg-blue-700",
                   onClick: () => setShowHistoryModal(true),
                 },
               ].map((btn, index) => (
                 <button
                   key={index}
-                  className={`${btn.color} text-white text-xs px-3 py-2 rounded flex items-center gap-1 shadow-md cursor-pointer`}
+                  className={`${btn.color} text-white text-xs px-4 py-2.5 rounded-md flex items-center gap-2 shadow-sm transition-all duration-200 hover:shadow-md active:transform active:scale-95`}
                   onClick={btn.onClick}
                 >
-                  <btn.icon className="w-4 h-4" /> {btn.text}
+                  <btn.icon className="w-3.5 h-3.5" /> {btn.text}
                 </button>
               ))}
             </div>
           </div>
 
           {/* Filters */}
-          <div className="grid grid-cols-7 gap-2 text-sm mb-4 items-end">
+          <div className="grid grid-cols-7 gap-4 text-sm mb-6 items-end bg-gray-50 p-4 rounded-lg">
             {[
               {
                 label: "Region",
@@ -504,11 +500,11 @@ export default function PlanYExclusiveDetail() {
               },
             ].map((filter, index) => (
               <div key={index} className="min-w-[140px]">
-                <label className="block text-xs font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                   {filter.label}
                 </label>
                 <select
-                  className="border border-gray-300 rounded p-2 w-full text-sm text-black"
+                  className="border border-gray-300 rounded-md p-2 w-full text-sm text-gray-800 bg-white hover:border-blue-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors duration-200"
                   value={filters[filter.key as keyof typeof filters]}
                   onChange={(e) =>
                     handleFilterChange(filter.key, e.target.value)
@@ -532,12 +528,9 @@ export default function PlanYExclusiveDetail() {
           </div>
 
           {/* Table Container */}
-          <div
-            id="work-schedule-container"
-            className="w-full  grid grid-cols-1 overflow-x-auto"
-          >
-            <table id="work-schedule" className="border-collapse text-s">
-              <thead className="sticky top-0 bg-gray-200 text-gray-900 z-10">
+          <div id="work-schedule-container" className="w-full overflow-x-auto rounded-lg border border-gray-200 grid grid-cols-1">
+            <table id="work-schedule" className="border-collapse text-sm w-full">
+              <thead className="sticky top-0 bg-gray-100 text-gray-800 z-10">
                 <tr>
                   {[
                     {
@@ -637,7 +630,10 @@ export default function PlanYExclusiveDetail() {
 
               <tbody>
                 {rows.map((row, index) => (
-                  <tr key={row.id} className="border-b">
+                  <tr 
+                    key={row.id} 
+                    className="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-150"
+                  >
                     <td className="border p-2 text-center">{row.id}</td>
                     <td className="border p-2 text-center">
                       <div className="flex justify-center gap-2 ">
@@ -782,21 +778,23 @@ export default function PlanYExclusiveDetail() {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex justify-start gap-2 mt-4">
+          <div className="flex justify-start gap-3 mt-6">
             <button
               onClick={handleAddRow}
-              className="bg-blue-500 text-white text-xs px-3 py-2 rounded flex gap-1 shadow-md"
+              className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2.5 rounded-md flex items-center gap-2 shadow-sm transition-all duration-200 hover:shadow-md active:transform active:scale-95"
             >
-              <FaPlus className="w-4 h-4" /> Add Row
+              <FaPlus className="w-3.5 h-3.5" /> Add Row
             </button>
             <button 
-              className={`text-white text-xs px-3 py-2 rounded flex gap-1 shadow-md ${
-                isAllRowsComplete() ? 'bg-green-500 cursor-pointer' : 'bg-gray-400 cursor-not-allowed'
+              className={`text-white text-sm px-4 py-2.5 rounded-md flex items-center gap-2 shadow-sm transition-all duration-200 ${
+                isAllRowsComplete() 
+                  ? 'bg-green-600 hover:bg-green-700 hover:shadow-md active:transform active:scale-95' 
+                  : 'bg-gray-400 cursor-not-allowed'
               }`}
               disabled={!isAllRowsComplete()}
               onClick={() => console.log('Save clicked')}
             >
-              <FaSave className="w-4 h-4" /> Save
+              <FaSave className="w-3.5 h-3.5" /> Save
             </button>
           </div>
         </div>
