@@ -20,7 +20,7 @@ export default function HistoryModal({
       store: "Store 1",
       userUpdate: "John Doe",
       updateDate: "2024-01-15",
-      action: "ปรับสถานะวันทำงาน Y เป็น 1",
+      action: { type: "Y", value: "1" }
     },
     {
       id: 2,
@@ -31,7 +31,7 @@ export default function HistoryModal({
       store: "Store 2",
       userUpdate: "Jane Smith",
       updateDate: "2024-01-16",
-      action: "ปรับสถานะวันทำงาน Y เป็น 1",
+      action: { type: "S", value: "1" }
     },
     {
       id: 2,
@@ -42,7 +42,7 @@ export default function HistoryModal({
       store: "Store 2",
       userUpdate: "Jane Smith",
       updateDate: "2024-01-16",
-      action: "ปรับสถานะวันทำงาน Y เป็น 1",
+      action: { type: "Y", value: "1" }
     },
     {
       id: 2,
@@ -53,7 +53,7 @@ export default function HistoryModal({
       store: "Store 2",
       userUpdate: "Jane Smith",
       updateDate: "2024-01-16",
-      action: "ปรับสถานะวันทำงาน Y เป็น 1",
+      action: { type: "Y", value: "1" }
     },
     {
       id: 2,
@@ -64,7 +64,7 @@ export default function HistoryModal({
       store: "Store 2",
       userUpdate: "Jane Smith",
       updateDate: "2024-01-16",
-      action: "ปรับสถานะวันทำงาน Y เป็น 1",
+      action: { type: "Y", value: "1" }
     },
     {
       id: 2,
@@ -75,7 +75,7 @@ export default function HistoryModal({
       store: "Store 2",
       userUpdate: "Jane Smith",
       updateDate: "2024-01-16",
-      action: "ปรับสถานะวันทำงาน Y เป็น 1",
+      action: { type: "Y", value: "1" }
     },
     {
       id: 2,
@@ -86,7 +86,7 @@ export default function HistoryModal({
       store: "Store 2",
       userUpdate: "Jane Smith",
       updateDate: "2024-01-16",
-      action: "ปรับสถานะวันทำงาน Y เป็น 1",
+      action: { type: "Y", value: "1" }
     },
     {
       id: 2,
@@ -97,7 +97,7 @@ export default function HistoryModal({
       store: "Store 2",
       userUpdate: "Jane Smith",
       updateDate: "2024-01-16",
-      action: "ปรับสถานะวันทำงาน Y เป็น 1",
+      action: { type: "Y", value: "1" }
     },
     {
       id: 2,
@@ -108,7 +108,7 @@ export default function HistoryModal({
       store: "Store 2",
       userUpdate: "Jane Smith",
       updateDate: "2024-01-16",
-      action: "ปรับสถานะวันทำงาน Y เป็น 1",
+      action: { type: "Y", value: "1" }
     },
     {
       id: 2,
@@ -119,7 +119,7 @@ export default function HistoryModal({
       store: "Store 2",
       userUpdate: "Jane Smith",
       updateDate: "2024-01-16",
-      action: "ปรับสถานะวันทำงาน Y เป็น 1",
+      action: { type: "Y", value: "1" }
     },
     {
       id: 2,
@@ -130,7 +130,7 @@ export default function HistoryModal({
       store: "Store 2",
       userUpdate: "Jane Smith",
       updateDate: "2024-01-16",
-      action: "ปรับสถานะวันทำงาน Y เป็น 1",
+      action: { type: "Y", value: "1" }
     },
     {
       id: 2,
@@ -141,7 +141,7 @@ export default function HistoryModal({
       store: "Store 2",
       userUpdate: "Jane Smith",
       updateDate: "2024-01-16",
-      action: "ปรับสถานะวันทำงาน Y เป็น 1",
+      action: { type: "Y", value: "1" }
     },
     {
       id: 2,
@@ -152,7 +152,7 @@ export default function HistoryModal({
       store: "Store 2",
       userUpdate: "Jane Smith",
       updateDate: "2024-01-16",
-      action: "ปรับสถานะวันทำงาน Y เป็น 1",
+      action: { type: "Y", value: "1" }
     },
     {
       id: 2,
@@ -163,7 +163,7 @@ export default function HistoryModal({
       store: "Store 2",
       userUpdate: "Jane Smith",
       updateDate: "2024-01-16",
-      action: "ปรับสถานะวันทำงาน Y เป็น 1",
+      action: { type: "Y", value: "1" }
     },
     {
       id: 2,
@@ -174,7 +174,7 @@ export default function HistoryModal({
       store: "Store 2",
       userUpdate: "Jane Smith",
       updateDate: "2024-01-16",
-      action: "ปรับสถานะวันทำงาน Y เป็น 1",
+      action: { type: "Y", value: "1" }
     },
     {
       id: 2,
@@ -185,7 +185,7 @@ export default function HistoryModal({
       store: "Store 2",
       userUpdate: "Jane Smith",
       updateDate: "2024-01-16",
-      action: "ปรับสถานะวันทำงาน Y เป็น 1",
+      action: { type: "Y", value: "1" }
     },
     {
       id: 2,
@@ -196,7 +196,7 @@ export default function HistoryModal({
       store: "Store 2",
       userUpdate: "Jane Smith",
       updateDate: "2024-01-16",
-      action: "ปรับสถานะวันทำงาน Y เป็น 1",
+      action: { type: "Y", value: "1" }
     },
     {
       id: 2,
@@ -207,7 +207,7 @@ export default function HistoryModal({
       store: "Store 2",
       userUpdate: "Jane Smith",
       updateDate: "2024-01-16",
-      action: "ปรับสถานะวันทำงาน Y เป็น 1",
+      action: { type: "Y", value: "1" }
     },
     {
       id: 2,
@@ -218,7 +218,18 @@ export default function HistoryModal({
       store: "Store 2",
       userUpdate: "Jane Smith",
       updateDate: "2024-01-16",
-      action: "ปรับสถานะวันทำงาน Y เป็น 1",
+      action: { type: "Y", value: "1" }
+    },
+    {
+      id: 2,
+      outsource: "Company B",
+      position: "Designer",
+      account: "ACC002",
+      province: "Chiang Mai",
+      store: "Store 2",
+      userUpdate: "Jane Smith",
+      updateDate: "2024-01-16",
+      action: { type: "Y", value: "1" }
     },
   ]);
 
@@ -254,12 +265,11 @@ export default function HistoryModal({
           isClosing ? "pop-out-reverse" : "pop-out"
         }`}
       >
-        <div className="p-4 border-b-1 border-gray-300">
-          <h2 className="text-center text-3xl font-bold">📜 History</h2>
+        <div className="p-6 border-b border-gray-200 bg-gray-50">
+          <h2 className="text-center text-2xl font-semibold text-gray-800">📜 ประวัติการทำรายการ</h2>
         </div>
-        {/* table */}
-        <div className="flex justify-end p-1  px-7">
-          <button className="bg-sky-500 text-white px-2 py-2 rounded flex items-center gap-2">
+        <div className="flex justify-end p-4 px-7">
+          <button className="bg-sky-500 hover:bg-sky-600 transition-colors duration-200 text-white px-4 py-2 rounded-md flex items-center gap-2 cursor-pointer shadow-sm">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-5 w-5"
@@ -277,57 +287,51 @@ export default function HistoryModal({
         </div>
         <div className="flex-1 overflow-auto mx-6">
           <table className="table-auto w-full border-collapse border border-gray-300">
-            <thead className="sticky top-0 bg-gray-200">
-              <th className="border border-gray-300 px-4 py-2">ID.</th>
-              <th className="border border-gray-300 px-4 py-2">Outsource</th>
-              <th className="border border-gray-300 px-4 py-2">Position</th>
-              <th className="border border-gray-300 px-4 py-2">Account</th>
-              <th className="border border-gray-300 px-4 py-2">Province</th>
-              <th className="border border-gray-300 px-4 py-2">Store</th>
-              <th className="border border-gray-300 px-4 py-2">User Update</th>
-              <th className="border border-gray-300 px-4 py-2">Update Date</th>
-              <th className="border border-gray-300 px-4 py-2">Action</th>
+            <thead className="sticky top-0 bg-gray-100">
+              <tr>
+                <th className="border border-gray-300 px-4 py-3 text-sm font-semibold text-gray-700">ID.</th>
+                <th className="border border-gray-300 px-4 py-3 text-sm font-semibold text-gray-700">Outsource</th>
+                <th className="border border-gray-300 px-4 py-3 text-sm font-semibold text-gray-700">Position</th>
+                <th className="border border-gray-300 px-4 py-3 text-sm font-semibold text-gray-700">Account</th>
+                <th className="border border-gray-300 px-4 py-3 text-sm font-semibold text-gray-700">Province</th>
+                <th className="border border-gray-300 px-4 py-3 text-sm font-semibold text-gray-700">Store</th>
+                <th className="border border-gray-300 px-4 py-3 text-sm font-semibold text-gray-700">User Update</th>
+                <th className="border border-gray-300 px-4 py-3 text-sm font-semibold text-gray-700">Update Date</th>
+                <th className="border border-gray-300 px-4 py-3 text-sm font-semibold text-gray-700">Action</th>
+              </tr>
             </thead>
             <tbody>
               {history.map((item, index) => (
-                <tr key={index}>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {item.id}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {item.outsource}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {item.position}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {item.account}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {item.province}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {item.store}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {item.userUpdate}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {item.updateDate}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {item.action}
+                <tr key={index} className="hover:bg-gray-50">
+                  <td className="border border-gray-300 px-4 py-2 text-sm">{item.id}</td>
+                  <td className="border border-gray-300 px-4 py-2 text-sm">{item.outsource}</td>
+                  <td className="border border-gray-300 px-4 py-2 text-sm">{item.position}</td>
+                  <td className="border border-gray-300 px-4 py-2 text-sm">{item.account}</td>
+                  <td className="border border-gray-300 px-4 py-2 text-sm">{item.province}</td>
+                  <td className="border border-gray-300 px-4 py-2 text-sm">{item.store}</td>
+                  <td className="border border-gray-300 px-4 py-2 text-sm">{item.userUpdate}</td>
+                  <td className="border border-gray-300 px-4 py-2 text-sm">{item.updateDate}</td>
+                  <td className="border border-gray-300 px-4 py-2 text-sm">
+                    ปรับสถานะวันทำงาน {' '}
+                    <span className={`px-1 py-0.5 rounded ${
+                      item.action.type === 'S' ? 'bg-pink-700 text-white' : 'bg-gray-200'
+                    }`}>
+                      {item.action.type}
+                    </span>
+                    {' '}เป็น{' '}
+                    <span className="bg-green-200 px-1 py-0.5 rounded">
+                      {item.action.value}
+                    </span>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-
-        <div className="py-2 px-6 border-t border-gray-300">
+        <div className="py-4 px-6 border-t border-gray-200 bg-gray-50">
           <button
             onClick={handleClose}
-            className="bg-red-500 text-white px-4 py-2 rounded cursor-pointer"
+            className="bg-red-500 hover:bg-red-600 transition-colors duration-200 text-white px-6 py-2 rounded-md cursor-pointer shadow-sm"
           >
             ปิด
           </button>
