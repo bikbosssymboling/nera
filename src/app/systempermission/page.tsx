@@ -4,6 +4,8 @@ import { DepartmentDto, PermissionConditionDto, PermissionDto, RoleDto } from "@
 import { useEffect, useState } from "react";
 import { FaUserGear, FaFloppyDisk } from "react-icons/fa6";
 
+const PERMISSION_FIELDS_SETTING = ['canSearch', 'canAdd', 'canDelete', 'canEdit'] as const;
+
 export default function SystemPermissionPage() {
 
     //for select
@@ -12,8 +14,8 @@ export default function SystemPermissionPage() {
     const [roleBydpm, setRoleByDpm] = useState<RoleDto[]>([]);
     const [permissionArr, setPermissionArr] = useState<PermissionDto[]>([]);
 
-    const [permissionSystem, setPermissionSystem] = useState<PermissionDto[]>([]);
-    const [permissionInput, setPermissionInput] = useState<PermissionDto[]>([]);
+    const [permissionSystem, setPermissionSystem] = useState<PermissionDto[]>([]);/* 
+    const [permissionInput, setPermissionInput] = useState<PermissionDto[]>([]); */
 
     const [selectedDepartment, setSelectedDepartment] = useState<string>("");
     const [selectedRole, setSelectedRole] = useState<string>("");
@@ -33,6 +35,10 @@ export default function SystemPermissionPage() {
         setDepartments(data.departments);
         setRoles(data.roles);
         setPermissionArr(data.permissions);
+       /*  updateSelectAllStatus('canSearch' as (typeof PERMISSION_FIELDS_SETTING)[number] , data.permissions);
+        updateSelectAllStatus('canAdd' as (typeof PERMISSION_FIELDS_SETTING)[number] , data.permissions);
+        updateSelectAllStatus('canEdit' as (typeof PERMISSION_FIELDS_SETTING)[number] , data.permissions);
+        updateSelectAllStatus('canDelete' as (typeof PERMISSION_FIELDS_SETTING)[number] , data.permissions); */
 
         if (data.departments.length > 0) {
             setSelectedDepartment(data.departments[0].departmentName!);
@@ -71,32 +77,60 @@ export default function SystemPermissionPage() {
         const per = await permissionConditionGET(condition);
         
         setPermissionArr(per)
-        setPermissionInput(per.map(p => ({ ...p }))); // << เก็บไว้เป็น working state
+  /*       setPermissionInput(per.map(p => ({ ...p }))); // << เก็บไว้เป็น working state */
         systemNameDistinct(per);
     }
 
     const handleCheckboxChange = (per: PermissionDto, field: keyof PermissionDto) => {
-        setPermissionArr(prev =>{
-            return prev.map( item => {
-                if(item.systemFunctionID === per.systemFunctionID){
-                    return {
-                        ...item,
-                        [field]: item[field] === 1 ? 0 : 1
-                    };
-                }
-                return item
-            })
-        })
+        const updatedPermissions = permissionArr.map(item => {
+            if (item.systemFunctionID === per.systemFunctionID) {
+                return {
+                    ...item,
+                    [field]: item[field] === 1 ? 0 : 1
+                };
+            }
+            return item;
+        });
+    
+        setPermissionArr(updatedPermissions);
+    
+        // ✅ ใช้ updatedPermissions แทน permissionArr เดิม
+        if (PERMISSION_FIELDS_SETTING.includes(field as typeof PERMISSION_FIELDS_SETTING[number])) {
+            updateSelectAllStatus(field as (typeof PERMISSION_FIELDS_SETTING)[number], updatedPermissions);
+        }
     };
 
     const [permissions, setPermissions] = useState<Record<string, boolean>>({});
 
-    /* const handleCheckboxChange = (id: string) => {
-        setPermissions((prev) => ({ ...prev, [id]: !prev[id] }));
-    }; */
+    const toggleAll = (field: typeof PERMISSION_FIELDS_SETTING[number]) => {
+        // เช็คสถานะก่อนหน้า
+        const isChecked = permissions[`selectAll-${field}`] || false;
+    
+        // อัปเดต permissionArr ทั้งหมด
+        setPermissionArr(prev =>
+            prev.map(item => ({
+                ...item,
+                [field]: isChecked ? 0 : 1 // toggle: ถ้าเคยติ๊กไว้แล้วก็ยกเลิก, ถ้ายังไม่ติ๊กก็ให้ติ๊กทั้งหมด
+            }))
+        );
+    
+        // toggle ค่าใน selectAll
+        setPermissions(prev => ({
+            ...prev,
+            [`selectAll-${field}`]: !isChecked
+        }));
+    };
 
-    const toggleAll = (type: string) => {
-
+    const updateSelectAllStatus = (
+        field: typeof PERMISSION_FIELDS_SETTING[number],
+        updatedArr: PermissionDto[]
+    ) => {
+        const isAllChecked = updatedArr.every(p => p[field] === 1);
+    
+        setPermissions(prev => ({
+            ...prev,
+            [`selectAll-${field}`]: isAllChecked
+        }));
     };
 
     const savePermissions = () => {
@@ -175,14 +209,14 @@ export default function SystemPermissionPage() {
                                 <tr>
                                     <th className="border p-2 w-[20%]">Menu</th>
                                     <th className="border p-2 w-[25%]">Function</th>
-                                    {['ค้นหา', 'เพิ่ม', 'ลบ', 'แก้ไข'].map((action) => (
-                                        <th key={action} className={`border p-2 text-center ${action === 'ค้นหา' ? 'bg-blue-300' : action === 'เพิ่ม' ? 'bg-green-300' : action === 'ลบ' ? 'bg-red-300' : 'bg-yellow-300'}`}>
+                                    {PERMISSION_FIELDS_SETTING.map((action) => (
+                                        <th key={action} className={`border p-2 text-center ${action === 'canSearch' ? 'bg-blue-300' : action === 'canAdd' ? 'bg-green-300' : action === 'canDelete' ? 'bg-red-300' : 'bg-yellow-300'}`}>
                                             <div className="flex flex-col items-center">
-                                                <span className="font-bold">{action}</span>
+                                                <span className="font-bold">{action === 'canSearch' ? 'ค้นหา' : action === 'canAdd' ? 'เพิ่ม' : action === 'canDelete' ? 'ลบ' : 'แก้ไข'}</span>
                                                 <input
                                                     type="checkbox"
                                                     checked={permissions[`selectAll-${action}`] || false}
-                                                    onChange={() => toggleAll(action)}
+                                                    onChange={() => toggleAll(action as typeof PERMISSION_FIELDS_SETTING[number])}
                                                 />
                                             </div>
                                         </th>
