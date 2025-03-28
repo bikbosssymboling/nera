@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FaBriefcase, FaPlus, FaSearch } from "react-icons/fa";
-import PlanYExclusiveRetrieveModal from "./component/PlanYExclusiveRetrieveModal";
-import PlanYExclusiveFormProjectModal from "./component/PlanYExclusiveFormProjectModal";
+import PlanYExclusiveRetrieveModal from "./components/PlanYExclusiveRetrieveModal";
+import PlanYExclusiveFormProjectModal from "./components/PlanYExclusiveFormProjectModal";
 
 
 export default function PlanYExclusive() {

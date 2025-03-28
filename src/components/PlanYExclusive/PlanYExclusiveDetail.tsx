@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, ReactElement } from "react";
 import {
   FaCheckSquare,
   FaUserCog,
@@ -17,8 +17,8 @@ import {
   FaMapMarkerAlt,
 } from "react-icons/fa";
 import "./css/PlanYExclusive.css";
-import SetPositionModal from "./component/SetPositionModal";
-import HistoryModal from "./component/HistoryModal";
+import SetPositionModal from "./components/SetPositionModal";
+import HistoryModal from "./components/HistoryModal";
 
 // First, update the Row interface to include all necessary fields
 interface Row {
@@ -185,6 +185,34 @@ export default function PlanYExclusiveDetail() {
 
   const isAllRowsComplete = (): boolean => {
     return rows.every(isRowComplete);
+  };
+
+  // เพิ่ม state สำหรับวันที่
+  const [dateRange] = useState({
+    start: new Date('2025-01-18'),
+    end: new Date('2025-03-28')
+  });
+
+  // ฟังก์ชันสร้าง array ของวันที่ระหว่าง start ถึง end
+  const getDatesInRange = () => {
+    const dates = [];
+    const currentDate = new Date(dateRange.start);
+    const endDate = new Date(dateRange.end);
+
+    while (currentDate <= endDate) {
+      dates.push(new Date(currentDate));
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return dates;
+  };
+
+  // สร้าง array ของวันที่ทั้งหมดในช่วง
+  const dates = getDatesInRange();
+
+  // เพิ่มฟังก์ชันสำหรับตรวจสอบเดือน
+  const isAlternateMonth = (date: Date): boolean => {
+    return date.getMonth() % 2 === 0;
   };
 
   return (
@@ -556,87 +584,52 @@ export default function PlanYExclusiveDetail() {
                       {col.label}
                     </th>
                   ))}
-                  <th
-                    className="border p-2 bg-gray-300 text-center border-gray-300"
-                    colSpan={14}
-                  >
-                    JAN
-                  </th>
-                  <th
-                    className="border p-2 bg-gray-300 text-center border-gray-300"
-                    colSpan={28}
-                  >
-                    FEB
-                  </th>
+                  {dates.reduce((acc: ReactElement[], date: Date, index: number) => {
+                    const month = date.toLocaleString('th-TH', { month: 'short' });
+                    const day = date.getDate();
+                    const isAltMonth = isAlternateMonth(date);
+                    
+                    // ถ้าเป็นวันแรกของเดือนหรือวันแรกในช่วง
+                    if (day === 1 || index === 0) {
+                      acc.push(
+                        <th
+                          key={`month-${date}`}
+                          className={`border p-2 text-center border-gray-300 ${
+                            isAltMonth ? 'bg-blue-100' : 'bg-green-100'
+                          }`}
+                          colSpan={dates.filter(d => 
+                            d.getMonth() === date.getMonth() && 
+                            d.getFullYear() === date.getFullYear()
+                          ).length}
+                        >
+                          {month}
+                        </th>
+                      );
+                    }
+                    return acc;
+                  }, [])}
                 </tr>
                 <tr>
-                  {[...Array(14).keys()].map((i) => (
+                  {dates.map((date, i) => (
                     <th
                       key={i}
-                      className="border bg-gray-200 p-2 text-center border-gray-300"
+                      className={`border p-2 text-center border-gray-300 ${
+                        isAlternateMonth(date) ? 'bg-blue-50' : 'bg-green-50'
+                      }`}
                     >
-                      {18 + i}
-                    </th>
-                  ))}
-                  {[...Array(28).keys()].map((i) => (
-                    <th
-                      key={14 + i}
-                      className="border bg-gray-200 p-2 text-center border-gray-300"
-                    >
-                      {i + 1}
+                      {date.getDate()}
                     </th>
                   ))}
                 </tr>
                 <tr>
-                  {[
-                    "Sat",
-                    "Sun",
-                    "Mon",
-                    "Tue",
-                    "Wed",
-                    "Thu",
-                    "Fri",
-                    "Sat",
-                    "Sun",
-                    "Mon",
-                    "Tue",
-                    "Wed",
-                    "Thu",
-                    "Fri",
-                    "Sat",
-                    "Sun",
-                    "Mon",
-                    "Tue",
-                    "Wed",
-                    "Thu",
-                    "Fri",
-                    "Sat",
-                    "Sun",
-                    "Mon",
-                    "Tue",
-                    "Wed",
-                    "Thu",
-                    "Fri",
-                    "Sat",
-                    "Sun",
-                    "Mon",
-                    "Tue",
-                    "Wed",
-                    "Thu",
-                    "Fri",
-                    "Sat",
-                    "Sun",
-                    "Mon",
-                    "Tue",
-                    "Wed",
-                    "Thu",
-                    "Fri",
-                  ].map((day, i) => (
+                  {dates.map((date, i) => (
                     <th
                       key={i}
-                      className="border bg-gray-300 p-2 text-xs text-center border-gray-300"
+                      className={`border p-2 text-xs text-center border-gray-300 ${
+                        isAlternateMonth(date) ? 'bg-blue-50' : 'bg-green-50'
+                      }`}
                     >
-                      {day}
+                      {date.toLocaleString('th-TH', { weekday: 'short' })}
                     </th>
                   ))}
                 </tr>
@@ -770,15 +763,18 @@ export default function PlanYExclusiveDetail() {
                           )}
                         </td>
                       ))}
-                    {Array(42)
-                      .fill("")
-                      .map((_, i) => (
-                        <td key={i} className="border p-2 text-center">
-                          <button className="bg-gray-300 text-xs px-2 py-1 rounded cursor-pointer">
-                            Y
-                          </button>
-                        </td>
-                      ))}
+                    {dates.map((date, i) => (
+                      <td 
+                        key={i} 
+                        className={`border p-2 text-center ${
+                          isAlternateMonth(date) ? 'bg-blue-50/30' : 'bg-green-50/30'
+                        }`}
+                      >
+                        <button className="bg-gray-300 text-xs px-2 py-1 rounded cursor-pointer">
+                          Y
+                        </button>
+                      </td>
+                    ))}
                   </tr>
                 ))}
               </tbody>
