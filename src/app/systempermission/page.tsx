@@ -15,13 +15,11 @@ export default function SystemPermissionPage() {
     const [permissionSystem, setPermissionSystem] = useState<PermissionDto[]>([]);
     const [permissionInput, setPermissionInput] = useState<PermissionDto[]>([]);
 
-    const [condition, setCondition] = useState<PermissionConditionDto>({
-        departmentId: 5,
-        roleId: 19
-    });
-
     const [selectedDepartment, setSelectedDepartment] = useState<string>("");
-    const [selectedPosition, setSelectedRole] = useState<string>("");
+    const [selectedRole, setSelectedRole] = useState<string>("");
+
+    // เพิ่ม State เก็บค่าการ check แต่ละ permissionFunctionID + action
+    const [checkedPermissions, setCheckedPermissions] = useState<Record<string, boolean>>({});
 
     //Initail page
     useEffect(() => {
@@ -30,20 +28,20 @@ export default function SystemPermissionPage() {
 
     const fetchPermissionCriteria = async () => {
         const data = await permissionCriteriaGET();
-        const data1 = await permissionConditionGET(condition);
-        debugger
+
+
         setDepartments(data.departments);
         setRoles(data.roles);
-        setPermissionArr(data1);
+        setPermissionArr(data.permissions);
 
         if (data.departments.length > 0) {
             setSelectedDepartment(data.departments[0].departmentName!);
             let rol = data.roles.filter(x => x.departmentId === data.departments[0].departmentId);
             if (rol.length > 0) {
-                debugger
-                setRoleByDpm(rol)
+
+                rolNameDistinct(rol)
                 setSelectedRole(rol[0].roleName!)
-                systemNameDistinct(data1)
+                systemNameDistinct(data.permissions)
             }
         }
     };
@@ -52,18 +50,53 @@ export default function SystemPermissionPage() {
         setPermissionSystem(per.filter((p, i, self) => i === self.findIndex(t => t.systemName === p.systemName)));
     }
 
-    const handleClickDepartment = async (id: number) => {
-        setRoleByDpm(roles.filter(x => x.departmentId === id));
+    const rolNameDistinct = (rol: RoleDto[]) => {
+        setRoleByDpm(rol.filter((p, i, self) => i === self.findIndex(t => t.roleName === p.roleName)));
     }
+
+    const handleClickDepartment = async (id: number) => {
+        setSelectedRole("");
+        setPermissionArr([]);
+        rolNameDistinct(roles.filter(x => x.departmentId === id));
+    }
+
+    const handleClickRole = async (idDpm: number, idRol: number) => {
+        setPermissionArr([]);
+
+        const condition: PermissionConditionDto = {
+            departmentId: idDpm,
+            roleId: idRol
+        }
+
+        const per = await permissionConditionGET(condition);
+        
+        setPermissionArr(per)
+        setPermissionInput(per.map(p => ({ ...p }))); // << เก็บไว้เป็น working state
+        systemNameDistinct(per);
+    }
+
+    const handleCheckboxChange = (per: PermissionDto, field: keyof PermissionDto) => {
+        setPermissionArr(prev =>{
+            return prev.map( item => {
+                if(item.systemFunctionID === per.systemFunctionID){
+                    return {
+                        ...item,
+                        [field]: item[field] === 1 ? 0 : 1
+                    };
+                }
+                return item
+            })
+        })
+    };
 
     const [permissions, setPermissions] = useState<Record<string, boolean>>({});
 
-    const handleCheckboxChange = (id: string) => {
+    /* const handleCheckboxChange = (id: string) => {
         setPermissions((prev) => ({ ...prev, [id]: !prev[id] }));
-    };
+    }; */
 
     const toggleAll = (type: string) => {
-        
+
     };
 
     const savePermissions = () => {
@@ -77,7 +110,7 @@ export default function SystemPermissionPage() {
                     <FaUserGear /> System Permissions
                 </h2>
 
-                {/* Grid แผนก / ตำแหน่ง */}
+                {/* Grid แผนก  */}
                 <div className="grid grid-cols-2 gap-4 mb-4">
                     <div className="bg-white rounded-lg shadow-md p-4">
                         <h3 className="text-lg font-bold mb-2">แผนก</h3>
@@ -105,7 +138,7 @@ export default function SystemPermissionPage() {
                             </table>
                         </div>
                     </div>
-
+                    {/*  ตำแหน่ง */}
                     <div className="bg-white rounded-lg shadow-md p-4">
                         <h3 className="text-lg font-bold mb-2">ตำแหน่ง</h3>
                         <div className="overflow-y-auto max-h-[180px] border border-gray-300 rounded">
@@ -119,8 +152,11 @@ export default function SystemPermissionPage() {
                                     {roleBydpm.map((rol) => (
                                         <tr
                                             key={rol.roleId}
-                                            className={`cursor-pointer hover:bg-green-100 ${selectedPosition === rol.roleName ? 'bg-green-200 font-semibold' : ''}`}
-                                            onClick={() => setSelectedRole(rol.roleName!)}
+                                            className={`cursor-pointer hover:bg-green-100 ${selectedRole === rol.roleName ? 'bg-green-200 font-semibold' : ''}`}
+                                            onClick={() => {
+                                                handleClickRole(rol.departmentId, rol.roleId);
+                                                setSelectedRole(rol.roleName!)
+                                            }}
                                         >
                                             <td className="border p-2 text-center">{rol.roleName}</td>
                                         </tr>
@@ -154,7 +190,7 @@ export default function SystemPermissionPage() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {permissionSystem.length === 0 ? (
+                                {permissionArr.length === 0 ? (
                                     <tr>
                                         <td colSpan={6} className="text-center p-4 text-gray-500">ไม่พบข้อมูล</td>
                                     </tr>
@@ -170,16 +206,32 @@ export default function SystemPermissionPage() {
                                                         <td className="border p-2">{perFn.systemFunctionName}</td>
                                                         <td className="border p-2">{`test`}</td>
                                                         <td className="border p-2 text-center bg-blue-50">
-                                                            <input type="checkbox" name="" id="" />
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={ perFn.canSearch === 1 ? true : false }
+                                                                onChange={() => handleCheckboxChange(perFn,`canSearch`)}
+                                                            />
                                                         </td>
                                                         <td className="border p-2 text-center bg-green-50">
-                                                            <input type="checkbox" name="" id="" />
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={ perFn.canAdd === 1 ? true : false }
+                                                                onChange={() => handleCheckboxChange(perFn,`canAdd`)}
+                                                            />
                                                         </td>
                                                         <td className="border p-2 text-center bg-red-50">
-                                                            <input type="checkbox" name="" id="" />
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={ perFn.canDelete === 1 ? true : false  }
+                                                                onChange={() => handleCheckboxChange(perFn,`canDelete`)}
+                                                            />
                                                         </td>
                                                         <td className="border p-2 text-center bg-yellow-50">
-                                                            <input type="checkbox" name="" id="" />
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={ perFn.canEdit === 1 ? true : false  }
+                                                                onChange={() => handleCheckboxChange(perFn,`canEdit`)}
+                                                            />
                                                         </td>
                                                     </tr>
                                                 ))
