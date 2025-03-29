@@ -966,7 +966,7 @@ export default function WorkSchedule() {
                           <button 
                             className="text-xs w-8 h-6 rounded cursor-pointer flex items-center justify-center"
                             style={{
-                              backgroundColor: status?.color || '#d1d1d1',
+                              backgroundColor: status?.color === '#6B7280' ? '#d1d1d1' : (status?.color || '#d1d1d1'),
                               color: '#fff'
                             }}
                             onClick={() => {

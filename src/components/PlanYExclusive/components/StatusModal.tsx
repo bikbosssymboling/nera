@@ -14,7 +14,7 @@ interface StatusModalProps {
 }
 
 const statusList: Status[] = [
-  { code: "Y", color: "#d1d1d1", description: "Visit ทำงานนอกสถานที่" },
+  { code: "Y", color: "#6B7280", description: "Visit ทำงานนอกสถานที่" },
   { code: "SH", color: "#EAB308", description: "ย้าย" },
   { code: "S", color: "#0EA5E9", description: "ภายใน" },
   { code: "X", color: "#DC2626", description: "วันหยุดคิดเงิน" },
