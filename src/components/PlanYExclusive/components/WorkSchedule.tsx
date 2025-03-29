@@ -681,17 +681,19 @@ export default function WorkSchedule() {
                             <select
                               className="w-full border p-1 text-sm"
                               value={
-                                row[
-                                  [
-                                    "region",
-                                    "province",
-                                    "account",
-                                    "store",
-                                    "supervisor",
-                                    "outsource",
-                                    "position",
-                                  ][i] as keyof Row
-                                ] || ""
+                                String(
+                                  row[
+                                    [
+                                      "region",
+                                      "province",
+                                      "account",
+                                      "store",
+                                      "supervisor",
+                                      "outsource",
+                                      "position",
+                                    ][i] as keyof Row
+                                  ] || ""
+                                )
                               }
                               onChange={(e) => {
                                 const newRows = [...rows];
