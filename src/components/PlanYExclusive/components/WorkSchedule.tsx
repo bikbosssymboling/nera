@@ -171,7 +171,7 @@ export default function WorkSchedule() {
   };
 
   const [filters, setFilters] = useState({
-    region: "Northern - ภาคเหนือ",
+    region: "ทั้งหมด", // เปลี่ยนค่าเริ่มต้นเป็น "ทั้งหมด"
     province: "ทั้งหมด",
     account: "ทั้งหมด",
     store: "ทั้งหมด",
@@ -186,6 +186,7 @@ export default function WorkSchedule() {
   // Add options for select inputs
   const selectOptions = {
     region: [
+      "ทั้งหมด", // เพิ่มตัวเลือก "ทั้งหมด"
       "Northern - ภาคเหนือ",
       "Central - ภาคกลาง",
       "Northeastern - อีสาน",
@@ -304,6 +305,16 @@ export default function WorkSchedule() {
         </button>
       </div>
     );
+  };
+
+  // Add filter function
+  const getFilteredRows = () => {
+    return rows.filter(row => {
+      return Object.entries(filters).every(([key, filterValue]) => {
+        if (filterValue === "ทั้งหมด" || !filterValue) return true;
+        return row[key] === filterValue;
+      });
+    });
   };
 
   return (
@@ -462,6 +473,7 @@ export default function WorkSchedule() {
               label: "Region",
               key: "region",
               options: [
+                "ทั้งหมด",
                 "Northern - ภาคเหนือ",
                 "Central - ภาคกลาง",
                 "Northeastern - อีสาน",
@@ -655,7 +667,7 @@ export default function WorkSchedule() {
                 </tr>
               </thead>
               <tbody>
-                {rows.map((row, index) => (
+                {getFilteredRows().map((row, index) => (
                   <tr
                     key={row.id}
                     className={`border-b border-gray-200 transition-colors duration-150 
