@@ -15,6 +15,7 @@ import {
   FaArrowCircleDown,
   FaCopy,
   FaMapMarkerAlt,
+  FaTimes,
 } from "react-icons/fa";
 import "../css/PlanYExclusive.css"
 import SetPositionModal from "./SetPositionModal";
@@ -181,6 +182,14 @@ export default function WorkSchedule() {
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters({ ...filters, [key]: value });
+  };
+
+  // Add clear filter handler
+  const handleClearFilter = (key: string) => {
+    setFilters(prev => ({
+      ...prev,
+      [key]: "ทั้งหมด"
+    }));
   };
 
   // Add options for select inputs
@@ -526,11 +535,26 @@ export default function WorkSchedule() {
             },
           ].map((filter, index) => (
             <div key={index} className="min-w-[140px]">
-              <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                {filter.label}
+              <label className="block text-xs font-medium text-gray-700 mb-1.5 flex items-center justify-between">
+                <span>{filter.label}</span>
+                {filters[filter.key as keyof typeof filters] !== "ทั้งหมด" && (
+                  <button
+                    onClick={() => handleClearFilter(filter.key)}
+                    className="text-gray-400 hover:text-red-500 transition-colors duration-200 
+                             flex items-center gap-1 text-[11px] hover:underline px-1 py-0.5 rounded"
+                  >
+                    <FaTimes className="w-2.5 h-2.5" />
+                    <span>Clear</span>
+                  </button>
+                )}
               </label>
               <select
-                className="border border-gray-300 rounded-md p-2 w-full text-sm text-gray-800 bg-white hover:border-blue-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors duration-200"
+                className={`border rounded-md p-2 w-full text-sm transition-all duration-200
+                           ${filters[filter.key as keyof typeof filters] !== "ทั้งหมด"
+                             ? 'border-blue-400 bg-blue-50/50'
+                             : 'border-gray-300 bg-white'
+                           }
+                           hover:border-blue-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-200`}
                 value={filters[filter.key as keyof typeof filters]}
                 onChange={(e) => handleFilterChange(filter.key, e.target.value)}
               >
@@ -542,10 +566,23 @@ export default function WorkSchedule() {
               </select>
             </div>
           ))}
-
-          {/* ✅ ทำให้ปุ่มอยู่ในแถวเดียวกัน */}
-          <div className="flex items-center justify-end min-w-[140px]">
-            <button className="bg-slate-500 text-white text-xs px-3 py-2 rounded flex items-center gap-1 shadow-md">
+          
+          {/* Clear All Filters button */}
+          <div className="flex items-center justify-end min-w-[140px] space-x-2">
+            {Object.values(filters).some(value => value !== "ทั้งหมด") && (
+              <button
+                onClick={() => setFilters(prev => Object.fromEntries(
+                  Object.keys(prev).map(key => [key, "ทั้งหมด"])
+                ))}
+                className="bg-blue-100 text-blue-600 hover:bg-blue-200 text-xs px-3 py-2 
+                           rounded flex items-center gap-1.5 transition-all duration-200 mr-2"
+              >
+                <FaTimes className="w-3.5 h-3.5" />
+                Clear All Filters
+              </button>
+            )}
+            <button className="bg-slate-500 hover:bg-slate-600 text-white text-xs px-3 py-2 
+                             rounded flex items-center gap-1 shadow-md transition-all duration-200">
               <FaTrash className="w-4 h-4" /> Original PlanY
             </button>
           </div>
