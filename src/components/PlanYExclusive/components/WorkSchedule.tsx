@@ -382,19 +382,15 @@ export default function WorkSchedule() {
   };
 
   const handleSave = () => {
-    // แยกข้อมูลที่ต้อง upsert และ delete
+    // Get current visible rows that aren't deleted
     const currentRows = getFilteredRows().filter(row => !row.isDeleted);
     
-    // หาข้อมูลที่ถูกแก้ไขหรือเพิ่มใหม่
-    const upsertRows = currentRows.filter(row => {
-      // ถ้าไม่มี ID แสดงว่าเป็นข้อมูลใหม่
-      if (!row.id) return true;
-  
-      // ถ้าเป็น ID ที่มีอยู่ใน mock ให้เช็คการแก้ไข
-      const mockRow = MOCK_DATA.find(mock => mock.id === row.id);
-      if (!mockRow) return true;
-  
-      return JSON.stringify({
+    // Map rows to include original order and current order
+    const upsertRows = currentRows.map((row, currentIndex) => {
+      const isNewRow = !row.id;
+      const isCopiedRow = row.id && !MOCK_DATA.some(mock => mock.id === row.id);
+      const originalRow = MOCK_DATA.find(mock => mock.id === row.id);
+      const hasChanges = originalRow && JSON.stringify({
         id: row.id,
         region: row.region,
         province: row.province,
@@ -405,19 +401,11 @@ export default function WorkSchedule() {
         position: row.position,
         amount: row.amount,
         planDays: row.planDays,
-      }) !== JSON.stringify(mockRow);
-    });
-  
-    // หา ID ที่ถูกลบจาก mock data เท่านั้น
-    const deleteIds = rows
-      .filter(row => row.isDeleted && MOCK_DATA.some(mock => mock.id === row.id))
-      .map(row => ({ id: row.id }));
-  
-    const payload = {
-      projectId: "PLAN123",
-      planDateRange: ["2025-03-15", "2025-04-20"],
-      schedule: {
-        upsert: upsertRows.map(row => ({
+      }) !== JSON.stringify(originalRow);
+
+      // Only include rows that are new, copied, moved, or modified
+      if (isNewRow || isCopiedRow || hasChanges || currentIndex !== row.id - 1) {
+        return {
           id: row.id,
           region: row.region,
           province: row.province,
@@ -428,16 +416,42 @@ export default function WorkSchedule() {
           position: row.position,
           amount: row.amount,
           planDays: row.planDays,
+          originalOrder: row.id || null,
+          currentOrder: currentIndex + 1,
+          operation: isNewRow ? 'new' : isCopiedRow ? 'copy' : hasChanges ? 'update' : 'move'
+        };
+      }
+      return null;
+    }).filter(Boolean);
+
+    // Get rows marked for deletion (only from original data)
+    const deleteIds = rows
+      .filter(row => row.isDeleted && MOCK_DATA.some(mock => mock.id === row.id))
+      .map(row => ({ id: row.id }));
+
+    const payload = {
+      projectId: "PLAN123",
+      planDateRange: ["2025-03-15", "2025-04-20"],
+      schedule: {
+        upsert: upsertRows.map(row => ({
+          ...row,
           calendarStatus: {
             "2025-03-15": "1",
             "2025-03-17": "0.5",
             "2025-04-20": row.id === 1 ? "W1" : "S"
           }
         })),
-        delete: deleteIds
+        delete: deleteIds,
+        reorderInfo: upsertRows
+          .filter(row => row.operation === 'move')
+          .map(row => ({
+            id: row.id,
+            fromPosition: row.originalOrder,
+            toPosition: row.currentOrder
+          }))
       }
     };
-  
+
     console.log(JSON.stringify(payload, null, 2));
   };
 
