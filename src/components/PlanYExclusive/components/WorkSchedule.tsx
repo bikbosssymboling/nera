@@ -22,7 +22,7 @@ import SetPositionModal from "./SetPositionModal";
 import HistoryModal from "./HistoryModal";
 
 interface Row {
-  id: number;
+  id?: number;
   region?: string;
   province?: string;
   account?: string;
@@ -35,6 +35,60 @@ interface Row {
   isDeleted?: boolean;
   [key: string]: string | number | boolean | undefined;
 }
+
+// เพิ่ม interface สำหรับ mock data
+interface MockData {
+  id: number;
+  region: string;
+  province: string;
+  account: string;
+  store: string;
+  supervisor: string;
+  outsource: string;
+  position: string;
+  amount: number;
+  planDays: number;
+}
+
+// เพิ่ม mock data constant
+const MOCK_DATA: MockData[] = [
+  {
+    id: 1,
+    region: "Northern - ภาคเหนือ",
+    province: "เชียงใหม่",
+    account: "LOTUS",
+    store: "Store A",
+    supervisor: "EMP-001 John",
+    outsource: "OUT-001 น้องหนึ่ง",
+    position: "Position A",
+    amount: 500,
+    planDays: 30,
+  },
+  {
+    id: 2,
+    region: "Central - ภาคกลาง",
+    province: "เชียงราย",
+    account: "BIGC",
+    store: "Store B",
+    supervisor: "EMP-002 Jane",
+    outsource: "OUT-002 น้องสอง",
+    position: "Position B",
+    amount: 750,
+    planDays: 25,
+  },
+  {
+    id: 3,
+    region: "Eastern - ภาคตะวันออก",
+    province: "น่าน",
+    account: "TOPS",
+    store: "Store C",
+    supervisor: "EMP-003 Michael",
+    outsource: "OUT-003 น้องสาม",
+    position: "Position C",
+    amount: 600,
+    planDays: 20,
+  },
+];
 
 export default function WorkSchedule() {
   const [showPositionModal, setShowPositionModal] = useState(false);
@@ -81,7 +135,8 @@ export default function WorkSchedule() {
   const lastRowRef = useRef<HTMLSelectElement>(null);
 
   const handleAddRow = () => {
-    const newRow = { id: rows.length + 1 };
+    // Remove ID for new row
+    const newRow = {};
     setRows([...rows, newRow]);
 
     // Focus the first select of the new row after render
@@ -274,7 +329,7 @@ export default function WorkSchedule() {
       return (
         <button
           className="text-blue-500 cursor-pointer hover:text-blue-600 flex items-center gap-1.5 bg-blue-50 px-2 py-1 rounded"
-          onClick={() => handleDeleteRow(row.id)}
+          onClick={() => handleDeleteRow(row.id!)}
         >
           ↩️ Undo Delete
         </button>
@@ -285,7 +340,7 @@ export default function WorkSchedule() {
       <div className="flex justify-center gap-2">
         <button
           className="text-red-500 cursor-pointer"
-          onClick={() => handleDeleteRow(row.id)}
+          onClick={() => handleDeleteRow(row.id!)}
         >
           <FaTrash />
         </button>
@@ -324,6 +379,66 @@ export default function WorkSchedule() {
         return row[key] === filterValue;
       });
     });
+  };
+
+  const handleSave = () => {
+    // แยกข้อมูลที่ต้อง upsert และ delete
+    const currentRows = getFilteredRows().filter(row => !row.isDeleted);
+    
+    // หาข้อมูลที่ถูกแก้ไขหรือเพิ่มใหม่
+    const upsertRows = currentRows.filter(row => {
+      // ถ้าไม่มี ID แสดงว่าเป็นข้อมูลใหม่
+      if (!row.id) return true;
+  
+      // ถ้าเป็น ID ที่มีอยู่ใน mock ให้เช็คการแก้ไข
+      const mockRow = MOCK_DATA.find(mock => mock.id === row.id);
+      if (!mockRow) return true;
+  
+      return JSON.stringify({
+        id: row.id,
+        region: row.region,
+        province: row.province,
+        account: row.account,
+        store: row.store,
+        supervisor: row.supervisor,
+        outsource: row.outsource,
+        position: row.position,
+        amount: row.amount,
+        planDays: row.planDays,
+      }) !== JSON.stringify(mockRow);
+    });
+  
+    // หา ID ที่ถูกลบจาก mock data เท่านั้น
+    const deleteIds = rows
+      .filter(row => row.isDeleted && MOCK_DATA.some(mock => mock.id === row.id))
+      .map(row => ({ id: row.id }));
+  
+    const payload = {
+      projectId: "PLAN123",
+      planDateRange: ["2025-03-15", "2025-04-20"],
+      schedule: {
+        upsert: upsertRows.map(row => ({
+          id: row.id,
+          region: row.region,
+          province: row.province,
+          account: row.account,
+          store: row.store,
+          supervisor: row.supervisor,
+          outsource: row.outsource,
+          position: row.position,
+          amount: row.amount,
+          planDays: row.planDays,
+          calendarStatus: {
+            "2025-03-15": "1",
+            "2025-03-17": "0.5",
+            "2025-04-20": row.id === 1 ? "W1" : "S"
+          }
+        })),
+        delete: deleteIds
+      }
+    };
+  
+    console.log(JSON.stringify(payload, null, 2));
   };
 
   return (
@@ -571,9 +686,17 @@ export default function WorkSchedule() {
           <div className="flex items-center justify-end min-w-[140px] space-x-2">
             {Object.values(filters).some(value => value !== "ทั้งหมด") && (
               <button
-                onClick={() => setFilters(prev => Object.fromEntries(
-                  Object.keys(prev).map(key => [key, "ทั้งหมด"])
-                ))}
+                onClick={() => setFilters(prev => {
+                  const defaultValues: typeof prev = {
+                    region: "ทั้งหมด",
+                    province: "ทั้งหมด", 
+                    account: "ทั้งหมด",
+                    store: "ทั้งหมด",
+                    supervisor: "ทั้งหมด",
+                    outsource: "ทั้งหมด"
+                  };
+                  return defaultValues;
+                })}
                 className="bg-blue-100 text-blue-600 hover:bg-blue-200 text-xs px-3 py-2 
                            rounded flex items-center gap-1.5 transition-all duration-200 mr-2"
               >
@@ -713,7 +836,9 @@ export default function WorkSchedule() {
                         : 'hover:bg-gray-50'
                       }`}
                   >
-                    <td className="border p-2 text-center">{row.id}</td>
+                    <td className="border p-2 text-center">
+                      {row.id || '-'}
+                    </td>
                     <td className="border p-2 text-center">
                       {renderManageButtons(row, index)}
                     </td>
@@ -848,7 +973,7 @@ export default function WorkSchedule() {
                 : "bg-gray-400 cursor-not-allowed"
             }`}
             disabled={!isAllRowsComplete()}
-            onClick={() => console.log("Save clicked")}
+            onClick={handleSave}
           >
             <FaSave className="w-3.5 h-3.5" /> บันทึก
           </button>
