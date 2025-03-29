@@ -67,7 +67,7 @@ export const StatusModal: React.FC<StatusModalProps> = ({ isOpen, onClose, onSel
       <div className="p-6 h-full overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold">เลือกสถานะ</h3>
-          <button onClick={handleClose} className="text-gray-500 hover:text-gray-700">
+          <button onClick={handleClose} className="text-gray-500 hover:text-gray-700 cursor-pointer">
             ✕
           </button>
         </div>
@@ -79,7 +79,7 @@ export const StatusModal: React.FC<StatusModalProps> = ({ isOpen, onClose, onSel
                 onSelect(status);
                 handleClose();
               }}
-              className="flex flex-col h-[80px] justify-center items-center gap-2 p-3 rounded-lg hover:brightness-90 transition-all w-full"
+              className="flex flex-col h-[80px] justify-center items-center gap-2 p-3 rounded-lg hover:brightness-90 transition-all w-full cursor-pointer"
               style={{ 
                 backgroundColor: `${status.color}`,
                 color: '#ffffff',
