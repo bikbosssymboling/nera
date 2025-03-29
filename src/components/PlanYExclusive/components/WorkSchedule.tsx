@@ -157,15 +157,14 @@ export default function WorkSchedule() {
     }
   };
 
-  const handleDeleteRow = (id: number) => {
-    const rowToDelete = rows.find(row => row.id === id);
-    const deleteIndex = rows.findIndex(row => row.id === id);
+  const handleDeleteRow = (index: number) => {
+    const rowToDelete = rows[index];
 
     if (rowToDelete && isRowComplete(rowToDelete)) {
       // Row has complete data - mark as deleted for undo
       setRows(prevRows => 
-        prevRows.map(row => 
-          row.id === id 
+        prevRows.map((row, idx) => 
+          idx === index 
             ? { ...row, isDeleted: !row.isDeleted }
             : row
         )
@@ -173,16 +172,13 @@ export default function WorkSchedule() {
     } else {
       // Row is incomplete - delete permanently
       setRows(prevRows => {
-        const newRows = prevRows.filter(row => row.id !== id);
-        return newRows.map((row, index) => ({
-          ...row,
-          id: index + 1,
-        }));
+        const newRows = prevRows.filter((_, idx) => idx !== index);
+        return newRows;
       });
 
       // Focus previous row or first row if deleting first row
       setTimeout(() => {
-        const newIndex = Math.max(0, deleteIndex - 1);
+        const newIndex = Math.max(0, index - 1);
         focusRow(newIndex);
       }, 0);
     }
@@ -329,7 +325,7 @@ export default function WorkSchedule() {
       return (
         <button
           className="text-blue-500 cursor-pointer hover:text-blue-600 flex items-center gap-1.5 bg-blue-50 px-2 py-1 rounded"
-          onClick={() => handleDeleteRow(row.id!)}
+          onClick={() => handleDeleteRow(index)}
         >
           ↩️ Undo Delete
         </button>
@@ -340,7 +336,7 @@ export default function WorkSchedule() {
       <div className="flex justify-center gap-2">
         <button
           className="text-red-500 cursor-pointer"
-          onClick={() => handleDeleteRow(row.id!)}
+          onClick={() => handleDeleteRow(index)}
         >
           <FaTrash />
         </button>
@@ -382,15 +378,19 @@ export default function WorkSchedule() {
   };
 
   const handleSave = () => {
-    // Get current visible rows that aren't deleted
+    // แยกข้อมูลที่ต้อง upsert และ delete
     const currentRows = getFilteredRows().filter(row => !row.isDeleted);
     
-    // Map rows to include original order and current order
-    const upsertRows = currentRows.map((row, currentIndex) => {
-      const isNewRow = !row.id;
-      const isCopiedRow = row.id && !MOCK_DATA.some(mock => mock.id === row.id);
-      const originalRow = MOCK_DATA.find(mock => mock.id === row.id);
-      const hasChanges = originalRow && JSON.stringify({
+    // หาข้อมูลที่ถูกแก้ไขหรือเพิ่มใหม่
+    const upsertRows = currentRows.filter(row => {
+      // ถ้าไม่มี ID แสดงว่าเป็นข้อมูลใหม่
+      if (!row.id) return true;
+  
+      // ถ้าเป็น ID ที่มีอยู่ใน mock ให้เช็คการแก้ไข
+      const mockRow = MOCK_DATA.find(mock => mock.id === row.id);
+      if (!mockRow) return true;
+  
+      return JSON.stringify({
         id: row.id,
         region: row.region,
         province: row.province,
@@ -401,11 +401,19 @@ export default function WorkSchedule() {
         position: row.position,
         amount: row.amount,
         planDays: row.planDays,
-      }) !== JSON.stringify(originalRow);
-
-      // Only include rows that are new, copied, moved, or modified
-      if (isNewRow || isCopiedRow || hasChanges || currentIndex !== row.id - 1) {
-        return {
+      }) !== JSON.stringify(mockRow);
+    });
+  
+    // หา ID ที่ถูกลบจาก mock data เท่านั้น
+    const deleteIds = rows
+      .filter(row => row.isDeleted && MOCK_DATA.some(mock => mock.id === row.id))
+      .map(row => ({ id: row.id }));
+  
+    const payload = {
+      projectId: "PLAN123",
+      planDateRange: ["2025-03-15", "2025-04-20"],
+      schedule: {
+        upsert: upsertRows.map(row => ({
           id: row.id,
           region: row.region,
           province: row.province,
@@ -416,42 +424,16 @@ export default function WorkSchedule() {
           position: row.position,
           amount: row.amount,
           planDays: row.planDays,
-          originalOrder: row.id || null,
-          currentOrder: currentIndex + 1,
-          operation: isNewRow ? 'new' : isCopiedRow ? 'copy' : hasChanges ? 'update' : 'move'
-        };
-      }
-      return null;
-    }).filter(Boolean);
-
-    // Get rows marked for deletion (only from original data)
-    const deleteIds = rows
-      .filter(row => row.isDeleted && MOCK_DATA.some(mock => mock.id === row.id))
-      .map(row => ({ id: row.id }));
-
-    const payload = {
-      projectId: "PLAN123",
-      planDateRange: ["2025-03-15", "2025-04-20"],
-      schedule: {
-        upsert: upsertRows.map(row => ({
-          ...row,
           calendarStatus: {
             "2025-03-15": "1",
             "2025-03-17": "0.5",
             "2025-04-20": row.id === 1 ? "W1" : "S"
           }
         })),
-        delete: deleteIds,
-        reorderInfo: upsertRows
-          .filter(row => row.operation === 'move')
-          .map(row => ({
-            id: row.id,
-            fromPosition: row.originalOrder,
-            toPosition: row.currentOrder
-          }))
+        delete: deleteIds
       }
     };
-
+  
     console.log(JSON.stringify(payload, null, 2));
   };
 
@@ -843,7 +825,7 @@ export default function WorkSchedule() {
               <tbody>
                 {getFilteredRows().map((row, index) => (
                   <tr
-                    key={row.id}
+                    key={index}
                     className={`border-b border-gray-200 transition-colors duration-150 
                       ${row.isDeleted 
                         ? 'bg-gray-50 opacity-60' 
@@ -851,7 +833,7 @@ export default function WorkSchedule() {
                       }`}
                   >
                     <td className="border p-2 text-center">
-                      {row.id || '-'}
+                      {index + 1}
                     </td>
                     <td className="border p-2 text-center">
                       {renderManageButtons(row, index)}
