@@ -20,6 +20,7 @@ import {
 import "../css/PlanYExclusive.css"
 import SetPositionModal from "./SetPositionModal";
 import HistoryModal from "./HistoryModal";
+import { StatusModal, Status, statusList } from './StatusModal';
 
 interface Row {
   id?: number;
@@ -33,7 +34,8 @@ interface Row {
   amount?: number;
   planDays?: number;
   isDeleted?: boolean;
-  [key: string]: string | number | boolean | undefined;
+  statuses?: { [key: string]: Status };
+  [key: string]: string | number | boolean | undefined | { [key: string]: Status };
 }
 
 // เพิ่ม interface สำหรับ mock data
@@ -133,6 +135,9 @@ export default function WorkSchedule() {
   ]);
 
   const lastRowRef = useRef<HTMLSelectElement>(null);
+  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string>('');
+  const [selectedRowIndex, setSelectedRowIndex] = useState<number>(-1);
 
   const handleAddRow = () => {
     // Remove ID for new row
@@ -435,6 +440,18 @@ export default function WorkSchedule() {
     };
   
     console.log(JSON.stringify(payload, null, 2));
+  };
+
+  const handleStatusSelect = (status: Status) => {
+    if (selectedRowIndex === -1 || !selectedDate) return;
+    
+    setRows(prevRows => {
+      const newRows = [...prevRows];
+      const row = newRows[selectedRowIndex];
+      if (!row.statuses) row.statuses = {};
+      row.statuses[selectedDate] = status;
+      return newRows;
+    });
   };
 
   return (
@@ -933,20 +950,36 @@ export default function WorkSchedule() {
                           )}
                         </td>
                       ))}
-                    {dates.map((date, i) => (
-                      <td
-                        key={i}
-                        className={`border p-2 text-center ${
-                          isAlternateMonth(date)
-                            ? "bg-blue-50/30"
-                            : "bg-green-50/30"
-                        }`}
-                      >
-                        <button className="bg-gray-300 text-xs px-2 py-1 rounded cursor-pointer">
-                          Y
-                        </button>
-                      </td>
-                    ))}
+                    {dates.map((date, i) => {
+                      const dateStr = date.toISOString().split('T')[0];
+                      const status = row.statuses?.[dateStr];
+                      
+                      return (
+                        <td
+                          key={i}
+                          className={`border p-2 text-center ${
+                            isAlternateMonth(date)
+                              ? "bg-blue-50/30"
+                              : "bg-green-50/30"
+                          }`}
+                        >
+                          <button 
+                            className="text-xs w-8 h-6 rounded cursor-pointer flex items-center justify-center"
+                            style={{
+                              backgroundColor: status?.color || '#d1d1d1',
+                              color: '#fff'
+                            }}
+                            onClick={() => {
+                              setSelectedDate(dateStr);
+                              setSelectedRowIndex(index);
+                              setShowStatusModal(true);
+                            }}
+                          >
+                            {status?.code || 'Y'}
+                          </button>
+                        </td>
+                      );
+                    })}
                   </tr>
                 ))}
               </tbody>
@@ -986,6 +1019,12 @@ export default function WorkSchedule() {
       <HistoryModal
         isOpen={showHistoryModal}
         onClose={() => setShowHistoryModal(false)}
+      />
+
+      <StatusModal
+        isOpen={showStatusModal}
+        onClose={() => setShowStatusModal(false)}
+        onSelect={handleStatusSelect}
       />
     </>
   );
