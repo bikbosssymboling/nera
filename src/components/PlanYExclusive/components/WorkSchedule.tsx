@@ -17,10 +17,10 @@ import {
   FaMapMarkerAlt,
   FaTimes,
 } from "react-icons/fa";
-import "../css/PlanYExclusive.css"
+import "../css/PlanYExclusive.css";
 import SetPositionModal from "./SetPositionModal";
 import HistoryModal from "./HistoryModal";
-import { StatusModal, Status, statusList } from './StatusModal';
+import { StatusModal, Status, statusList } from "./StatusModal";
 
 interface Row {
   id?: number;
@@ -35,7 +35,12 @@ interface Row {
   planDays?: number;
   isDeleted?: boolean;
   statuses?: { [key: string]: Status };
-  [key: string]: string | number | boolean | undefined | { [key: string]: Status };
+  [key: string]:
+    | string
+    | number
+    | boolean
+    | undefined
+    | { [key: string]: Status };
 }
 
 // เพิ่ม interface สำหรับ mock data
@@ -50,7 +55,53 @@ interface MockData {
   position: string;
   amount: number;
   planDays: number;
+  statuses?: { [key: string]: Status };
 }
+
+// Add new function to handle status colors
+const getStatusColor = (code: string | undefined): string => {
+  switch (code) {
+    case "1":
+    case "0.5":
+      return "#16A34A"; // green-600
+    case "S":
+      return "#DC2626"; // red-600
+    case "W":
+      return "#EA580C"; // orange-600
+    case "W1":
+      return "#CA8A04"; // yellow-600
+    case "W2":
+      return "#2563EB"; // blue-600
+    case "WE":
+      return "#9333EA"; // purple-600
+    case "P":
+      return "#059669"; // emerald-600
+    default:
+      return "#d1d1d1"; // gray-500
+  }
+};
+
+const getStatusClassName = (code: string | undefined): string => {
+  switch (code) {
+    case "1":
+    case "0.5":
+      return "bg-green-600 hover:bg-green-700";
+    case "S":
+      return "bg-red-600 hover:bg-red-700";
+    case "W":
+      return "bg-orange-600 hover:bg-orange-700";
+    case "W1":
+      return "bg-yellow-600 hover:bg-yellow-700";
+    case "W2":
+      return "bg-blue-600 hover:bg-blue-700";
+    case "WE":
+      return "bg-fuchsia-600 hover:bg-fuchsia-700";
+    case "P":
+      return "bg-emerald-600 hover:bg-emerald-700";
+    default:
+      return "bg-gray-600 hover:bg-gray-700";
+  }
+};
 
 // เพิ่ม mock data constant
 const MOCK_DATA: MockData[] = [
@@ -65,6 +116,48 @@ const MOCK_DATA: MockData[] = [
     position: "Position A",
     amount: 500,
     planDays: 30,
+    statuses: {
+      "2025-01-18": {
+        code: "1",
+        color: getStatusColor("1"),
+        description: "ทำงานเต็มวัน",
+      },
+      "2025-01-19": {
+        code: "0.5",
+        color: getStatusColor("0.5"),
+        description: "ทำงานครึ่งวัน",
+      },
+      "2025-01-20": {
+        code: "S",
+        color: getStatusColor("S"),
+        description: "ภายใน",
+      },
+      "2025-01-21": {
+        code: "W",
+        color: getStatusColor("W"),
+        description: "เช็คอินเเล้วรอคีย์ยอด",
+      },
+      "2025-01-22": {
+        code: "W1",
+        color: getStatusColor("W1"),
+        description: "คีย์ยอดเเล้วรอ Monitor",
+      },
+      "2025-01-23": {
+        code: "W2",
+        color: getStatusColor("W2"),
+        description: "รอ Data ตรวจสอบ",
+      },
+      "2025-01-24": {
+        code: "WE",
+        color: getStatusColor("WE"),
+        description: "รอแก้ไขยอด",
+      },
+      "2025-01-25": {
+        code: "P",
+        color: getStatusColor("P"),
+        description: "อนุมัติส่งข้อมูลให้เเล้ว",
+      },
+    },
   },
   {
     id: 2,
@@ -77,6 +170,23 @@ const MOCK_DATA: MockData[] = [
     position: "Position B",
     amount: 750,
     planDays: 25,
+    statuses: {
+      "2025-01-18": {
+        code: "1",
+        color: getStatusColor("1"),
+        description: "ทำงานเต็มวัน",
+      },
+      "2025-01-19": {
+        code: "W2",
+        color: getStatusColor("W2"),
+        description: "รอ Data ตรวจสอบ",
+      },
+      "2025-01-20": {
+        code: "WE",
+        color: getStatusColor("WE"),
+        description: "รอแก้ไขยอด",
+      },
+    },
   },
   {
     id: 3,
@@ -89,54 +199,40 @@ const MOCK_DATA: MockData[] = [
     position: "Position C",
     amount: 600,
     planDays: 20,
+    statuses: {
+      "2025-01-18": {
+        code: "P",
+        color: getStatusColor("P"),
+        description: "อนุมัติส่งข้อมูลให้เเล้ว",
+      },
+      "2025-01-19": {
+        code: "1",
+        color: getStatusColor("1"),
+        description: "ทำงานเต็มวัน",
+      },
+      "2025-01-20": {
+        code: "0.5",
+        color: getStatusColor("0.5"),
+        description: "ทำงานครึ่งวัน",
+      },
+    },
   },
 ];
 
 export default function WorkSchedule() {
   const [showPositionModal, setShowPositionModal] = useState(false);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
-  const [rows, setRows] = useState<Row[]>([
-    {
-      id: 1,
-      region: "Northern - ภาคเหนือ",
-      province: "เชียงใหม่",
-      account: "LOTUS",
-      store: "Store A",
-      supervisor: "EMP-001 John",
-      outsource: "OUT-001 น้องหนึ่ง",
-      position: "Position A",
-      amount: 500,
-      planDays: 30,
-    },
-    {
-      id: 2,
-      region: "Central - ภาคกลาง",
-      province: "เชียงราย",
-      account: "BIGC",
-      store: "Store B",
-      supervisor: "EMP-002 Jane",
-      outsource: "OUT-002 น้องสอง",
-      position: "Position B",
-      amount: 750,
-      planDays: 25,
-    },
-    {
-      id: 3,
-      region: "Eastern - ภาคตะวันออก",
-      province: "น่าน",
-      account: "TOPS",
-      store: "Store C",
-      supervisor: "EMP-003 Michael",
-      outsource: "OUT-003 น้องสาม",
-      position: "Position C",
-      amount: 600,
-      planDays: 20,
-    },
-  ]);
+  // Update initial rows state to use MOCK_DATA
+  const [rows, setRows] = useState<Row[]>(
+    MOCK_DATA.map((mockRow) => ({
+      ...mockRow,
+      isDeleted: false,
+    }))
+  );
 
   const lastRowRef = useRef<HTMLSelectElement>(null);
   const [showStatusModal, setShowStatusModal] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<string>('');
+  const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedRowIndex, setSelectedRowIndex] = useState<number>(-1);
 
   const handleAddRow = () => {
@@ -167,16 +263,14 @@ export default function WorkSchedule() {
 
     if (rowToDelete && isRowComplete(rowToDelete)) {
       // Row has complete data - mark as deleted for undo
-      setRows(prevRows => 
-        prevRows.map((row, idx) => 
-          idx === index 
-            ? { ...row, isDeleted: !row.isDeleted }
-            : row
+      setRows((prevRows) =>
+        prevRows.map((row, idx) =>
+          idx === index ? { ...row, isDeleted: !row.isDeleted } : row
         )
       );
     } else {
       // Row is incomplete - delete permanently
-      setRows(prevRows => {
+      setRows((prevRows) => {
         const newRows = prevRows.filter((_, idx) => idx !== index);
         return newRows;
       });
@@ -242,9 +336,9 @@ export default function WorkSchedule() {
 
   // Add clear filter handler
   const handleClearFilter = (key: string) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
-      [key]: "ทั้งหมด"
+      [key]: "ทั้งหมด",
     }));
   };
 
@@ -374,7 +468,7 @@ export default function WorkSchedule() {
 
   // Add filter function
   const getFilteredRows = () => {
-    return rows.filter(row => {
+    return rows.filter((row) => {
       return Object.entries(filters).every(([key, filterValue]) => {
         if (filterValue === "ทั้งหมด" || !filterValue) return true;
         return row[key] === filterValue;
@@ -384,41 +478,45 @@ export default function WorkSchedule() {
 
   const handleSave = () => {
     // แยกข้อมูลที่ต้อง upsert และ delete
-    const currentRows = getFilteredRows().filter(row => !row.isDeleted);
-    
+    const currentRows = getFilteredRows().filter((row) => !row.isDeleted);
+
     // หาข้อมูลที่ถูกแก้ไขหรือเพิ่มใหม่
-    const upsertRows = currentRows.filter(row => {
+    const upsertRows = currentRows.filter((row) => {
       // ถ้าไม่มี ID แสดงว่าเป็นข้อมูลใหม่
       if (!row.id) return true;
-  
+
       // ถ้าเป็น ID ที่มีอยู่ใน mock ให้เช็คการแก้ไข
-      const mockRow = MOCK_DATA.find(mock => mock.id === row.id);
+      const mockRow = MOCK_DATA.find((mock) => mock.id === row.id);
       if (!mockRow) return true;
-  
-      return JSON.stringify({
-        id: row.id,
-        region: row.region,
-        province: row.province,
-        account: row.account,
-        store: row.store,
-        supervisor: row.supervisor,
-        outsource: row.outsource,
-        position: row.position,
-        amount: row.amount,
-        planDays: row.planDays,
-      }) !== JSON.stringify(mockRow);
+
+      return (
+        JSON.stringify({
+          id: row.id,
+          region: row.region,
+          province: row.province,
+          account: row.account,
+          store: row.store,
+          supervisor: row.supervisor,
+          outsource: row.outsource,
+          position: row.position,
+          amount: row.amount,
+          planDays: row.planDays,
+        }) !== JSON.stringify(mockRow)
+      );
     });
-  
+
     // หา ID ที่ถูกลบจาก mock data เท่านั้น
     const deleteIds = rows
-      .filter(row => row.isDeleted && MOCK_DATA.some(mock => mock.id === row.id))
-      .map(row => ({ id: row.id }));
-  
+      .filter(
+        (row) => row.isDeleted && MOCK_DATA.some((mock) => mock.id === row.id)
+      )
+      .map((row) => ({ id: row.id }));
+
     const payload = {
       projectId: "PLAN123",
       planDateRange: ["2025-03-15", "2025-04-20"],
       schedule: {
-        upsert: upsertRows.map(row => ({
+        upsert: upsertRows.map((row) => ({
           id: row.id,
           region: row.region,
           province: row.province,
@@ -432,20 +530,20 @@ export default function WorkSchedule() {
           calendarStatus: {
             "2025-03-15": "1",
             "2025-03-17": "0.5",
-            "2025-04-20": row.id === 1 ? "W1" : "S"
-          }
+            "2025-04-20": row.id === 1 ? "W1" : "S",
+          },
         })),
-        delete: deleteIds
-      }
+        delete: deleteIds,
+      },
     };
-  
+
     console.log(JSON.stringify(payload, null, 2));
   };
 
   const handleStatusSelect = (status: Status) => {
     if (selectedRowIndex === -1 || !selectedDate) return;
-    
-    setRows(prevRows => {
+
+    setRows((prevRows) => {
       const newRows = [...prevRows];
       const row = newRows[selectedRowIndex];
       if (!row.statuses) row.statuses = {};
@@ -453,6 +551,19 @@ export default function WorkSchedule() {
       return newRows;
     });
   };
+
+  // Update the status info display in the header
+  const statusInfo = [
+    { label: "จำนวนวันทำงาน", code: "Y", value: 100 },
+    { label: "ทำงานเต็มวัน", code: "1", value: 20 },
+    { label: "ทำงานครึ่งวัน", code: "0.5", value: 12 },
+    { label: "ภายใน", code: "S", value: 8 },
+    { label: "เช็คอินเเล้วรอคีย์ยอด", code: "W", value: 8 },
+    { label: "คีย์ยอดเเล้วรอ Monitor", code: "W1", value: 8 },
+    { label: "รอ Data ตรวจสอบ", code: "W2", value: 8 },
+    { label: "รอแก้ไขยอด", code: "WE", value: 8 },
+    { label: "อนุมัติส่งข้อมูลให้เเล้ว", code: "P", value: 8 },
+  ];
 
   return (
     <>
@@ -462,62 +573,7 @@ export default function WorkSchedule() {
         id="project-info-sum"
       >
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-4 text-xs w-full">
-          {[
-            {
-              label: "จำนวนวันทำงาน",
-              code: "Y",
-              value: 100,
-              color: "bg-gray-600 hover:bg-gray-700",
-            },
-            {
-              label: "ทำงานเต็มวัน",
-              code: "1",
-              value: 20,
-              color: "bg-green-600 hover:bg-green-700",
-            },
-            {
-              label: "ทำงานครึ่งวัน",
-              code: "0.5",
-              value: 12,
-              color: "bg-green-600 hover:bg-green-700",
-            },
-            {
-              label: "ภายใน",
-              code: "S",
-              value: 8,
-              color: "bg-red-600 hover:bg-red-700",
-            },
-            {
-              label: "เช็คอินเเล้วรอคีย์ยอด",
-              code: "W",
-              value: 8,
-              color: "bg-orange-600 hover:bg-orange-700",
-            },
-            {
-              label: "คีย์ยอดเเล้วรอ Monitor",
-              code: "W1",
-              value: 8,
-              color: "bg-yellow-600 hover:bg-yellow-700",
-            },
-            {
-              label: "รอ Data ตรวจสอบ",
-              code: "W2",
-              value: 8,
-              color: "bg-blue-600 hover:bg-blue-700",
-            },
-            {
-              label: "รอแก้ไขยอด",
-              code: "WE",
-              value: 8,
-              color: "bg-fuchsia-600 hover:bg-fuchsia-700",
-            },
-            {
-              label: "อนุมัติส่งข้อมูลให้เเล้ว",
-              code: "P",
-              value: 8,
-              color: "bg-emerald-600 hover:bg-emerald-700",
-            },
-          ].map((item, index) => (
+          {statusInfo.map((item, index) => (
             <div
               key={index}
               className="flex flex-col items-center pl-4 border-l border-gray-200 first:border-l-0 transition-all duration-200 hover:shadow-md rounded-lg py-2"
@@ -530,7 +586,9 @@ export default function WorkSchedule() {
                   {item.code}:
                 </span>
                 <span
-                  className={`text-white font-medium px-3 py-1 rounded-md transition-colors duration-200 ${item.color}`}
+                  className={`text-white font-medium px-3 py-1 rounded-md transition-colors duration-200 ${getStatusClassName(
+                    item.code
+                  )}`}
                 >
                   {item.value}
                 </span>
@@ -678,9 +736,11 @@ export default function WorkSchedule() {
               </label>
               <select
                 className={`border rounded-md p-2 w-full text-sm transition-all duration-200
-                           ${filters[filter.key as keyof typeof filters] !== "ทั้งหมด"
-                             ? 'border-blue-400 bg-blue-50/50'
-                             : 'border-gray-300 bg-white'
+                           ${
+                             filters[filter.key as keyof typeof filters] !==
+                             "ทั้งหมด"
+                               ? "border-blue-400 bg-blue-50/50"
+                               : "border-gray-300 bg-white"
                            }
                            hover:border-blue-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-200`}
                 value={filters[filter.key as keyof typeof filters]}
@@ -694,22 +754,24 @@ export default function WorkSchedule() {
               </select>
             </div>
           ))}
-          
+
           {/* Clear All Filters button */}
           <div className="flex items-center justify-end min-w-[140px] space-x-2">
-            {Object.values(filters).some(value => value !== "ทั้งหมด") && (
+            {Object.values(filters).some((value) => value !== "ทั้งหมด") && (
               <button
-                onClick={() => setFilters(prev => {
-                  const defaultValues: typeof prev = {
-                    region: "ทั้งหมด",
-                    province: "ทั้งหมด", 
-                    account: "ทั้งหมด",
-                    store: "ทั้งหมด",
-                    supervisor: "ทั้งหมด",
-                    outsource: "ทั้งหมด"
-                  };
-                  return defaultValues;
-                })}
+                onClick={() =>
+                  setFilters((prev) => {
+                    const defaultValues: typeof prev = {
+                      region: "ทั้งหมด",
+                      province: "ทั้งหมด",
+                      account: "ทั้งหมด",
+                      store: "ทั้งหมด",
+                      supervisor: "ทั้งหมด",
+                      outsource: "ทั้งหมด",
+                    };
+                    return defaultValues;
+                  })
+                }
                 className="bg-blue-100 text-blue-600 hover:bg-blue-200 text-xs px-3 py-2 
                            rounded flex items-center gap-1.5 transition-all duration-200 mr-2"
               >
@@ -717,8 +779,10 @@ export default function WorkSchedule() {
                 Clear All Filters
               </button>
             )}
-            <button className="bg-slate-500 hover:bg-slate-600 text-white text-xs px-3 py-2 
-                             rounded flex items-center gap-1 shadow-md transition-all duration-200">
+            <button
+              className="bg-slate-500 hover:bg-slate-600 text-white text-xs px-3 py-2 
+                             rounded flex items-center gap-1 shadow-md transition-all duration-200"
+            >
               <FaTrash className="w-4 h-4" /> Original PlanY
             </button>
           </div>
@@ -844,14 +908,13 @@ export default function WorkSchedule() {
                   <tr
                     key={index}
                     className={`border-b border-gray-200 transition-colors duration-150 
-                      ${row.isDeleted 
-                        ? 'bg-gray-50 opacity-60' 
-                        : 'hover:bg-gray-50'
+                      ${
+                        row.isDeleted
+                          ? "bg-gray-50 opacity-60"
+                          : "hover:bg-gray-50"
                       }`}
                   >
-                    <td className="border p-2 text-center">
-                      {index + 1}
-                    </td>
+                    <td className="border p-2 text-center">{index + 1}</td>
                     <td className="border p-2 text-center">
                       {renderManageButtons(row, index)}
                     </td>
@@ -867,21 +930,19 @@ export default function WorkSchedule() {
                           {i < 7 ? (
                             <select
                               className="w-full border p-1 text-sm"
-                              value={
-                                String(
-                                  row[
-                                    [
-                                      "region",
-                                      "province",
-                                      "account",
-                                      "store",
-                                      "supervisor",
-                                      "outsource",
-                                      "position",
-                                    ][i] as keyof Row
-                                  ] || ""
-                                )
-                              }
+                              value={String(
+                                row[
+                                  [
+                                    "region",
+                                    "province",
+                                    "account",
+                                    "store",
+                                    "supervisor",
+                                    "outsource",
+                                    "position",
+                                  ][i] as keyof Row
+                                ] || ""
+                              )}
                               onChange={(e) => {
                                 const newRows = [...rows];
                                 newRows[index][
@@ -951,9 +1012,9 @@ export default function WorkSchedule() {
                         </td>
                       ))}
                     {dates.map((date, i) => {
-                      const dateStr = date.toISOString().split('T')[0];
+                      const dateStr = date.toISOString().split("T")[0];
                       const status = row.statuses?.[dateStr];
-                      
+
                       return (
                         <td
                           key={i}
@@ -963,11 +1024,14 @@ export default function WorkSchedule() {
                               : "bg-green-50/30"
                           }`}
                         >
-                          <button 
+                          <button
                             className="text-xs w-8 h-6 rounded cursor-pointer flex items-center justify-center"
                             style={{
-                              backgroundColor: status?.color === '#6B7280' ? '#d1d1d1' : (status?.color || '#d1d1d1'),
-                              color: '#fff'
+                              backgroundColor:
+                                status?.color === "#6B7280"
+                                  ? "#d1d1d1"
+                                  : status?.color || "#d1d1d1",
+                              color: "#fff",
                             }}
                             onClick={() => {
                               setSelectedDate(dateStr);
@@ -975,7 +1039,7 @@ export default function WorkSchedule() {
                               setShowStatusModal(true);
                             }}
                           >
-                            {status?.code || 'Y'}
+                            {status?.code || "Y"}
                           </button>
                         </td>
                       );
