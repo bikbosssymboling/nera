@@ -31,7 +31,8 @@ interface Row {
   position?: string;
   amount?: number;
   planDays?: number;
-  [key: string]: string | number | undefined;
+  isDeleted?: boolean;
+  [key: string]: string | number | boolean | undefined;
 }
 
 export default function WorkSchedule() {
@@ -91,15 +92,44 @@ export default function WorkSchedule() {
     }, 0);
   };
 
+  const focusRow = (rowIndex: number) => {
+    const tableBody = document.querySelector("#work-schedule tbody");
+    const targetRow = tableBody?.children[rowIndex];
+    if (targetRow) {
+      const firstSelect = targetRow.querySelector("select");
+      (firstSelect as HTMLSelectElement)?.focus();
+    }
+  };
+
   const handleDeleteRow = (id: number) => {
-    setRows(rows.filter((row) => row.id !== id));
-    // Reorder remaining rows' IDs
-    setRows((prevRows) =>
-      prevRows.map((row, index) => ({
-        ...row,
-        id: index + 1,
-      }))
-    );
+    const rowToDelete = rows.find(row => row.id === id);
+    const deleteIndex = rows.findIndex(row => row.id === id);
+
+    if (rowToDelete && isRowComplete(rowToDelete)) {
+      // Row has complete data - mark as deleted for undo
+      setRows(prevRows => 
+        prevRows.map(row => 
+          row.id === id 
+            ? { ...row, isDeleted: !row.isDeleted }
+            : row
+        )
+      );
+    } else {
+      // Row is incomplete - delete permanently
+      setRows(prevRows => {
+        const newRows = prevRows.filter(row => row.id !== id);
+        return newRows.map((row, index) => ({
+          ...row,
+          id: index + 1,
+        }));
+      });
+
+      // Focus previous row or first row if deleting first row
+      setTimeout(() => {
+        const newIndex = Math.max(0, deleteIndex - 1);
+        focusRow(newIndex);
+      }, 0);
+    }
   };
 
   const handleMoveRowUp = (index: number) => {
@@ -107,6 +137,8 @@ export default function WorkSchedule() {
     const newRows = [...rows];
     [newRows[index - 1], newRows[index]] = [newRows[index], newRows[index - 1]];
     setRows(newRows);
+    // Focus moved row in new position
+    setTimeout(() => focusRow(index - 1), 0);
   };
 
   const handleMoveRowDown = (index: number) => {
@@ -114,9 +146,10 @@ export default function WorkSchedule() {
     const newRows = [...rows];
     [newRows[index], newRows[index + 1]] = [newRows[index + 1], newRows[index]];
     setRows(newRows);
+    // Focus moved row in new position
+    setTimeout(() => focusRow(index + 1), 0);
   };
 
-  // Add handleCopyRow function
   const handleCopyRow = (index: number) => {
     const newRows = [...rows];
 
@@ -133,6 +166,8 @@ export default function WorkSchedule() {
     }));
 
     setRows(updatedRows);
+    // Focus the newly copied row
+    setTimeout(() => focusRow(index + 1), 0);
   };
 
   const [filters, setFilters] = useState({
@@ -222,6 +257,53 @@ export default function WorkSchedule() {
   // เพิ่มฟังก์ชันสำหรับตรวจสอบเดือน
   const isAlternateMonth = (date: Date): boolean => {
     return date.getMonth() % 2 === 0;
+  };
+
+  const renderManageButtons = (row: Row, index: number) => {
+    if (row.isDeleted && isRowComplete(row)) {
+      return (
+        <button
+          className="text-blue-500 cursor-pointer hover:text-blue-600 flex items-center gap-1.5 bg-blue-50 px-2 py-1 rounded"
+          onClick={() => handleDeleteRow(row.id)}
+        >
+          ↩️ Undo Delete
+        </button>
+      );
+    }
+
+    return (
+      <div className="flex justify-center gap-2">
+        <button
+          className="text-red-500 cursor-pointer"
+          onClick={() => handleDeleteRow(row.id)}
+        >
+          <FaTrash />
+        </button>
+        <button
+          className="text-indigo-500 cursor-pointer"
+          onClick={() => handleMoveRowUp(index)}
+          disabled={index === 0}
+        >
+          <FaArrowCircleUp />
+        </button>
+        <button
+          className="text-indigo-500 cursor-pointer"
+          onClick={() => handleMoveRowDown(index)}
+          disabled={index === rows.length - 1}
+        >
+          <FaArrowCircleDown />
+        </button>
+        <button
+          className="text-sky-500 cursor-pointer"
+          onClick={() => handleCopyRow(index)}
+        >
+          <FaCopy />
+        </button>
+        <button className="text-green-500">
+          <FaMapMarkerAlt />
+        </button>
+      </div>
+    );
   };
 
   return (
@@ -576,41 +658,15 @@ export default function WorkSchedule() {
                 {rows.map((row, index) => (
                   <tr
                     key={row.id}
-                    className="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-150"
+                    className={`border-b border-gray-200 transition-colors duration-150 
+                      ${row.isDeleted 
+                        ? 'bg-gray-50 opacity-60' 
+                        : 'hover:bg-gray-50'
+                      }`}
                   >
                     <td className="border p-2 text-center">{row.id}</td>
                     <td className="border p-2 text-center">
-                      <div className="flex justify-center gap-2 ">
-                        <button
-                          className="text-red-500 cursor-pointer"
-                          onClick={() => handleDeleteRow(row.id)}
-                        >
-                          <FaTrash />
-                        </button>
-                        <button
-                          className="text-indigo-500 cursor-pointer"
-                          onClick={() => handleMoveRowUp(index)}
-                          disabled={index === 0} // Disable for first row
-                        >
-                          <FaArrowCircleUp />
-                        </button>
-                        <button
-                          className="text-indigo-500 cursor-pointer"
-                          onClick={() => handleMoveRowDown(index)}
-                          disabled={index === rows.length - 1} // Disable for last row
-                        >
-                          <FaArrowCircleDown />
-                        </button>
-                        <button
-                          className="text-sky-500 cursor-pointer"
-                          onClick={() => handleCopyRow(index)}
-                        >
-                          <FaCopy />
-                        </button>
-                        <button className="text-green-500">
-                          <FaMapMarkerAlt />
-                        </button>
-                      </div>
+                      {renderManageButtons(row, index)}
                     </td>
                     <td className="border p-2 text-center">
                       <button className="bg-blue-500 text-white text-xs px-3 py-2 rounded flex items-center justify-center gap-1 w-full shadow-md">
@@ -652,6 +708,7 @@ export default function WorkSchedule() {
                                 ] = e.target.value;
                                 setRows(newRows);
                               }}
+                              disabled={row.isDeleted}
                             >
                               <option value="" hidden>
                                 {
@@ -699,6 +756,7 @@ export default function WorkSchedule() {
                                 ] = parseFloat(e.target.value);
                                 setRows(newRows);
                               }}
+                              disabled={row.isDeleted}
                             />
                           )}
                         </td>
